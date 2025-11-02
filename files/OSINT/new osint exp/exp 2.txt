@@ -1,3 +1,8 @@
+2. A company reports delayed email deliveries. You are asked to
+extract the routing path from the email header and identify which
+mail server caused the delay based on timestamp analysis.
+
+
 🧪 New Experiment 2: Find Email Delays
 Aim: Extract the routing path from an email header and identify which mail server caused a delay.
 

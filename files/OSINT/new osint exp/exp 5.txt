@@ -1,3 +1,8 @@
+5. You have been hired to assess an organization’s email
+footprint. Using enumeration tools, identify valid corporate email
+addresses from public sources and document their data
+exposure risk.
+
 🧪 New Experiment 5: Assess Email Footprint and Risk
 Aim: Identify valid corporate email addresses from public sources and document their data exposure risk.
 

@@ -1,3 +1,8 @@
+3. A phishing email was sent to multiple employees from a Gmail
+account. Use the email header to trace the email’s journey and
+approximate geographic location of the sender.
+
+
 🧪 New Experiment 3: Trace Journey and Find Geo-Location
 Aim: Use the email header to trace the email’s journey and approximate the geographic location of the sender.
 

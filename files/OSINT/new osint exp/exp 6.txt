@@ -1,3 +1,9 @@
+6. A malicious email attachment was shared internally. Extract
+and analyze the metadata of the email (.eml) to determine:
+● The originating IP address
+● The email client or software used
+● The exact timestamp of sending
+
 🧪 New Experiment 6 (Revised): Analyze Email Metadata (.eml file)
 Aim: Extract and analyze the metadata of an email (.eml file) to find:
 

@@ -1,0 +1,3 @@
+7. During an investigation, two copies of a suspicious email were
+found on different devices. Compare the metadata of both and
+identify if one of them has been tampered with or altered.

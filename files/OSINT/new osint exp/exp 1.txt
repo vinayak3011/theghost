@@ -1,3 +1,11 @@
+1. The cybersecurity team received a suspicious email claiming to
+be from the university’s IT department. You are tasked to analyze
+its email header to:
+● Identify the actual sender’s IP address,
+● Verify if the email passed SPF/DKIM checks, and
+● Determine if the email was spoofed.
+
+
 🧪 New Experiment 1: Analyze Header for IP and Spoofing
 Aim: Identify the actual sender’s IP address, verify if the email passed SPF/DKIM checks, and determine if the email was spoofed.
 

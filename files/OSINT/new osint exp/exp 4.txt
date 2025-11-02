@@ -1,3 +1,8 @@
+4. As a penetration tester, you are assessing the exposure of staff
+email IDs of infosec.edu. Using theHarvester and Hunter.io,
+enumerate possible email addresses and verify their existence.
+
+
 🧪 New Experiment 4: Enumerate Emails with theHarvester & Hunter.io
 Aim: Enumerate possible email addresses for the domain infosec.edu and verify their existence.
 
