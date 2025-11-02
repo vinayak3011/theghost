@@ -1,0 +1,121 @@
+EXP 5 OSINT
+5.1 Aim: To perform the reverse Image analysis for finding the physical location where the content was captured. Use OSINT tool to use image metadata, landmarks, street signs, or other visual cues to identify the geolocation accurately.
+
+Step 1
+	open browser 
+	search for 
+	https://www.geoimgr.com/sample-photos.html
+	(here u will get the sample imgs with gps metadata embedded)
+
+Step 2
+	choose one photo
+	click on it, it will open in new tab right click n save the img
+
+Step 3 
+	open browser 
+	search for 
+	https://ezgif.com/view-metadata
+
+Step 4 
+	upload the downloaded photo and click upload
+
+Step 5
+	it will give all the embedded meta data in a table form analyse it
+	(mainly see for something like this
+		GPS Altitude	77.8 m Above Sea Level
+		GPS Date/Time	2018:08:22 12:13:40Z
+		GPS Latitude	51 deg 30' 14.78" N
+		GPS Longitude	0 deg 4' 28.47" W
+		GPS Position	51 deg 30' 14.78" N, 0 deg 4' 28.47" W 
+	it will be mostly at the end of table)
+
+
+Above steps are for metadata analysis for finding the physical location where the content was captured
+
+
+
+Below steps are for Reverse Image Analysis
+
+
+Step 1
+	open browser
+	open google lens 
+
+Step 2
+	upload the downloaded img in the google lens
+	see for the similar or exact img 
+	(u will mostly see the exact img if not similar img will do)
+
+
+this is optional 
+
+Step 1 
+	open browser 
+	search for 
+	https://www.duplichecker.com/reverse-image-search.php
+
+Step 2
+	upload the downloaded photo
+	click Search Similar Images
+
+Step 3
+	see for similar or exact photo
+
+EXPERIMENT DONE!!!!!
+
+
+******************💬 Viva Questions & Answers — Experiment 5.1: Reverse Image Analysis******************
+
+Q1. What is Reverse Image Analysis?
+A. Reverse Image Analysis is a technique used to trace the origin, location, or source of an image using tools that analyze metadata or search for visually similar images online.
+
+Q2. What does OSINT stand for?
+A. OSINT stands for Open-Source Intelligence, which involves collecting and analyzing publicly available information for investigative or research purposes.
+
+Q3. Which tools are commonly used for Reverse Image Analysis?
+A. Google Lens, TinEye, Yandex Image Search, Duplichecker, and Bing Visual Search are common tools used.
+
+Q4. What is EXIF metadata?
+A. EXIF (Exchangeable Image File Format) metadata is data automatically stored in an image file by a camera or smartphone that includes details like date, time, camera type, and GPS coordinates.
+
+Q5. What type of information can you extract from EXIF metadata?
+A. You can extract the device model, camera settings, image resolution, GPS location, and capture date/time.
+
+Q6. How can GPS coordinates from metadata help in OSINT investigations?
+A. GPS coordinates help pinpoint the exact geographical location where the photo was taken, which is crucial in forensic or intelligence investigations.
+
+Q7. Name two websites that can display metadata from an image.
+A. https://ezgif.com/view-metadata
+ and https://exif.regex.info/exif.cgi
+
+Q8. What is the difference between metadata analysis and reverse image search?
+A. Metadata analysis extracts internal image data (like GPS info), while reverse image search compares the visual appearance of the image to find similar or identical images on the internet.
+
+Q9. What is the purpose of using Google Lens in this experiment?
+A. Google Lens is used to visually analyze the image and find matching or similar images to determine its location or origin.
+
+Q10. What is the significance of the website “geoimgr.com” in this experiment?
+A. Geoimgr.com provides sample photos with embedded GPS metadata, which can be used to practice extracting geolocation information.
+
+Q11. What kind of real-world applications does reverse image analysis have?
+A. It is used in digital forensics, verifying fake news, social media investigations, locating missing persons, and copyright verification.
+
+Q12. What happens if GPS metadata is not available in an image?
+A. If GPS data is missing, investigators rely on visual analysis like landmarks, signs, and architecture using reverse image search tools.
+
+Q13. Why do some people remove metadata from their images?
+A. For privacy and security reasons, to prevent others from finding their location or device information.
+
+Q14. What are the limitations of reverse image analysis?
+A. Limitations include missing metadata, edited or cropped images, poor image quality, and unavailability of matching images online.
+
+Q15. How can reverse image analysis contribute to cyber investigations?
+A. It helps identify fake accounts, detect misinformation, trace image origins, and locate suspects or victims in digital crime cases.
+
+
+
+
+
+
+
+

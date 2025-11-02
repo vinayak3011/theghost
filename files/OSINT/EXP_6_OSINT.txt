@@ -1,0 +1,250 @@
+EXPERIMENT NO. 6: Tactical Information Gathering using OSINT Tools
+
+
+6.1 Aim
+Using OSINT tools gather Tactical information using WHOIS lookup tools or websites like
+Domain Tools (domain, registration details, owner’s contact information, registration date,
+and expiration date.) Archives, Text, Reverse Image Search, Images and EXIF data, Source
+code, Others TLD, Mentions of target, Check info such as via RSS, SSL certificates,
+Robots/Sitemap, Port scans, Reverse IP lookup.
+
+
+6.2 Course Outcome
+Demonstrate digital footprint and geospatial profiling using OSINT tools.
+
+
+6.3 Learning Objectives
+Investigate visual cues and metadata in images to identify accurate geolocation.
+
+
+6.4 Requirements
+Operating System: Windows or Linux
+Internet Connection: Required
+Tools/Platforms Used:
+● who.is / DomainTools — WHOIS lookup
+● ViewDNS.info — Reverse IP, Port Scan, DNS lookup
+● crt.sh — SSL certificate enumeration
+● archive.org — Website history
+● Shodan.io — Port and service scan
+● Spyse or Censys.io — Infrastructure discovery
+● VirusTotal — Domain reputation
+● Command line: whois, nslookup, dig, nmap
+
+
+6.5 Related Theory
+Open-Source Intelligence (OSINT) is the process of collecting information from publicly
+available sources for investigative or analytical purposes.
+Tactical OSINT focuses on extracting technical and infrastructure-level data — such as
+domain registration, IP ownership, server configurations, SSL/TLS information, and port
+scanning results — to understand how a digital entity operates.
+Key concepts include:
+Technique Purpose
+WHOIS Lookup Provides domain owner, registrar, registration and
+expiration dates.
+Reverse IP Lookup Finds other domains hosted on the same server.
+Port Scan Identifies open ports and running services on a host.
+SSL Certificate Lookup Lists certificate issuers, domains covered, and
+validity dates.
+Website Archives (Wayback
+Machine)
+Shows historical versions of a website.
+Robots.txt/Sitemap.xml Reveals hidden or unindexed web paths.
+Source Code Inspection Detects framework, analytics IDs, or links to
+external services.
+All data collected must respect ethical and legal guidelines; no unauthorized access or
+exploitation is permitted.
+
+6.6 Program and Output:
+
+1) WHOIS Lookup — domain registration details
+Purpose: returns registrar, creation/expiry dates, name servers, and public contact blocks (if available).
+
+COMMAND:  whois youtube.com
+
+Notes: Output varies by TLD/registrar. Look for Registrar:, Creation Date:, Registry Expiry Date:, Name Server:.
+
+
+
+
+
+
+2) DNS & Name Server Investigation — A/AAAA/MX/TXT/NS records
+Purpose: list DNS records and delegated name servers (used to determine mail hosts, IPs, TXT/SPF, and authoritative NS).
+
+COMMAND :
+# A record
+dig +noall +answer testphp.vulnweb.com A
+# AAAA (IPv6)
+dig +noall +answer testphp.vulnweb.com AAAA
+# MX (mail exchange)
+dig +noall +answer testphp.vulnweb.com MX
+# TXT (SPF, DKIM, DMARC, other text records)
+dig +noall +answer testphp.vulnweb.com TXT
+# NS (authoritative name servers)
+dig +noall +answer testphp.vulnweb.com NS
+
+
+Notes: +noall +answer shows just the answer section. Use dig @ns1.example.com ... to query a specific nameserver.
+
+
+
+
+
+
+
+
+3) Web Archive (Wayback Machine) — historical snapshots
+Purpose: view prior versions of pages to find removed content or historical changes.
+
+WORKING :  
+Open: http://web.archive.org/
+Search for: testphp.vulnweb.com  (use the site search box)
+
+
+Notes: browse snapshots by date; useful for content discovery and timeline analysis.
+
+
+
+
+
+
+4) Reverse Image Search & EXIF extraction
+
+Purpose: find where an image appears online and extract embedded metadata (camera, GPS, timestamps).
+Steps (example):
+
+# 1. Download any image to a folder  (https://www.pic2map.com/) 
+
+# 2. Extract EXIF metadata
+exiftool (england-london-bridge.jpg) > exif_output.txt                (replace your image name)
+
+
+Notes: exiftool outputs GPS, camera model, date/time, software. Many social sites strip EXIF; reverse-image search (Google/ Bing/ Yandex) helps find other copies.
+
+
+
+
+
+5) Image Geolocation
+Purpose: if EXIF contains GPS coordinates, you can geolocate the photo. exiftool already shows GPS fields.
+
+COMMAND:
+# display just GPS fields
+exiftool -gps* (england-london-bridge.jpg)                (replace your image name)
+
+
+Notes: If GPS exists, copy lat/long into Google Maps. If no GPS, use visual geolocation (landmarks) combined with reverse-image results.
+
+
+
+
+
+6) Source Code & Resource Enumeration (Browser DevTools)
+Purpose: inspect loaded JS/CSS, endpoints, API calls, and hidden resources. No single command — use the browser.
+Steps:
+
+WORKING:
+Open target in browser (Chrome/Firefox).
+Press F12 or Ctrl+Shift+I → use the Network, Sources, Console, and Application tabs.
+
+
+Notes: Look for API endpoints, JavaScript variables, XHR/Fetch calls, and static assets. Use Ctrl+F to search source for interesting strings (e.g., api, token, endpoint).
+
+
+
+
+
+7) Mentions & OSINT Harvesting (theHarvester)
+Purpose: collect email addresses, subdomains, hosts and mentions from public sources.
+
+COMMAND:
+# Example: harvest with Bing and save HTML report
+theHarvester -d testphp.vulnweb.com -b bing -f outputs/theharvester_bing.html
+
+
+Notes: -d domain, -b data source (bing, google, linkedin, etc.), -f output file. Use benign targets only.
+
+
+
+
+8) Robots.txt / Sitemap / RSS — fetch and quick grep
+Purpose: discover disallowed paths, sitemap links, and RSS/Atom feeds (useful for hidden URLs and content feeds).
+
+COMMANDS:
+
+# robots.txt
+curl -s https://testphp.vulnweb.com/robots.txt | tee outputs/robots_testphp.txt
+# sitemap
+curl -s https://testphp.vulnweb.com/sitemap.xml | tee outputs/sitemap_testphp.xml
+# quick grep for RSS/Atom links from homepage
+curl -s https://testphp.vulnweb.com | grep -iE "application/(rss|atom)|<link[^>]+(rss|atom)|sitemap"
+
+
+Notes: robots.txt lists disallowed paths (not authoritative but useful). Sitemap often contains URLs for crawling. RSS/Atom feeds expose timely content.
+
+
+
+
+9) SSL Certificate Inspection — retrieve and inspect cert details
+Purpose: examine certificate issuer, validity dates, subject, and SANs (useful for domain ownership and expiry checks).
+
+COMMANDS:
+
+# fetch cert and save
+echo | openssl s_client -connect testphp.vulnweb.com:443 -servername testphp.vulnweb.com 2>/dev/null \
+  | openssl x509 -noout -text > outputs/cert_testphp.txt
+# quick grep for Subject Alternative Name in the saved file
+grep -i "Subject Alternative Name" -A3 outputs/cert_testphp.txt || true
+
+
+Notes: check Not Before/Not After dates, Issuer, and Subject Alternative Name (SAN) entries. -servername sends SNI.
+
+
+
+
+10) Port Scan (nmap) — quick and extended scans (lab only)
+Purpose: discover open services and versions. Only use on permitted targets.
+
+
+COMMANDS:
+# Top-100 TCP ports with service/version detection
+nmap -sV --top-ports 100 -oN outputs/nmap_testphp_top100.txt testphp.vulnweb.com
+# If allowed and in lab: ports 1-1000 with version detection
+nmap -sV -p 1-1000 -oN outputs/nmap_testphp_1_1000.txt testphp.vulnweb.com
+
+
+Notes: -sV probes for service/version; -oN saves normal output. For stealth or timing, adjust -T and flags.
+
+
+
+
+
+
+11) Reverse IP / Resolve and reverse DNS lookup
+Purpose: resolve domain to IP, then reverse lookup to find PTR records and other hostnames sharing the IP.
+
+# Resolve A record and save IP
+dig +short example.com > outputs/example_ip.txt
+# Read the IP into a variable and write a one-line summary
+IP=$(cat outputs/example_ip.txt)
+echo "IP: $IP" | tee outputs/ip_summary_example.txt
+# Basic reverse DNS (PTR) lookup and append to summary
+host "$IP" | tee -a outputs/ip_summary_example.txt
+
+
+Notes: dig +short gives just IP(s). host shows PTR records. For reverse IP hosting lists (other domains on same IP), use online reverse IP tools or run nmap --script=http-vhosts cautiously.
+
+
+
+
+
+
+6.7 Conclusion
+In this experiment, I used various OSINT tools to perform tactical intelligence gathering on
+a target domain. By combining WHOIS data, DNS lookups, SSL certificate details, and port
+scans, I successfully profiled the target’s digital infrastructure. Archive and source-code
+inspection revealed historical and technical insights, while VirusTotal confirmed the domain’s
+reputation.
+This exercise demonstrated how OSINT can map a domain’s digital footprint, providing
+valuable situational awareness while emphasizing the importance of ethical use and data
+validation.

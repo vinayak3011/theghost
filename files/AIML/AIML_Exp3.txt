@@ -1,0 +1,409 @@
+------------------------------------------------------------
+Experiment No. 3: AI for Medical Diagnosis based on MRI/X-ray Data
+------------------------------------------------------------
+Aim: Colab File Link:
+https://colab.research.google.com/drive/1iYAPY-Eqm6Q1v6VuqD618FvGTll8A6WG?usp=sharing
+
+To build, train, and evaluate a Convolutional Neural Network (CNN) model for automated detection of Pneumonia from chest X-ray images using Artificial Intelligence techniques.
+
+Course Outcome:
+
+HNAMLR1702.2, HNAMLR1702.3
+
+Learning Outcomes:
+
+Understand how AI and Deep Learning models can analyze medical images for diagnosis.
+
+Learn the process of data loading, augmentation, model training, and evaluation using CNN.
+
+Visualize and interpret training accuracy and validation performance.
+
+------------------------------------------------------------
+Algorithm:
+------------------------------------------------------------
+
+Download the X-ray dataset from Kaggle.
+
+Configure Kaggle API for authentication.
+
+Extract dataset into training, testing, and validation folders.
+
+Import libraries such as TensorFlow, Keras, NumPy, and Matplotlib.
+
+Use ImageDataGenerator to rescale and augment data for better generalization.
+
+Load image data from directories using flow methods.
+
+Define a CNN model using convolution, pooling, and dense layers.
+
+Compile the model using the Adam optimizer and binary cross-entropy loss.
+
+Train the CNN model with augmented data.
+
+Evaluate the model performance and visualize accuracy/loss graphs.
+
+------------------------------------------------------------
+Code Implementation:
+------------------------------------------------------------
+# =============================================================
+# Step 1: Setup Kaggle API to download dataset
+# =============================================================
+
+!pip install -q kaggle
+
+from google.colab import files
+files.upload()  # Upload your kaggle.json file
+
+!mkdir ~/.kaggle
+!cp kaggle.json ~/.kaggle/
+!chmod 600 ~/.kaggle/kaggle.json
+
+# Download the Pneumonia X-ray dataset
+!kaggle datasets download -d pcbreviglieri/pneumonia-xray-images
+
+# Install TensorFlow
+!pip install tensorflow
+
+
+# =============================================================
+# Step 2: Extract and Prepare Dataset
+# =============================================================
+
+import zipfile
+
+# Define paths
+zf = "/content/pneumonia-xray-images.zip"
+target_dir = "/content/dataset/cnn/pneumonia_revamped"
+
+# Extract files
+zfile = zipfile.ZipFile(zf)
+zfile.extractall(target_dir)
+
+print("✅ Dataset extracted successfully to:", target_dir)
+
+
+# =============================================================
+# Step 3: Import Required Libraries
+# =============================================================
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
+
+# =============================================================
+# Step 4: Define Constants and Dataset Paths
+# =============================================================
+
+train_path = '/content/dataset/cnn/pneumonia_revamped/train'
+test_path = '/content/dataset/cnn/pneumonia_revamped/test'
+valid_path = '/content/dataset/cnn/pneumonia_revamped/val'
+
+# Standard parameter values
+batch_size = 16
+img_height = 500
+img_width = 500
+
+
+# =============================================================
+# Step 5: Image Data Augmentation and Preprocessing
+# =============================================================
+
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
+# Data augmentation for training
+image_gen = ImageDataGenerator(
+    rescale=1./255,
+    shear_range=0.2,
+    zoom_range=0.2,
+    horizontal_flip=True
+)
+
+# Simple rescaling for validation and test sets
+test_data_gen = ImageDataGenerator(rescale=1./255)
+
+# Load training data
+train = image_gen.flow_from_directory(
+    train_path,
+    target_size=(img_height, img_width),
+    color_mode='grayscale',
+    class_mode='binary',
+    batch_size=batch_size
+)
+
+# Load validation and test data
+valid = test_data_gen.flow_from_directory(
+    valid_path,
+    target_size=(img_height, img_width),
+    color_mode='grayscale',
+    class_mode='binary',
+    batch_size=batch_size
+)
+
+test = test_data_gen.flow_from_directory(
+    test_path,
+    target_size=(img_height, img_width),
+    color_mode='grayscale',
+    shuffle=False,
+    class_mode='binary',
+    batch_size=batch_size
+)
+
+
+# =============================================================
+# Step 6: Visualize Sample Training Images
+# =============================================================
+
+plt.figure(figsize=(20, 12))
+for i in range(10):
+    plt.subplot(2, 5, i+1)
+    for X_batch, Y_batch in train:
+        image = X_batch[0]
+        labels = {0: 'NORMAL', 1: 'PNEUMONIA'}
+        plt.title(labels.get(Y_batch[0]))
+        plt.axis('off')
+        plt.imshow(np.squeeze(image), cmap='gray', interpolation='nearest')
+        break
+plt.tight_layout()
+plt.show()
+
+
+# =============================================================
+# Step 7: Build CNN Model
+# =============================================================
+
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Conv2D, Flatten, MaxPooling2D
+
+cnn = Sequential([
+    Conv2D(32, (3, 3), activation="relu", input_shape=(img_width, img_height, 1)),
+    MaxPooling2D(pool_size=(2, 2)),
+
+    Conv2D(32, (3, 3), activation="relu"),
+    MaxPooling2D(pool_size=(2, 2)),
+
+    Conv2D(32, (3, 3), activation="relu"),
+    MaxPooling2D(pool_size=(2, 2)),
+
+    Conv2D(64, (3, 3), activation="relu"),
+    MaxPooling2D(pool_size=(2, 2)),
+
+    Conv2D(64, (3, 3), activation="relu"),
+    MaxPooling2D(pool_size=(2, 2)),
+
+    Flatten(),
+    Dense(128, activation='relu'),
+    Dense(64, activation='relu'),
+    Dense(1, activation='sigmoid')
+])
+
+cnn.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+cnn.summary()
+
+
+# =============================================================
+# Step 8: Visualize Model Architecture
+# =============================================================
+
+!pip install pydot graphviz
+
+from tensorflow.keras.utils import plot_model
+plot_model(cnn, show_shapes=True, show_layer_names=True, rankdir='TB', expand_nested=True)
+
+
+# =============================================================
+# Step 9: Train the Model
+# =============================================================
+
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
+from sklearn.utils.class_weight import compute_class_weight
+
+# Callbacks
+early = EarlyStopping(monitor="val_loss", mode="min", patience=3)
+learning_rate_reduction = ReduceLROnPlateau(monitor='val_loss', patience=2, verbose=1, factor=0.3, min_lr=0.000001)
+
+# Compute class weights
+weights = compute_class_weight(
+    class_weight="balanced",
+    classes=np.unique(train.classes),
+    y=train.classes
+)
+cw = dict(zip(np.unique(train.classes), weights))
+print("Class Weights:", cw)
+
+# Train model
+history = cnn.fit(train, epochs=1, validation_data=valid, class_weight=cw, callbacks=[early, learning_rate_reduction])
+
+
+# =============================================================
+# Step 10: Save and Reload Model
+# =============================================================
+
+fp = "/content/cnn_pneu_vamp_model.h5"
+cnn.save(fp)
+
+from tensorflow.keras.models import load_model
+cnn = load_model(fp)
+
+print("✅ Model saved and reloaded successfully.")
+
+
+# =============================================================
+# Step 11: Model Evaluation
+# =============================================================
+
+import seaborn as sns
+from sklearn.metrics import classification_report, confusion_matrix
+
+# Plot training history
+pd.DataFrame(history.history).plot()
+
+# Evaluate on test data
+test_accu = cnn.evaluate(test)
+print(f'Testing Accuracy: {test_accu[1] * 100:.2f}%')
+
+# Predict on test set
+preds = cnn.predict(test, verbose=1)
+
+# Thresholding
+predictions = np.where(preds > 0.5, 1, 0)
+
+# Confusion Matrix
+cm = pd.DataFrame(
+    confusion_matrix(test.classes, predictions, labels=[0, 1]),
+    index=["Actual Normal", "Actual Pneumonia"],
+    columns=["Predicted Normal", "Predicted Pneumonia"]
+)
+
+plt.figure(figsize=(6, 4))
+sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
+plt.title("Confusion Matrix")
+plt.show()
+
+# Classification Report
+print(classification_report(test.classes, predictions, target_names=['NORMAL', 'PNEUMONIA']))
+
+
+# =============================================================
+# Step 12: Visualize Predictions
+# =============================================================
+
+test.reset()
+x = np.concatenate([next(test)[0] for _ in range(len(test))])
+y = np.concatenate([next(test)[1] for _ in range(len(test))])
+
+labels = {0: 'NORMAL', 1: 'PNEUMONIA'}
+
+plt.figure(figsize=(20, 20))
+for i in range(228, 237):
+    plt.subplot(3, 3, i - 227)
+    if preds[i, 0] >= 0.5:
+        out = f'{preds[i][0]:.2%} probability of being Pneumonia'
+    else:
+        out = f'{1 - preds[i][0]:.2%} probability of being Normal'
+    plt.title(out + "\nActual: " + labels[int(y[i])])
+    plt.imshow(np.squeeze(x[i]), cmap='gray')
+    plt.axis('off')
+plt.show()
+
+
+# =============================================================
+# Step 13: Visualize Using Plotly
+# =============================================================
+
+import plotly.graph_objects as go
+
+# Actual labels
+fig = go.Figure(go.Scatter(y=y))
+fig.update_layout(title="Actual Labels Distribution")
+fig.show()
+
+# Predicted labels
+fig = go.Figure(go.Scatter(y=predictions[:, 0]))
+fig.update_layout(title="Predicted Labels Distribution")
+fig.show()
+
+
+# =============================================================
+# Step 14: Test with a Custom X-Ray Image
+# =============================================================
+
+from tensorflow.keras.preprocessing import image
+
+# Path to your test image
+test_img_path = '/content/dataset/cnn/pneumonia_revamped/test/normal/IM-0001-0001.jpeg'
+
+# Load and preprocess the image
+img = image.load_img(test_img_path, target_size=(500, 500), color_mode='grayscale')
+img_array = image.img_to_array(img) / 255.0
+img_array = np.expand_dims(img_array, axis=0)
+
+# Predict
+pred = cnn.predict(img_array)
+
+# Display result
+plt.figure(figsize=(6, 6))
+plt.axis('off')
+if pred >= 0.5:
+    out = f"I am {pred[0][0]:.2%} confident this is Pneumonia."
+else:
+    out = f"I am {1 - pred[0][0]:.2%} confident this is Normal."
+plt.title("Custom X-Ray Result\n" + out)
+plt.imshow(np.squeeze(img_array), cmap='gray')
+plt.show()
+
+------------------------------------------------------------
+Explanation (for Viva):
+------------------------------------------------------------
+
+💡 About the Experiment:
+This experiment uses a Convolutional Neural Network (CNN) to automatically detect pneumonia from chest X-ray images. It demonstrates how AI can assist in medical diagnostics using computer vision.
+
+💡 Concept Used – CNN:
+CNNs are deep learning models capable of automatically learning image features like edges, shapes, and textures, which are essential for medical imaging tasks.
+
+💡 Data Augmentation:
+To avoid overfitting, transformations like zoom, flip, and shear are applied to increase data diversity.
+
+💡 Training Process:
+The model uses binary cross-entropy loss and the Adam optimizer for binary classification (Normal vs. Pneumonia).
+
+💡 Evaluation:
+Model performance is checked using accuracy and validation metrics, and results are visualized using training curves.
+
+------------------------------------------------------------
+Viva Questions with Answers:
+------------------------------------------------------------
+
+1. What is the main objective of using CNNs in medical image analysis?
+➡️ CNNs automatically extract spatial and texture-based features from medical images, enabling accurate disease detection without manual feature engineering.
+
+2. What is the difference between training, validation, and test datasets?
+➡️ Training set – used to fit the model.
+➡️ Validation set – used to tune hyperparameters and prevent overfitting.
+➡️ Test set – used to evaluate the final model performance.
+
+3. Why is data augmentation important in deep learning?
+➡️ It increases data diversity by generating new images through transformations, helping models generalize better and reduce overfitting.
+
+4. What activation functions are used in CNNs?
+➡️ ReLU for hidden layers (faster convergence).
+➡️ Sigmoid or Softmax for output layers depending on binary or multi-class classification.
+
+5. What is the role of pooling layers in CNN?
+➡️ Pooling layers reduce spatial dimensions, minimize computation, and retain the most important spatial features.
+
+6. Why do we normalize image data?
+➡️ Normalization ensures that pixel values are within the same range (e.g., 0–1), improving learning speed and model stability.
+
+7. What is binary cross-entropy and why is it used?
+➡️ Binary cross-entropy measures the difference between actual and predicted probabilities in binary classification problems like Normal vs. Pneumonia.
+
+8. How can overfitting be prevented in CNN models?
+➡️ By using dropout layers, data augmentation, early stopping, and regularization techniques.
+
+9. Why is the Adam optimizer used in CNNs?
+➡️ Adam adapts the learning rate automatically for each parameter, providing fast and efficient convergence during training.
+
+10. How does AI assist doctors in diagnostics?
+➡️ AI systems can process and analyze X-rays quickly, highlight abnormal regions, and support doctors with faster and more consistent diagnoses.

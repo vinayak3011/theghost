@@ -1,0 +1,218 @@
+🧪 New Experiment 6 (Revised): Analyze Email Metadata (.eml file)
+Aim: Extract and analyze the metadata of an email (.eml file) to find:
+
+The originating IP address
+
+The email client or software used
+
+The exact timestamp of sending
+
+Tools:
+
+Gmail (or any email account)
+
+Web Browser
+
+Tool 1: MXToolbox Header Analyzer
+
+Tool 2: The "Find" function in your browser (Ctrl + F)
+
+Step-by-Step Guide
+
+
+Part 1: Get Your Email Header
+
+Open Gmail and log in.
+
+Select an email.
+
+Click the three dots (⋮) on the top-right.
+
+Click "Show Original".
+
+A new browser tab opens.
+
+
+
+Part 2: Find the IP and Timestamp (The Easy Way)
+
+On the "Show Original" page, click the "Copy to clipboard" button.
+
+Open a new tab and go to: https://mxtoolbox.com/EmailHeaders.aspx.
+
+Paste your copied header into the big text box.
+
+Click the "Analyze Header" button.
+
+The tool will show you a clean report.
+
+To find the IP Address: Look for the line that says "Sender IP" or "Originating IP". This is your first answer.
+
+(In your example, this is 128.245.247.83).
+
+To find the Timestamp: Look near the top of the report for the line that says "Date". This is your second answer.
+
+(In your example, this is Wed, 15 Oct 2025 05:21:29 -0600).
+
+
+
+
+
+Part 3: Find the Email Client (The Pro Way)
+
+This part has 3 steps. If the first one doesn't work, try the next.
+
+Go back to your "Show Original" browser tab (the one with the messy text).
+
+Press Ctrl + F on your keyboard  A small search box will appear.
+
+Search 1: In that search box, type User-Agent: and press Enter. If you find it, the text next to it is your answer (e.g., Mozilla/5.0 or Thunderbird).
+		User-Agent:
+
+Search 2 (if 1 fails): If you don't find User-Agent:, search for this instead: X-Mailer:. The text next to it is your answer (e.g., Microsoft Outlook 16.0).
+		X-Mailer:
+
+Search 3 (if 1 & 2 fail): This is your situation! It means a web service sent the email.
+
+In the search box, type Received: from.
+	Received: from
+
+Look at the first "Received: from" line you can find (it's usually near the top, but not from mx.google.com).
+
+In your example, you see this line: Received: from akz83.mta.exacttarget.com (akz83.mta.exacttarget.com. [128.245.247.83])
+
+The "client" or sending software is exacttarget.com. This is a famous, large email marketing service (now owned by Salesforce). This is your third answer.
+
+
+
+
+
+
+****************raw header*****************
+
+
+Delivered-To: pratham.17083@sakec.ac.in
+Received: by 2002:a05:7000:9e93:b0:6d7:70fa:3ab5 with SMTP id dw19csp5259653mab;
+        Wed, 15 Oct 2025 04:21:29 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IG/BYO7dHt5jHqgRcGs3vKwePYsYzB8guX+VRwG/JEOCid3BSl2wu4NsSImKIrXIds4SwtI
+X-Received: by 2002:ac8:4f54:0:b0:4e6:ebfd:5fde with SMTP id d75a77b69052e-4e6ebfd6015mr286255941cf.16.1760527289558;
+        Wed, 15 Oct 2025 04:21:29 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1760527289; cv=none;
+        d=google.com; s=arc-20240605;
+        b=Mq7Sx8xdOcs+vuPx0LJ2Z0gj9LrH/HZD+VddfgV0F+d/qZcS7DTcsqGmrVOXwegDIY
+         NRZ71bPRuqqRgyrcDhH9xbDvV8/WSlO4xaCcQWHP6E4fE9TEg7whiFtlagEUtkt+TGCt
+         6E5qwxRUGujKNgv3FDrLFW4oYej/FxksAY3mkA9PSqUCm+rOuHS4AyxDVWvUbp6HFdXm
+         /OQ0vFnDY5Ql3SEgw6ZOawRU1Ln1yy0tH07LQD5coefDQ5ofMIpZylgx5I9pqXfjZUfh
+         +bYzOiP5P3gLcblDy/4qCWp3tTpY280MCUWJpJzw6/oLFA0nw5XLraZOMfQ2n8GuCNxn
+         Z/VA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=message-id:reply-to:list-unsubscribe-post:list-unsubscribe
+         :mime-version:list-help:date:subject:to:from:dkim-signature;
+        bh=NeEOMcH5LleULhI3kR1CzVoOsPBCTUItdsbhyG9drgI=;
+        fh=V8yMVC0Q5fNiqdtTgnqhGyRs7WJWQgol3Q5d6QJqDqo=;
+        b=OC/E1iVx+o41ix2EYspt3ItzSpOTcxwDf0IAGNSf1rDTMcv/aBRX4RGpZ4LgL7wE8E
+         q7v7gaYfUrqP1ya8bH3L4YujJ5srJK5UVN4qknjFj4CQBVxm39Ac8fBTgHJrgDILMcxN
+         Rfe31pkkTP/59Zy71thrrR7ELXY1JkZvQahq0hToQeUaP875XCjXjng0s+cR5NaiMnvI
+         +Ob+5SrGWStQK2QENPucJPq5DsMIvfiDNBCBw/C3YE+ocHMF8T5+bINUAP7zmCULlXbD
+         qlFRuU1GAMjhKrluKhiJEncfYeqZQMhXFihbzTM7/Nbr6Mx6Vbbj+/NonyZUup7DILZf
+         T4Vw==;
+        dara=google.com
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@portswigger.net header.s=200608 header.b=WMG0hd+z;
+       spf=pass (google.com: domain of bounce-4673_html-377684140-12674-546007459-108350@bounce.s13.mc.pd25.com designates 128.245.247.83 as permitted sender) smtp.mailfrom=bounce-4673_HTML-377684140-12674-546007459-108350@bounce.s13.mc.pd25.com
+Return-Path: <bounce-4673_HTML-377684140-12674-546007459-108350@bounce.s13.mc.pd25.com>
+Received: from akz83.mta.exacttarget.com (akz83.mta.exacttarget.com. [128.245.247.83])
+        by mx.google.com with ESMTPS id d75a77b69052e-4e881d25d5asi9034641cf.684.2025.10.15.04.21.29
+        for <pratham.17083@sakec.ac.in>
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 15 Oct 2025 04:21:29 -0700 (PDT)
+Received-SPF: pass (google.com: domain of bounce-4673_html-377684140-12674-546007459-108350@bounce.s13.mc.pd25.com designates 128.245.247.83 as permitted sender) client-ip=128.245.247.83;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@portswigger.net header.s=200608 header.b=WMG0hd+z;
+       spf=pass (google.com: domain of bounce-4673_html-377684140-12674-546007459-108350@bounce.s13.mc.pd25.com designates 128.245.247.83 as permitted sender) smtp.mailfrom=bounce-4673_HTML-377684140-12674-546007459-108350@bounce.s13.mc.pd25.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; s=200608; d=portswigger.net; h=From:To:Subject:Date:List-Help:MIME-Version:List-Unsubscribe: List-Unsubscribe-Post:Reply-To:Message-ID:Content-Type; i=hello@portswigger.net; bh=NeEOMcH5LleULhI3kR1CzVoOsPBCTUItdsbhyG9drgI=; b=WMG0hd+zNpHNi8eD9seQcef4w4GGWoINUwi+qiMs+hm1cQxko4Yrk0pCnNMmkG4TO5HSz80M/z/l
+   +i33xvVKvBH4PttrHGaGv7OCXymr8pHgE9tiuyCayK3xs5h4uo3Sd7i4kB8wQGE7caXx0o8jNc0O
+   Oy0s6GadGZHGELDozis=
+Received: by akz83.mta.exacttarget.com id htu1ri2fmd48 for <pratham.17083@sakec.ac.in>; Wed, 15 Oct 2025 11:21:29 +0000 (envelope-from <bounce-4673_HTML-377684140-12674-546007459-108350@bounce.s13.mc.pd25.com>)
+From: PortSwigger <hello@portswigger.net>
+To: <pratham.17083@sakec.ac.in>
+Subject: AI won't replace pentesters; Pentesters with AI will
+Date: Wed, 15 Oct 2025 05:21:29 -0600
+List-Help: <https://cl.s13.exct.net/subscription_center.aspx?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtaWQiOiI1NDYwMDc0NTkiLCJzIjoiMzc3Njg0MTQwIiwibGlkIjoiNDY3MyIsImoiOiIxMjY3NCIsImpiIjoiMTA4MzUwIiwiZCI6IjEzMDAxMCJ9.tSCgTKWkwYX8byxJPNm4qhE-FWqiIf3CCLlHDeTzPws>
+MIME-Version: 1.0
+x-messageKey: 1066743-1341059343-87241722
+X-Delivery: Transactional
+X-SFMC-Stack: 13
+x-job: 546007459_12674
+List-Unsubscribe: <https://go.portswigger.net/listUnsubscribeHeader/u/1066743/ad4136232766dfedf1e768f4e9fa6eb1c140506e5890e108ab8aed586d6d8394/1341565194>
+List-Unsubscribe-Post: List-Unsubscribe=One-Click
+X-Report-Abuse-To: abuse@pd25.com
+Reply-To: no-reply@portswigger.net
+Message-ID: <b809aad7-26ef-4453-a3d2-b0639b6bc21d@iad4s13mta906.xt.local>
+Content-Type: multipart/alternative; boundary="NvJ311yPHmXd=_?:"
+
+--NvJ311yPHmXd=_?:
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+
+**AI won’t replace pentesters; Pentesters with AI will
+----------------------------------------------------
+
+Burp AI the #1 AI-enhanced tool in web security, according to HackerOne's Hacker-Powered Security Report 2025. Register for the webinar to learn more.
+
+Register now < https://go.portswigger.net/e/1066743/events-bionic-hacking/fgdc41/1341565194/h/2HTzOFSdjbvqzVIvPRonN5FqI8qDkmdv-gpiGtDLdRo > 
+
+Securing the Age of AI Autonomy: Priorities for 2026
+
+Wed Oct 15 @ 12 p.m. ET / 16:00 UTC
+
+Hi .
+
+Burp AIis built into the tool you already trust, Burp Suite Professional. By combining human intuition and AI acceleration, you and your team can reclaim hoursper engagement and focus effort where it matters.
+
+In the aftermath of their Hacker-Powered Security Report 2025 < https://go.portswigger.net/e/1066743/ources-hacker-powered-security/fgdc44/1341565194/h/2HTzOFSdjbvqzVIvPRonN5FqI8qDkmdv-gpiGtDLdRo > , on Wednesday, October 15 @ 12 p.m. ET / 16:00 UTC, HackerOne is convening leaders from PortSwigger, IAC, and the ethical hacking community to unpack what insights the report reveals about the next 12 months, and how this affects your security strategy going into 2026. James Kettle < https://go.portswigger.net/e/1066743/research-james-kettle/fgdc47/1341565194/h/2HTzOFSdjbvqzVIvPRonN5FqI8qDkmdv-gpiGtDLdRo > , PortSwigger’s Director of Research, is among the speakers. 
+
+→ Read the report < https://go.portswigger.net/e/1066743/ources-hacker-powered-security/fgdc44/1341565194/h/2HTzOFSdjbvqzVIvPRonN5FqI8qDkmdv-gpiGtDLdRo > : Get the benchmarks and trends that matter for 2026.
+
+→ Join the webinar < https://go.portswigger.net/e/1066743/events-bionic-hacking/fgdc41/1341565194/h/2HTzOFSdjbvqzVIvPRonN5FqI8qDkmdv-gpiGtDLdRo > : Securing the Age of AI Autonomy: Priorities for 2026.
+
+→ Bring Human × AI to your testing < https://go.portswigger.net/e/1066743/burp-ai/fgdc4b/1341565194/h/2HTzOFSdjbvqzVIvPRonN5FqI8qDkmdv-gpiGtDLdRo > : Try Burp AI, recognized by HackerOne as the leading AI tool in AppSec, to accelerate workflows while keeping humans firmly in control.
+
+Hope to see you there!
+
+**
+----------------------------------------------------
+
+We've sent you this email because you've used our products, in line with our privacy policy < https://go.portswigger.net/e/1066743/privacy/fgdc4f/1341565194/h/2HTzOFSdjbvqzVIvPRonN5FqI8qDkmdv-gpiGtDLdRo > . We’d like to send you messages about how to get the most out of our products. Don’t worry, we have no plans to become an Evil Marketing Machine, and we won’t be spamming you with special offers. If you’d rather not hear from us, please use the unsubscribe link below, and we won’t trouble you again.
+
+PortSwigger, 6 Booths Park, Chelford Road, Knutsford, WA16 8ZS United Kingdom. Unsubscribe <  https://go.portswigger.net/preferencecentre?ehash=ad4136232766dfedf1e768f4e9fa6eb1c140506e5890e108ab8aed586d6d8394&email_id=1341565194&epc_hash=K6UZu1zRs1DQNQDgJv1SyUzu0CJuB1z478Y6NU8X364  >
+
+--NvJ311yPHmXd=_?:
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+
+<!doctype html><html> <head>  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">  <meta name="viewport" content="width=device-width, initialscale=1.0">  <meta http-equiv="X-UA-Compatible" content="IE=edge">  <style type="text/css">@media screen and (max-width: 480px) {slot[style] {margin-right: 0 !important;}.columnDiv {margin-right: 0 !important;<span>}</span>}@media screen and (min-width: 480px) {slot[style] {margin-bottom: 0 !important;}.columnDiv {margin-bottom: 0 !important;<span>}</span>}</style>  <style type="text/css">.contentpageDefaultEmailContentPageTemplate .contentRoot {width: 600px;}@media only screen and (max-width: 480px) {.contentpageDefaultEmailContentPageTemplate .contentRoot {width: 320px;<span>}</span>}</style>  <style type="text/css">@media screen and (max-width: 480px) {.contentbuilderBaseColumnRow .columnCell {display:inline-block;width:100%<span>}</span>}</style> </head> <body>  <table
+class="contentpageDefaultEmailContentPageTemplate" style="background-color: #E9EAEC;" role="presentation" id="contentpage_emailContentBodyContent" width="100%" cellpadding="0" cellspacing="0">   <tbody>    <tr>     <td width="100%" align="center">      <table class="contentRoot" role="presentation" width="600" cellpadding="0" cellspacing="0" bgcolor="#FFFFFF">       <tbody>        <tr>         <td style="padding-top: 10px; padding-bottom: 10px; padding-left: 10px; padding-right: 10px;">          <table class="contentbuilderBaseColumnRow" style="align-items: flex-start; width: 100%; background-color:;" role="presentation" width="100%" cellpadding="0" cellspacing="0">           <tbody>            <tr valign="top">             <td width="100%" class="columnCell" style="vertical-align: top;display: inline-block; float:left">              <div class="columnDiv" style="padding: 10px;">        
+      <table cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse; word-break:break-word;">                <tbody>                 <tr>                  <td>                   <table style="width:100%; border-collapse: collapse; word-break:break-word;" id="contentRegion" role="presentation" cellspacing="0" cellpadding="0" locked="0">                    <tbody>                     <tr>                      <td align="Center"><img style="width: 100%; display: block; border: none; max-width: 100%; object-fit: fill;" src="https://portswigger.cdn.salesforce-experience.com/cms/delivery/media/MCDU3ZCB2Q55CTVBAAE5JY7SE4O4?oid=00D4J000000OpXkUAK&amp;channelId=0apTw00000007xZIAQ" alt width="580"></td>                     </tr>                    </tbody>                   </table></td>                 </tr>                </tbody>                <tbody>                
+<tr>                  <td>                   <table style="width: 100%; border-collapse: collapse; word-break: break-word; font-size: 14px" id="contentRegion" role="presentation" cellspacing="0" cellpadding="0" locked="0">                    <tbody>                     <tr>                      <td style="font-family: Arial, Helvetica, sans-serif;padding-top: 10px;padding-bottom: 10px;"><h1 style="color: rgb(17, 17, 17); font-family: Arial; font-size: 32px; font-weight: bold; margin: 0px;">AI won’t replace pentesters; Pentesters with AI will</h1></td>                     </tr>                    </tbody>                   </table></td>                 </tr>                </tbody>                <tbody>                 <tr>                  <td>                   <table style="width: 100%; border-collapse: collapse; word-break: break-word; font-size: 14px" id="contentRegion"
+role="presentation" cellspacing="0" cellpadding="0" locked="0">                    <tbody>                     <tr>                      <td style="font-family: Arial, Helvetica, sans-serif;padding-top: 10px;padding-bottom: 10px;"><p style="color:#333333;font-family:Arial;font-size:16px;font-weight:normal;margin:0;"><span style="font-family:Arial,Helvetica,sans-serif;">Burp AI the #1 AI-enhanced tool in web security, according to HackerOne's <em>Hacker-Powered Security Report 2025</em>. Register for the webinar to learn more.</span></p></td>                     </tr>                    </tbody>                   </table></td>                 </tr>                </tbody>                <tbody>                 <tr>                  <td>                   <table style="border: 0; width: 100%; border-collapse: collapse; mso-table-lspace:0pt;mso-table-rspace:0pt;" locked="0">                
+   <tbody>                     <tr>                      <td style="padding-top: 10px;padding-bottom: 10px;mso-table-lspace:0pt;mso-table-rspace:0pt;">                       <div style="word-break:break-word; border: 0; mso-border-alt: 0; text-align:center; ">                        <div style="display: inline-block; border: 0; mso-border-alt: 0; ">                         <a style="direction:ltr;display:block;text-align:center;margin:0; font-family:Arial, Helvetica, sans-serif; font-size:16px; padding-top: 16px;padding-right: 28px;padding-bottom: 16px;padding-left: 28px; color:#FFFFFF;font-weight:normal;font-style:normal;text-decoration:none;border:0;background-color:#ff6633;border-radius:50px;mso-padding-alt:0;" href="https://go.portswigger.net/e/1066743/events-bionic-hacking/fgdc41/1341565194/h/2HTzOFSdjbvqzVIvPRonN5FqI8qDkmdv-gpiGtDLdRo" target="_blank"><!--[if mso]><i
+style="background-color:#ff6633; letter-spacing: 28px; mso-text-raise: 16px; mso-font-width: -100%;">&nbsp;</i><![endif]--><span>Register now</span><!--[if mso]><i style="background-color:#ff6633; letter-spacing: 28px; mso-text-raise: -16px; mso-font-width: -100%;">&nbsp;</i><![endif]--></a>                        </div>                       </div></td>                     </tr>                    </tbody>                   </table></td>                 </tr>                </tbody>                <tbody>                 <tr>                  <td>                   <table style="width: 100%; border-collapse: collapse; word-break: break-word; font-size: 14px" id="contentRegion" role="presentation" cellspacing="0" cellpadding="0" locked="0">                    <tbody>                     <tr>                      <td style="font-family: Arial, Helvetica, sans-serif;padding-top:
+10px;padding-bottom: 20px;"><p style="color: rgb(51, 51, 51); font-family: Arial; font-size: 16px; font-weight: normal; margin: 0px; text-align: center;"><strong>Securing the Age of AI Autonomy: Priorities for 2026</strong></p><p style="color: rgb(51, 51, 51); font-family: Arial; font-size: 16px; font-weight: normal; margin: 0px; text-align: center;">Wed Oct 15 @ 12 p.m. ET / 16:00 UTC</p></td>                     </tr>                    </tbody>                   </table></td>                 </tr>                </tbody>                <tbody>                 <tr>                  <td>                   <table style="width: 100%; border-collapse: collapse; word-break: break-word; font-size: 14px" id="contentRegion" role="presentation" cellspacing="0" cellpadding="0" locked="0">                    <tbody>                     <tr>                      <td style="font-family: Arial,
+Helvetica, sans-serif;"><p style="color:#333333;font-family:Arial;font-size:16px;font-weight:normal;margin:0;">Hi .<br><br><strong>Burp AI</strong> is built into the tool you already trust, Burp Suite Professional. By <strong>combining human intuition and AI acceleration</strong>, you and your team can r<strong>eclaim hours</strong> per engagement and <strong>focus effort where it matters</strong>.<br><br> In the aftermath of their <a href="https://go.portswigger.net/e/1066743/ources-hacker-powered-security/fgdc44/1341565194/h/2HTzOFSdjbvqzVIvPRonN5FqI8qDkmdv-gpiGtDLdRo">Hacker-Powered Security Report 2025</a>, on <strong>Wednesday, October 15 @ 12 p.m. ET / 16:00 UTC</strong>, HackerOne is convening leaders from PortSwigger, IAC, and the ethical hacking community to unpack what insights the report reveals about the next 12 months, and how this affects your security strategy going into
+2026. <a href="https://go.portswigger.net/e/1066743/research-james-kettle/fgdc47/1341565194/h/2HTzOFSdjbvqzVIvPRonN5FqI8qDkmdv-gpiGtDLdRo">James Kettle</a> , PortSwigger’s Director of Research, is among the speakers.&nbsp;<br><br> → <a href="https://go.portswigger.net/e/1066743/ources-hacker-powered-security/fgdc44/1341565194/h/2HTzOFSdjbvqzVIvPRonN5FqI8qDkmdv-gpiGtDLdRo">Read the report</a> : Get the benchmarks and trends that matter for 2026.<br><br> → <a href="https://go.portswigger.net/e/1066743/events-bionic-hacking/fgdc41/1341565194/h/2HTzOFSdjbvqzVIvPRonN5FqI8qDkmdv-gpiGtDLdRo">Join the webinar</a> ​​​​​​​: Securing the Age of AI Autonomy: Priorities for 2026.<br><br> → <a href="https://go.portswigger.net/e/1066743/burp-ai/fgdc4b/1341565194/h/2HTzOFSdjbvqzVIvPRonN5FqI8qDkmdv-gpiGtDLdRo">Bring Human × AI to your testing</a> ​​​​​​​: Try Burp AI,
+recognized by HackerOne as the leading AI tool in AppSec, to accelerate workflows while keeping humans firmly in control.<br><br> Hope to see you there!</p></td>                     </tr>                    </tbody>                   </table></td>                 </tr>                </tbody>                <tbody>                 <tr>                  <td>                   <table style="width: 100%; border-collapse: collapse; word-break: break-word; font-size: 14px" id="contentRegion" role="presentation" cellspacing="0" cellpadding="0" locked="1">                    <tbody>                     <tr>                      <td style="font-family: Arial, Helvetica, sans-serif;">                       <hr></td>                     </tr>                    </tbody>                   </table></td>                 </tr>                </tbody>                <tbody>                 <tr>        
+         <td>                   <table style="width:100%; border-collapse: collapse; word-break:break-word;" id="contentRegion" role="presentation" cellspacing="0" cellpadding="0" locked="0">                    <tbody>                     <tr>                      <td style="padding-top: 20px;padding-bottom: 20px;" align="Center"><img style="width: 100%; display: block; border: none; max-width: 35%; object-fit: fill;" src="https://mcusercontent.com/732fe39f51f62a298ec1f1d79/images/353ef06f-5e91-ab97-9938-4b3364d78798.png" alt width="203"></td>                     </tr>                    </tbody>                   </table></td>                 </tr>                </tbody>                <tbody>                 <tr>                  <td>                   <table style="width: 100%; border-collapse: collapse; word-break: break-word; font-size: 14px" id="contentRegion" role="presentation"
+cellspacing="0" cellpadding="0" locked="1">                    <tbody>                     <tr>                      <td style="font-family: Arial, Helvetica, sans-serif;"><p><span style="font-size:10px;">We've sent you this email because you've used our products, in line with our <a href="https://go.portswigger.net/e/1066743/privacy/fgdc4f/1341565194/h/2HTzOFSdjbvqzVIvPRonN5FqI8qDkmdv-gpiGtDLdRo">privacy policy</a>. We’d like to send you messages about how to get the most out of our products. Don’t worry, we have no plans to become an Evil Marketing Machine, and we won’t be spamming you with special offers. If you’d rather not hear from us, please use the unsubscribe link below, and we won’t trouble you again.</span></p><p><span style="font-size:10px;">PortSwigger, 6 Booths Park, Chelford Road, Knutsford, WA16 8ZS United Kingdom. </span><a href="
+https://go.portswigger.net/preferencecentre?ehash=ad4136232766dfedf1e768f4e9fa6eb1c140506e5890e108ab8aed586d6d8394&email_id=1341565194&epc_hash=K6UZu1zRs1DQNQDgJv1SyUzu0CJuB1z478Y6NU8X364 " rel="nofollow,noreferrer"><span style="font-size: 10px"><span style="font-family: 'Helvetica Neue', Helvetica, Arial, Verdana, sans-serif">Unsubscribe</span></span></a></p></td>                     </tr>                    </tbody>                   </table></td>                 </tr>                </tbody>               </table>              </div></td>            </tr>           </tbody>          </table></td>        </tr>       </tbody>      </table></td>    </tr>   </tbody>  </table> <img alt="" src="https://go.portswigger.net/r/1066743/1/1341565194/open/1" /><style data-ignore-inlining> 
+@media (prefers-color-scheme: dark) { #_t::before {content:url('https://i38s5y4v.emltrk.com/v2/i38s5y4v?rd&d=[UNIQUE]');<span>}</span>} 
+@media (prefers-color-scheme: light) { #_t::before {content:url('https://i38s5y4v.emltrk.com/v2/i38s5y4v?rl&d=[UNIQUE]');<span>}</span>} 
+@media print{ #_t {background-image:url('https://i38s5y4v.emltrk.com/v2/i38s5y4v?p&d=[UNIQUE]');<span>}</span>} 
+div.OutlookMessageHeader {background-image:url('https://i38s5y4v.emltrk.com/v2/i38s5y4v?f&d=[UNIQUE]')} 
+table.moz-email-headers-table {background-image:url('https://i38s5y4v.emltrk.com/v2/i38s5y4v?f&d=[UNIQUE]')} 
+blockquote #_t {background-image:url('https://i38s5y4v.emltrk.com/v2/i38s5y4v?f&d=[UNIQUE]')} 
+#MailContainerBody #_t {background-image:url('https://i38s5y4v.emltrk.com/v2/i38s5y4v?f&d=[UNIQUE]')} 
+</style><div id="_t"></div>
+<img src="https://i38s5y4v.emltrk.com/v2/i38s5y4v?d=[UNIQUE]" width="1" height="1" border="0" alt="" /></body></html>
+
+--NvJ311yPHmXd=_?:--

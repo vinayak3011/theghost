@@ -1,0 +1,44 @@
+🧪 New Experiment 5: Assess Email Footprint and Risk
+Aim: Identify valid corporate email addresses from public sources and document their data exposure risk.
+
+Tools:
+
+Tool 1: Kali Linux Terminal (for theHarvester)
+
+Tool 2: Web Browser (for Hunter.io)
+
+Tool 3: A plain text editor (like Notepad, gedit)
+
+Step-by-Step Guide
+Part 1: Find the "Email Footprint" (using theHarvester)
+
+Open Kali Linux and open the Terminal.
+
+To find the entire footprint, you will search all sources at once. Type any one command below
+	theHarvester -d sakec.ac.in -b all
+	theHarvester -d nist.gov -b all
+	theHarvester -d infosectrain.com -b all
+	theHarvester -d tesla.com -b all				
+
+Press Enter and wait. This will search Google, Bing, LinkedIn, etc., to find as many emails as possible for your target.
+
+This list of all the emails you found is the "email footprint".
+
+if mam ask for specific like yahoo or linkedin just replace the all with whatever she ask
+	(for yahoo theHarvester -d infosectrain.com -b all ---> theHarvester -d infosectrain.com -b yahoo)
+
+
+
+Part 2: Identify Valid Emails (using Hunter.io)
+
+Open your Web Browser and go to https://hunter.io/.
+
+Log in. On the gray menu bar on the far left, click on "Verifier".
+
+Copy the email you found in Part 1 (with theHarvester) and paste them one-by-one into the "Verifier" box.
+
+Click "Verify" for each one.
+
+Make a note of every email that comes back as "Valid".
+
+

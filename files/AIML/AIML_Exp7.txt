@@ -1,0 +1,319 @@
+Experiment No. 7
+
+Aim:
+Medical Reviews Analysis from Social Media Data (Sentiment Analysis)
+
+Course Outcomes (CO):
+
+CO1: Understand Natural Language Processing (NLP) techniques for text data preprocessing.
+CO2: Implement feature extraction (TF-IDF) and build classification models for sentiment analysis.
+CO3: Evaluate and interpret model performance using classification metrics and confusion matrices.
+
+Laboratory Learning Outcomes (LLO):
+
+LLO1: Preprocess raw text data: cleaning, tokenization, stopword removal, and lemmatization.
+LLO2: Transform text into numeric features using TF-IDF vectorization.
+LLO3: Train and evaluate a logistic regression classifier for sentiment prediction.
+LLO4: Save and load trained models for reuse and inference on new text.
+
+Algorithm / Procedure:
+
+Clone dataset repository containing Amazon Health & Personal Care reviews.
+
+Load dataset (JSON lines) into a Pandas DataFrame.
+
+Inspect label distribution and balance dataset (sample equal positive/negative examples).
+
+Clean and preprocess review text: lowercase, remove punctuation, tokenize, remove stopwords, lemmatize.
+
+Convert text to TF-IDF features.
+
+Split into train and test sets.
+
+Train a Logistic Regression classifier.
+
+Evaluate model using accuracy, classification report, and confusion matrix.
+
+Save vectorizer and model to disk (pickle).
+
+Load model and vectorizer to perform predictions on new review texts.
+
+Program Code:
+
+# -------------------------------------------------------------
+# Step 1: Clone Dataset Repository
+# -------------------------------------------------------------
+!git clone https://gitlab.com/sayantan.world98/sentiment-analysis-amazon-health-and-personal-care.git
+
+
+# -------------------------------------------------------------
+# Step 2: Import Libraries
+# -------------------------------------------------------------
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud
+
+# NLP tools
+import nltk
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+
+# ML libraries
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics import confusion_matrix, classification_report
+from sklearn.linear_model import LogisticRegression
+
+# Utility
+import re
+import string
+import warnings
+import pickle
+warnings.filterwarnings('ignore')
+
+
+# -------------------------------------------------------------
+# Step 3: Load Dataset
+# -------------------------------------------------------------
+df = pd.read_json(
+    '/content/sentiment-analysis-amazon-health-and-personal-care/dataset/Health_and_Personal_Care_5.json',
+    lines=True
+)
+print("✅ Dataset loaded successfully!")
+df.head()
+
+
+# -------------------------------------------------------------
+# Step 4: Explore and Balance Data
+# -------------------------------------------------------------
+print(df['overall'].value_counts())
+
+positives = df['overall'][(df.overall == 5) | (df.overall == 4)]
+negatives = df['overall'][(df.overall == 2) | (df.overall == 1)]
+print(f"Total length of data: {df.shape[0]}")
+print(f"Positive reviews: {len(positives)}")
+print(f"Negative reviews: {len(negatives)}")
+
+# Weight helpful reviews
+df['score'] = df.helpful.apply(lambda x: x[0] / (x[1] + 2))
+
+# Sample equal positive and negative reviews
+df_pos = df[(df.overall == 5) | (df.overall == 4)].sample(
+    n=32000, weights=df.score, random_state=42)
+df_neg = df[(df.overall == 2) | (df.overall == 1)].sample(
+    n=32000, random_state=42)
+
+df_all = pd.concat([df_pos, df_neg])
+
+
+# -------------------------------------------------------------
+# Step 5: Label Encoding (1 = Positive, 0 = Negative)
+# -------------------------------------------------------------
+def sentiment_score(n):
+    return 1 if n in [4, 5] else 0
+
+df_all['overall'] = df_all['overall'].apply(sentiment_score)
+print(df_all['overall'].value_counts())
+
+
+# -------------------------------------------------------------
+# Step 6: Clean Columns and Inspect
+# -------------------------------------------------------------
+cols_to_drop = [
+    'reviewerName', 'helpful', 'unixReviewTime', 'reviewTime',
+    'score', 'summary', 'asin', 'reviewerID'
+]
+df_all.drop(columns=cols_to_drop, inplace=True)
+df_all.reset_index(drop=True, inplace=True)
+df_all.head()
+
+
+# -------------------------------------------------------------
+# Step 7: Word Count Distribution
+# -------------------------------------------------------------
+def word_count(words):
+    return len(words.split())
+
+df_all['word count'] = df_all['reviewText'].apply(word_count)
+p = df_all['word count'][df_all.overall == 1]
+n = df_all['word count'][df_all.overall == 0]
+
+plt.figure(figsize=(12, 6))
+plt.xlim(0, 400)
+plt.xlabel('Word count')
+plt.ylabel('Frequency')
+plt.hist([p, n], color=['g', 'r'], alpha=0.5,
+         label=['positive', 'negative'], bins=50)
+plt.legend(loc='upper right')
+plt.title("Word Count Distribution by Sentiment")
+plt.show()
+
+df_all.drop(['word count'], axis=1, inplace=True)
+
+
+# -------------------------------------------------------------
+# Step 8: Text Preprocessing
+# -------------------------------------------------------------
+nltk.download('stopwords')
+nltk.download('punkt')
+nltk.download('wordnet')
+
+stopword = set(stopwords.words('english'))
+wordLemm = WordNetLemmatizer()
+
+
+def process_reviews(review):
+    """Lowercase, remove punctuation, tokenize, remove stopwords, lemmatize."""
+    review = review.lower()
+    review = review.translate(str.maketrans("", "", string.punctuation))
+    tokens = word_tokenize(review)
+    tokens = [w for w in tokens if w not in stopword and len(w) > 1]
+    lemmatized = [wordLemm.lemmatize(w) for w in tokens]
+    return ' '.join(lemmatized)
+
+
+df_all['reviewText'] = df_all['reviewText'].astype(str)
+df_all['processed_reviews'] = df_all['reviewText'].apply(process_reviews)
+print("✅ Text preprocessing complete.")
+df_all.head()
+
+
+# -------------------------------------------------------------
+# Step 9: TF-IDF Vectorization and Train-Test Split
+# -------------------------------------------------------------
+X = df_all['processed_reviews'].values
+y = df_all['overall'].values
+
+vector = TfidfVectorizer(sublinear_tf=True)
+X = vector.fit_transform(X)
+print(f"Vectorization complete. Shape: {X.shape}")
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.20, random_state=42)
+
+
+# -------------------------------------------------------------
+# Step 10: Train & Evaluate Logistic Regression
+# -------------------------------------------------------------
+def model_evaluate(model):
+    """Train-test accuracy, classification report, confusion matrix heatmap."""
+    acc_train = model.score(X_train, y_train)
+    acc_test = model.score(X_test, y_test)
+
+    print(f"Training accuracy: {acc_train*100:.2f}%")
+    print(f"Testing accuracy:  {acc_test*100:.2f}%\n")
+
+    y_pred = model.predict(X_test)
+    print(classification_report(y_test, y_pred))
+
+    cf_matrix = confusion_matrix(y_test, y_pred)
+    categories = ['Negative', 'Positive']
+    sns.heatmap(cf_matrix, annot=True, fmt='d', cmap='YlGn',
+                xticklabels=categories, yticklabels=categories)
+    plt.xlabel("Predicted")
+    plt.ylabel("Actual")
+    plt.title("Confusion Matrix")
+    plt.show()
+
+
+lg = LogisticRegression()
+lg.fit(X_train, y_train)
+model_evaluate(lg)
+
+
+# -------------------------------------------------------------
+# Step 11: Save Vectorizer & Model
+# -------------------------------------------------------------
+with open('vectoriser.pickle', 'wb') as f:
+    pickle.dump(vector, f)
+with open('logisticRegression.pickle', 'wb') as f:
+    pickle.dump(lg, f)
+
+print("✅ Model and vectorizer saved successfully.")
+
+
+# -------------------------------------------------------------
+# Step 12: Load Saved Models
+# -------------------------------------------------------------
+def load_models():
+    with open('vectoriser.pickle', 'rb') as f:
+        vectoriser = pickle.load(f)
+    with open('logisticRegression.pickle', 'rb') as f:
+        lg = pickle.load(f)
+    return vectoriser, lg
+
+
+# -------------------------------------------------------------
+# Step 13: Predict Function for New Reviews
+# -------------------------------------------------------------
+def predict(vectoriser, model, text):
+    processed = [process_reviews(s) for s in text]
+    features = vectoriser.transform(processed)
+    preds = model.predict(features)
+    df_pred = pd.DataFrame({'text': text,
+                            'sentiment': ['Positive' if p == 1 else 'Negative' for p in preds]})
+    return df_pred
+
+
+# -------------------------------------------------------------
+# Step 14: Demo Prediction
+# -------------------------------------------------------------
+if __name__ == "__main__":
+    vectoriser, lg = load_models()
+
+    sample_texts = [
+        "Such an amazing trimmer. Must buy for anyone!",
+        "Absolute garbage. Do not buy this!",
+        "Definitely worth it if you can afford it."
+    ]
+
+    results = predict(vectoriser, lg, sample_texts)
+    print(results)
+
+Output (summary):
+
+Dataset loaded and inspected; balanced positive and negative samples (32,000 each).
+
+Text preprocessing completed (stopword removal, tokenization, lemmatization).
+
+TF-IDF vectorization produced feature matrix; training and testing split created.
+
+Logistic Regression trained and evaluated. Training and testing accuracy printed; detailed classification report displayed.
+
+Confusion matrix plotted as a heatmap.
+
+Vectorizer and model saved to disk (vectoriser.pickle, logisticRegression.pickle).
+
+Demo predictions for sample review texts printed as Positive/Negative.
+
+Conclusion:
+
+This experiment demonstrates effective sentiment analysis on product reviews using standard NLP preprocessing, TF-IDF feature extraction, and a Logistic Regression classifier. The pipeline can be used to monitor public opinion on health products and extract customer sentiment trends from social media or e-commerce reviews.
+
+Viva Questions with Answers:
+
+Q1. What is TF-IDF and why is it used?
+A1. TF-IDF (Term Frequency–Inverse Document Frequency) weights terms by their frequency in a document and inversely by how common they are across documents; it helps emphasize terms that are informative for classification.
+
+Q2. Why do we lemmatize words in preprocessing?
+A2. Lemmatization reduces words to their dictionary/root form (lemma), consolidating word variants (e.g., "running" -> "run") which reduces feature dimensionality and improves model generalization.
+
+Q3. What does the confusion matrix tell you?
+A3. The confusion matrix shows counts of true positives, true negatives, false positives, and false negatives—helpful to understand type of classification errors and class-specific performance.
+
+Q4. Why balance the dataset before training?
+A4. Balancing reduces bias towards the majority class and helps the classifier learn features for both classes, improving evaluation fairness and reducing misleading high accuracy due to imbalance.
+
+Q5. What are common alternatives to Logistic Regression for text classification?
+A5. Support Vector Machines (SVM), Naive Bayes, Random Forests, Gradient Boosting, and deep learning models like LSTM or Transformers (BERT) are common alternatives.
+
+Q6. How can you improve model performance?
+A6. Use hyperparameter tuning (grid/random search), more sophisticated vectorizers (n-grams, char-ngrams), ensemble methods, or advanced models (fine-tuned transformer models). Also, clean data further or increase sample size.
+
+Q7. How would you deploy this model for real-time monitoring?
+A7. Save the model and vectorizer (pickle), wrap them in an API (Flask/FastAPI), and host the service; streaming reviews can be preprocessed and fed to the API for live sentiment scoring.
+
+End of Experiment 7

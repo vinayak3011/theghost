@@ -1,0 +1,172 @@
+------------------------------------------------------------
+Experiment No. 4: Heart Disease Prediction using Machine Learning
+------------------------------------------------------------
+
+Aim:  
+To predict the likelihood of heart disease using different machine learning algorithms and compare their accuracy.
+
+Course Outcome:  
+HNAMLR1701.2
+
+Learning Outcomes:  
+- To apply and compare multiple machine learning models for disease prediction.  
+- To analyze healthcare data using visualization and statistical techniques.  
+- To identify the most accurate algorithm for heart disease detection.
+
+------------------------------------------------------------
+Algorithm (Simple Steps)
+------------------------------------------------------------
+1. Install and configure the Kaggle API to download the Heart Disease dataset.  
+2. Import all required Python libraries (NumPy, Pandas, Matplotlib, Seaborn, Scikit-Learn).  
+3. Load the dataset (`heart.csv`) and display basic information such as shape, datatypes, and summary statistics.  
+4. Check for missing values and data consistency.  
+5. Perform Exploratory Data Analysis (EDA):  
+   - Plot a correlation heatmap to observe feature relationships.  
+   - Use boxplots to identify possible outliers.  
+6. Separate the dataset into features (X) and target variable (y).  
+7. Split data into training and testing sets (80-20 ratio).  
+8. Normalize features using StandardScaler for uniform numeric range.  
+9. Train and test the following ML models:  
+   - Logistic Regression  
+   - K-Nearest Neighbors (KNN)  
+   - Support Vector Machine (SVM)  
+   - Decision Tree  
+   - Random Forest  
+10. Evaluate each model using Accuracy, Precision, Recall, F1-Score, and Confusion Matrix.  
+11. Compare all model accuracies and identify the best-performing model.
+
+------------------------------------------------------------
+Code Implementation
+------------------------------------------------------------
+
+# -------------------------------------------------------------
+# Step 1: Import essential libraries
+# -------------------------------------------------------------
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn import model_selection, preprocessing, metrics, linear_model, neighbors, svm, tree, ensemble
+
+# -------------------------------------------------------------
+# Step 2: Download dataset directly from Kaggle
+# -------------------------------------------------------------
+!pip install -q kaggle
+
+from google.colab import files
+files.upload()   # Upload kaggle.json
+
+!mkdir -p ~/.kaggle
+!cp kaggle.json ~/.kaggle/
+!chmod 600 ~/.kaggle/kaggle.json
+
+!kaggle datasets download -d johnsmith88/heart-disease-dataset
+!unzip heart-disease-dataset.zip
+
+# -------------------------------------------------------------
+# Step 3: Load and explore dataset
+# -------------------------------------------------------------
+df = pd.read_csv('heart.csv')
+print("Shape of dataset:", df.shape)
+print(df.head())
+print(df.info())
+print("Missing values:\n", df.isnull().sum())
+
+# -------------------------------------------------------------
+# Step 4: Data visualization
+# -------------------------------------------------------------
+plt.figure(figsize=(10,6))
+sns.heatmap(df.corr(), annot=True, cmap='coolwarm')
+plt.title('Correlation Heatmap')
+plt.show()
+
+df.plot(kind='box', figsize=(12,5), subplots=True, layout=(4,4))
+plt.tight_layout()
+plt.show()
+
+# -------------------------------------------------------------
+# Step 5: Feature selection and data splitting
+# -------------------------------------------------------------
+X = df.drop('target', axis=1)
+y = df['target']
+X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, test_size=0.2, random_state=42)
+
+# -------------------------------------------------------------
+# Step 6: Feature scaling
+# -------------------------------------------------------------
+scaler = preprocessing.StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# -------------------------------------------------------------
+# Step 7: Train and evaluate multiple models
+# -------------------------------------------------------------
+models = {
+    "Logistic Regression": linear_model.LogisticRegression(),
+    "KNN": neighbors.KNeighborsClassifier(),
+    "SVM": svm.SVC(kernel='linear'),
+    "Decision Tree": tree.DecisionTreeClassifier(random_state=42),
+    "Random Forest": ensemble.RandomForestClassifier(random_state=42)
+}
+
+results = []
+
+for name, model in models.items():
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    acc = metrics.accuracy_score(y_test, y_pred)
+    results.append([name, acc])
+    print(f"\n{name}")
+    print(metrics.classification_report(y_test, y_pred))
+
+# -------------------------------------------------------------
+# Step 8: Compare model accuracies
+# -------------------------------------------------------------
+results_df = pd.DataFrame(results, columns=['Model', 'Accuracy'])
+print(results_df)
+
+sns.barplot(x='Model', y='Accuracy', data=results_df)
+plt.title("Model Comparison")
+plt.show()
+
+max_acc = results_df['Accuracy'].max()
+best_model = results_df[results_df['Accuracy'] == max_acc]
+print("\n✅ Best Performing Model:")
+print(best_model)
+
+
+------------------------------------------------------------
+Explanation (for Viva)
+------------------------------------------------------------
+
+💡 Dataset Used:
+
+Heart Disease dataset from Kaggle containing patient attributes such as: Age, Gender, Cholesterol (chol), Chest Pain Type (cp)
+
+💡 Data Preprocessing:
+
+- Checked for missing or null values.  
+- Visualized feature correlation using a heatmap.  
+- Detected outliers using boxplots.  
+- Standardized data using StandardScaler for equal numeric scaling.  
+
+💡 Models Used:
+
+- Logistic Regression: Linear model used for binary classification problems.  
+- K-Nearest Neighbors (KNN): Classifies data based on the majority of nearest neighbors.  
+- Support Vector Machine (SVM): Finds the best boundary (hyperplane) separating two classes.  
+- Decision Tree: Builds a tree-like structure to split data based on decision rules.  
+- Random Forest: An ensemble of multiple decision trees giving improved and stable accuracy.  
+
+💡 Evaluation Metrics:
+
+- Accuracy: Percentage of correct predictions.  
+- Precision: How many predicted positives are actually positive.  
+- Recall: How many actual positives were correctly identified.  
+- F1-Score: Balance between precision and recall.  
+- Confusion Matrix: Table showing correct vs. incorrect predictions.  
+
+------------------------------------------------------------
+End of Experiment 4
+------------------------------------------------------------
+

@@ -1,0 +1,107 @@
+OSINT Lab — Experiment No. 8
+Title: IP Geolocation & Geospatial Profiling
+
+8.1 Aim
+Determine the geolocation (country, region, city — approximate) for at least 10 IP addresses using OSINT techniques and tools (GeoIP databases, WHOIS, reverse DNS, traceroute, web APIs).
+
+8.2 Course Outcome
+Demonstrate digital footprinting and geospatial profiling using OSINT tools.
+
+8.3 Learning Objectives
+Use GeoIP services and public records to map IP → location. Corroborate results across multiple sources (WHOIS, GeoIP DBs, reverse DNS, traceroute).Understand limits of accuracy and ethical constraints.
+
+8.4 Requirements
+OS: Windows or Linux (Kali recommended).
+Internet connection.
+Tools: whois, dig (or nslookup), traceroute, curl, jq (optional), GeoIP lookup tool or API (ipinfo/ip-api/MaxMind).
+Optional: ipinfo token for higher rate limits.
+
+8.5 Related Theory (short)
+IP Geolocation: maps IPs to approximate locations using vendor databases (MaxMind, DB-IP), RIR/WHOIS records, BGP/AS info and public metadata. Country-level is usually reliable; city-level often imprecise. Sources: WHOIS/RIR, GeoIP DBs, reverse DNS (PTR), BGP/AS lookup, traceroute/latency, web APIs.Corroboration: combine multiple sources to increase confidence. Limitations & Ethics: geolocation is probabilistic; do not expose personal data or perform intrusive scans without permission.
+
+8.6 program and output:
+
+8.7 Conclusion This experiment demonstrates how OSINT and low-impact active tools can profile IPs to produce an approximate geolocation and provide context (ISP/AS, PTR, routing). Use multiple corroborating sources to increase confidence. Always respect privacy, legal constraints, and never perform intrusive scanning without explicit authorization.
+
+
+
+
+IP Geolocation – Easy Steps
+
+1. Update & install prerequisites
+
+sudo apt update -y
+sudo apt install -y whois geoip-bin jq dnsutils traceroute curl timeout
+
+
+2. Create ips.txt (one IP per line)
+
+cat > ips.txt <<'IPLIST'
+203.0.113.12
+128.51.100.7
+192.0.2.45
+45.33.32.156
+151.101.1.69
+13.35.8.35
+104.16.132.229
+185.199.110.153
+IPLIST
+
+
+3. Process each IP (loop) — core snippet
+
+while IFS= read -r rawip || [ -n "$rawip" ]; do
+    IP=$(echo "$rawip" | tr -d '[:space:]')
+    echo "Processing: $IP"
+
+    SAFEIP=$(echo "$IP" | tr -d '[:space:]')
+
+    WHOIS_F="${OUTDIR}/${SAFEIP}_whois.txt"
+    GEOIP_F="${OUTDIR}/${SAFEIP}_geoip.txt"
+    IPINFO_F="${OUTDIR}/${SAFEIP}_ipinfo.json"
+    PTR_F="${OUTDIR}/${SAFEIP}_ptr.txt"
+    TR_F="${OUTDIR}/${SAFEIP}_traceroute.txt"
+
+    # Uncomment to run:
+    # whois "$IP" > "$WHOIS_F"
+    # geoiplookup "$IP" > "$GEOIP_F"
+    # curl -s "https://ipinfo.io/${IP}/json" -o "$IPINFO_F"
+    # dig -x "$IP" +short > "$PTR_F"
+    # traceroute -m 10 "$IP" > "$TR_F"
+
+done < ips.txt
+
+
+Explanation (short)
+
+WHOIS → organization that owns the IP.
+GeoIP → approximate country/region/city.
+IPInfo API → JSON with location and ISP details.
+PTR (reverse DNS) → hostname for the IP.
+Traceroute → network path to the IP.
+
+4. Make the script executable
+
+chmod +x geolocate_ips.sh
+echo "Script geolocate_ips.sh created and made executable."
+
+
+5. Run the script
+
+./geolocate_ips.sh ips.txt
+
+
+6. Show results (CSV + raw files)
+
+echo -e "\n- Top 20 lines of geolocation_summary.csv"
+head -n 20 geolocation_summary.csv
+
+echo -e "\n- Raw output files in geo_results/"
+ls -1 geo_results
+
+# If ipinfo rate-limited:
+# export IPINFO_TOKEN=YOUR_TOKEN
+
+
+7. Final output
+The CSV and raw files will show each IP’s approximate country/region/city, owner (AS/Org), PTR, traceroute path and a confidence estimate — this is the final geolocation output.

@@ -1,0 +1,56 @@
+🧪 New Experiment 4: Enumerate Emails with theHarvester & Hunter.io
+Aim: Enumerate possible email addresses for the domain infosec.edu and verify their existence.
+
+Tools:
+
+Tool 1: Kali Linux Terminal
+
+Tool 2: Web Browser
+
+Step-by-Step Guide
+
+Part 1: Find Emails with theHarvester
+
+Open Kali Linux and open the Terminal.
+
+To complete the experiment, type the main command and press Enter:
+
+	theHarvester -d infosec.edu -b google
+
+Wait for the tool to finish. It will show you a list of any emails (like name@infosec.edu) and subdomains it found.
+
+If your examiner asks for more examples, you are ready. Show them these other commands from your notes to prove you know the tool well:
+
+To search a different domain (like your college):
+	theHarvester -d sakec.ac.in -b yahoo
+
+To search for employee names on LinkedIn:
+	theHarvester -d nist.gov -b linkedin
+
+To search with a limit (so it's faster):
+	theHarvester -d nist.gov -b google -l 100 -v
+
+To search another domain:
+	theHarvester -d infosectrain.com -b yahoo
+
+
+
+Part 2: Verify Emails with Hunter.io
+
+Open your Web Browser (on Windows or Kali).
+
+Go to the website:
+ https://hunter.io/
+
+Log in (or create your free account). 
+On that screen, look at the gray menu bar on the far left side.
+
+Click on the word "Verifier". (it is the fifth word down, just under "Finder").
+
+A new box will appear. 
+
+Paste that email into the "Verifier" box.(give random email there u can use ur sakec email)
+
+Click the "Verify" button.
+
+The tool will check the email and tell you if its status is "Valid", "Invalid", or "Risky". This confirms if the email exists.

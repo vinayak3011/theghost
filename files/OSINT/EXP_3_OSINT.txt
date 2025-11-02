@@ -1,0 +1,130 @@
+Experiment 3
+
+3.1 Aim: Analyze the metadata of an email, including date and time stamps, email clients
+used, originating IP address, email’s origin, potential geographic location of the sender, and
+possible email routing.
+
+3.2 Course Outcome (CO):
+Apply OSINT tools for passive information gathering to identify potential vulnerabilities in
+cybersecurity.
+
+3.3 Learning Objective:
+Analyze email headers for identifying the sender's origin, email client, timestamps, and
+routing details.
+
+3.4 Requirements:
+• Sample email with full header
+• Tools:
+o MXToolbox Header Analyzer
+o Google Email Header Analyzer
+o Manual inspection in a text editor
+• Internet connection
+• Optional: IP location lookup tools like IPLocation.net
+
+3.5 Theory:
+Email headers contain detailed metadata used in cybersecurity and forensic investigations.
+These include:
+• Date and Time Stamps: Timestamp when the email was sent/received.
+• From / To / CC / BCC: Email addresses involved.
+• Subject: Content topic.
+• Message-ID: A globally unique ID for email tracking.
+• Return-Path: Where non-delivery notifications (bounces) go.
+• Received Fields: Shows the path the email took across mail servers (last to first).
+• X-Originating-IP: IP address of sender’s device (sometimes available).
+• User-Agent / X-Mailer: Email client used to compose/send the email.
+
+
+3.6 Procedure:
+1. Obtain a Sample Email:
+o Export or copy the full email header from your email client (e.g., Gmail →
+"Show Original").
+
+2. Use Online Header Analyzers:
+o Paste the full header into MXToolbox or Google Toolbox.
+o Analyze:
+▪ Delivery time
+▪ Sender IP
+▪ Mail servers passed through
+▪ User-Agent (Client used)
+
+3. Manual Analysis (Optional):
+o Paste the header into a text editor.
+o Look for:
+▪ Received: lines (track server path, reverse order).
+▪ Date: and Message-ID:
+▪ X-Originating-IP: or X-Mailer: if present.
+
+4. Determine Sender Location:
+o Copy the originating IP and paste it into IPLocation.net.
+o Note the geographic location and ISP.
+5. Document all observations such as:
+o Date/Time email was sent
+o Source IP and location
+o Email client used
+o Routing path via mail servers
+
+
+3.7 Results: 
+
+3.8 Conclusion: In this experiment, we successfully extracted and analyzed the metadata of an email using
+both online tools and manual inspection. We identified crucial information such as the
+sending IP address, email client, timestamps, and the routing path of the email. This metadata
+is vital in digital forensics and OSINT investigations for tracing the origin of phishing, spam,
+or spoofed emails
+
+
+
+
+
+
+
+
+WORKING: 
+
+Step 1: Get a Sample Email Header
+
+Open your email account (e.g., Gmail, Outlook, Yahoo).
+Choose any email message.
+In Gmail: Click three dots (⋮) next to “Reply” → click “Show Original.”
+A new tab opens with the full email header and body.Copy everything from the header section (before the email content).Save it in a text file, e.g., email_header.txt.
+
+
+Step 2: Analyze Using Online Tools
+
+Option 1: MXToolbox
+Go to 👉 https://mxtoolbox.com/EmailHeaders.aspx
+Paste your copied header into the textbox.
+Click “Analyze Header.”
+The tool will display:
+Email routing path
+Delay between mail servers
+Originating IP
+Email client used
+
+Option 2: Google Admin Toolbox
+Visit 👉 https://toolbox.googleapps.com/apps/messageheader/
+Paste the same header.
+Click “Analyze the Header.”
+View:
+Delivery time
+Server hops
+Sender’s domain/IP
+
+
+Step 3: Find Sender’s Geographic Location
+Copy the originating IP address found in Step 2 or 3.
+Visit 👉 https://www.iplocation.net/
+Paste the IP address and click “Find.”
+Note:
+Country, City
+ISP or Organization name
+
+
+Step 5: Document Your Observations
+Create a small result table (example):
+Parameter	Observation
+Date & Time Sent	18 Oct 2025, 10:42 AM
+Source IP	192.0.2.15
+Sender Location	California, USA
+Email Client	Outlook 16.0
+Routing Path	smtp.example.com → mail.google.com → yourmailserver.com

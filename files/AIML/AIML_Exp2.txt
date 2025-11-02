@@ -1,0 +1,220 @@
+------------------------------------------------------------
+Experiment No. 2: Exploratory Data Analysis (EDA)
+------------------------------------------------------------
+
+Aim:
+Perform Exploratory Data Analysis (EDA) on a 3D MRI brain scan dataset.
+
+Course Outcome:
+HNAMLR1702.1, HNAMLR1702.2
+
+Learning Outcomes:
+- To understand the importance of EDA during the initial exploration of a dataset.
+- To analyze and investigate datasets and summarize their main characteristics using data visualization.
+
+------------------------------------------------------------
+Algorithm:
+------------------------------------------------------------
+1. Take the dataset of 3D MRI brain scans.
+2. Install required libraries: itk, itkwidgets, and ipywidgets.
+3. Import numpy, matplotlib, seaborn, nibabel, and visualization libraries.
+4. Define the MRI image path and load the data using nibabel.
+5. Extract the data as a NumPy array and print its dimensions (height, width, depth, channels).
+6. Visualize a random MRI slice using matplotlib.
+7. Create an interactive viewer using itkwidgets or ipywidgets to scroll through MRI slices.
+8. If label data is available, load and explore it similarly.
+9. Display shape and details of label data.
+10. Visualize one labeled slice to compare with the MRI image.
+
+------------------------------------------------------------
+Code Implementation 
+------------------------------------------------------------
+
+
+# -------------------------------------------------------------
+# Step 1: Clone the dataset repository from GitHub (contains sample MRI data)
+# -------------------------------------------------------------
+!git clone https://github.com/hardik0/AI-for-Medicine-Specialization
+
+# -------------------------------------------------------------
+# Step 2: Install necessary libraries for medical image visualization
+# itk and itkwidgets handle medical images and interactive exploration
+# ipywidgets allows adding sliders and buttons for interactive display
+# -------------------------------------------------------------
+!pip install itk itkwidgets ipywidgets
+
+# -------------------------------------------------------------
+# Step 3: Import all required Python libraries
+# numpy       -> numerical computations
+# nibabel     -> reading .nii or .nii.gz MRI data files
+# itk, itkwidgets -> medical image visualization
+# ipywidgets  -> interactive sliders/buttons
+# matplotlib, seaborn -> plotting and visual style
+# -------------------------------------------------------------
+import numpy as np
+import nibabel as nib
+import itk
+import itkwidgets
+from ipywidgets import interact, interactive, IntSlider, ToggleButtons
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set_style('darkgrid')   # apply a clean background style
+
+# -------------------------------------------------------------
+# Step 4: Define image path and load MRI data using nibabel
+# The path points to one brain MRI scan in the BraTS dataset
+# -------------------------------------------------------------
+image_path = "BraTS-Data/imagesTr/BRATS_001.nii.gz"
+image_obj = nib.load(image_path)
+print(f'Type of the image: {type(image_obj)}')
+
+# -------------------------------------------------------------
+# Step 5: Extract image data as a NumPy array for numerical access
+# -------------------------------------------------------------
+image_data = image_obj.get_fdata()
+type(image_data)
+
+# -------------------------------------------------------------
+# Step 6: Print the shape of the MRI data
+# height, width, depth = spatial dimensions; channels = MRI sequence types
+# -------------------------------------------------------------
+height, width, depth, channels = image_data.shape
+print(f"The image object has the following dimensions: height: {height}, width: {width}, depth: {depth}, channels: {channels}")
+
+# -------------------------------------------------------------
+# Step 7: Display a random slice (layer) from the MRI scan
+# i = random slice index, channel = MRI sequence (0 to 3)
+# -------------------------------------------------------------
+maxval = 154
+i = np.random.randint(0, maxval)
+channel = 0
+print(f"Plotting Layer {i}, Channel {channel} of Image")
+plt.imshow(image_data[:, :, i, channel], cmap='gray')
+plt.axis('off')
+plt.show()
+
+# -------------------------------------------------------------
+# Step 8: Define a function to explore the MRI volume interactively
+# The slider lets users scroll through brain layers visually
+# -------------------------------------------------------------
+def explore_3dimage(layer):
+    plt.figure(figsize=(10, 5))
+    channel = 2
+    plt.imshow(image_data[:, :, layer, channel], cmap='gray')
+    plt.title('Explore Layers of Brain MRI', fontsize=20)
+    plt.axis('off')
+    return layer
+
+# Create an interactive slider to browse MRI layers
+# interact() automatically adds the slider in the notebook
+interact(explore_3dimage, layer=(0, image_data.shape[2] - 1))
+
+# -------------------------------------------------------------
+# Step 9: Load the corresponding label (segmentation) file
+# The label marks different regions of the brain (tumor, edema, etc.)
+# -------------------------------------------------------------
+label_path = "./BraTS-Data/labelsTr/BRATS_001.nii.gz"
+label_obj = nib.load(label_path)
+type(label_obj)
+
+# -------------------------------------------------------------
+# Step 10: Extract label data as NumPy array
+# -------------------------------------------------------------
+label_array = label_obj.get_fdata()
+type(label_array)
+
+# -------------------------------------------------------------
+# Step 11: Print label dimensions and unique values
+# Each number in 'unique values' represents a specific brain region
+# -------------------------------------------------------------
+height, width, depth = label_array.shape
+print(f"Dimensions of labels data array -> height: {height}, width: {width}, depth: {depth}")
+print(f'Unique label values: {np.unique(label_array)}')
+print("""Label Categories:
+0 - Normal tissue
+1 - Edema
+2 - Non-enhancing tumor
+3 - Enhancing tumor
+""")
+
+# -------------------------------------------------------------
+# Step 12: Visualize labeled regions in one selected MRI layer
+# Each subplot shows a binary mask for one tissue class
+# -------------------------------------------------------------
+layer = 45
+classes_dict = {
+    'Normal': 0.0,
+    'Edema': 1.0,
+    'Non-enhancing tumor': 2.0,
+    'Enhancing tumor': 3.0
+}
+fig, ax = plt.subplots(nrows=1, ncols=4, figsize=(50, 30))
+for i in range(4):
+    img_label_str = list(classes_dict.keys())[i]
+    img = label_array[:, :, layer]
+    mask = np.where(img == classes_dict[img_label_str], 255, 0)
+    ax[i].imshow(mask)
+    ax[i].set_title(f"Layer {layer} - {img_label_str}", fontsize=45)
+    ax[i].axis('off')
+plt.tight_layout()
+plt.show()
+
+# -------------------------------------------------------------
+# Step 13: Create interactive tools to choose tissue type and layer
+# ToggleButtons -> choose tumor type
+# IntSlider     -> choose which MRI slice to view
+# -------------------------------------------------------------
+select_class = ToggleButtons(
+    options=['Normal', 'Edema', 'Non-enhancing tumor', 'Enhancing tumor'],
+    description='Select Class:',
+    disabled=False,
+    button_style='info'
+)
+
+select_layer = IntSlider(min=0, max=154, description='Select Layer', continuous_update=False)
+
+# Define a function for interactive labeled visualization
+# It displays the selected tissue region mask for a given layer
+def plot_image(seg_class, layer):
+    print(f"Plotting Layer {layer} | Label: {seg_class}")
+    img_label = classes_dict[seg_class]
+    mask = np.where(label_array[:, :, layer] == img_label, 255, 0)
+    plt.figure(figsize=(10, 5))
+    plt.imshow(mask, cmap='gray')
+    plt.axis('off')
+    plt.show()
+
+# Run interactive visualization for label exploration
+# You can use buttons and slider to explore tumor regions easily
+interactive(plot_image, seg_class=select_class, layer=select_layer)
+
+------------------------------------------------------------
+Explanation (for Viva)
+------------------------------------------------------------
+
+💡 What is EDA?
+Exploratory Data Analysis (EDA) is the process of understanding and summarizing data before building any model.
+It helps identify patterns, trends, missing values, and outliers using visual and statistical methods.
+
+💡 Why EDA is Important:
+- It helps clean and organize data properly.
+- Detects patterns and correlations early.
+- Helps in choosing the right features for model training.
+- Improves model performance and accuracy.
+
+💡 Types of EDA:
+1. **Univariate Analysis** – Study of one variable (e.g., intensity distribution of MRI image).
+   Example: Histogram, Box plot.
+2. **Bivariate Analysis** – Study of two variables and their relationship.
+   Example: Comparing slice depth vs. average intensity.
+3. **Multivariate Analysis** – Analysis involving more than two variables.
+   Example: Using multiple MRI metrics together in a 3D plot or heatmap.
+
+💡 About Interactive Visualization (Slider):
+- MRI images are 3D (like a stack of 2D slices).
+- The slider created using `itkwidgets` allows scrolling through these slices layer by layer.
+- This helps to explore internal brain structures easily and identify abnormalities visually.
+
+------------------------------------------------------------
+End of Experiment 2
+------------------------------------------------------------

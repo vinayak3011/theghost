@@ -1,0 +1,56 @@
+🧪 New Experiment 2: Find Email Delays
+Aim: Extract the routing path from an email header and identify which mail server caused a delay.
+
+Tools:
+
+An email (like in your second picture)
+
+Web Browser
+
+MXToolbox Header Analyzer
+
+
+
+Step-by-Step Guide
+
+
+Part 1: Get Your Email Header
+
+Open an email in your email account.
+
+Click the three dots (⋮) on the top-right.
+
+Click "Show Original".
+
+A new tab will open with the messy "Raw Header" (this is your second image).
+
+Click the "Copy to clipboard" button.
+
+
+
+Part 2: Analyze the Header
+
+Open a new browser tab.
+
+Go to the website:
+ https://mxtoolbox.com/EmailHeaders.aspx.
+
+Paste your copied header into the big text box.
+
+Click the "Analyze Header" button.
+
+
+
+Part 3: Find the Delay (Using Your Table)
+
+The tool will show you a report. Scroll down until you see the "Routing Path" table. 
+
+Look at the column named Delay.
+
+Find the row that has the biggest number (the longest time).
+
+("0 seconds", which means the email was super fast. In a different email, you might see "10 minutes" or "300 seconds".)
+
+In that same row with the biggest delay, look at the server name in the From column.
+
+That From server is the one that caused the delay. It held the email for a long time before sending it to the By server.

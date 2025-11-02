@@ -10,7 +10,48 @@ const experimentData = {
 //     { title: 'EXP 8 Study the behavior of protections such as IDF and firewalls when altering headers in network packets.', file: 'files/ict/exp8.txt' },
 //     { title: 'EXP 9 Study of steganography tools (Beyond syllabus)', file: 'files/ict/exp9.txt' }
 // ],
-'CNS': [
+'OSINT': [
+    { title: 'EXP 1: Perform Email Header Analysis for extracting valuable information like sender IP address, email servers, and routing information', file: 'files\\OSINT\\EXP_1_OSINT.txt' },
+    { title: "EXP 1 scenario Based: The cybersecurity team received a suspicious email claiming to\nbe from the university’s IT department. You are tasked to analyze\nits email header to:\n● Identify the actual sender’s IP address,\n● Verify if the email passed SPF/DKIM checks, and\n● Determine if the email was spoofed.", file: "files\\OSINT\\new osint exp\\exp_1.txt" },
+    { title: 'EXP 2: Conduct email address enumeration by attempting to verify the existence of email addresses within a target domain using tools like TheHarvester or thehunter.io to find email addresses associated with a specific domain', file: 'files\\OSINT\\EXP_2_OSINT.txt' },
+    { title: "EXP 2 scenario Based: A company reports delayed email deliveries. You are asked to\nextract the routing path from the email header and identify which\nmail server caused the delay based on timestamp analysis.", file: "files\\OSINT\\new osint exp\\exp_2.txt" },
+    { title: 'EXP 3: Analyze the metadata of an email, including date and time stamps, email clients used, originating IP address, email’s origin, potential geographic location of the sender, and possible email routing', file: 'files\\OSINT\\EXP_3_OSINT.txt' },
+    { title: "EXP 3 scenario Based: A phishing email was sent to multiple employees from a Gmail\naccount. Use the email header to trace the email’s journey and\napproximate geographic location of the sender.", file: "files\\OSINT\\new osint exp\\exp_3.txt" },
+    { title: "EXP 4: As a penetration tester, you are assessing the exposure of staff\nemail IDs of infosec.edu. Using theHarvester and Hunter.io,\nenumerate possible email addresses and verify their existence.", file: "files\\OSINT\\new osint exp\\exp_4.txt" },
+    { title: 'EXP 4 scenario Based: Use OSINT tools such as TheHarvester to gather publicly available information (emails, subdomains, hosts, employee names, open ports, banners) from search engines, PGP key servers and other public sources', file: 'files\\OSINT\\EXP_4_OSINT.txt' },
+    { title: 'EXP 5: Perform reverse image analysis to find the physical location where content was captured by using image metadata, landmarks, street signs, or other visual cues to identify geolocation', file: 'files\\OSINT\\EXP_5_OSINT.txt' },
+    { title: "EXP 5 scenario Based: You have been hired to assess an organization’s email\nfootprint. Using enumeration tools, identify valid corporate email addresses from public sources and document their data\nexposure risk.", file: "files\\OSINT\\new osint exp\\exp_5.txt" },
+    { title: 'EXP 6: Gather tactical information using WHOIS/DomainTools, archives, reverse image search, EXIF data, source code, SSL certificates, robots/sitemaps, port scans, reverse IP lookup, mentions and other OSINT sources to profile a target', file: 'files\\OSINT\\EXP_6_OSINT.txt' },
+    { title: "EXP 6 scenario Based: A malicious email attachment was shared internally. Extract\nand analyze the metadata of the email (.eml) to determine:\n● The originating IP address\n● The email client or software used\n● The exact timestamp of sending", file: "files\\OSINT\\new osint exp\\exp_6.txt" },
+    { title: 'EXP 7: Use OSINT tools to identify technologies and frameworks used by a website (CMS, server software, programming languages, analytics) and create a vulnerability/technology-report', file: 'files\\OSINT\\EXP_7_OSINT.txt' },
+    { title: "EXP 7 scenario Based: During an investigation, two copies of a suspicious email were\nfound on different devices. Compare the metadata of both and\nidentify if one of them has been tampered with or altered.", file: "files\\OSINT\\new osint exp\\exp_7.txt" },
+    { title: 'EXP 8: Determine the geolocation (country, region, city — approximate) for at least 10 IP addresses using GeoIP databases, WHOIS, reverse DNS, traceroute and web APIs', file: 'files\\OSINT\\EXP_8_OSINT.txt' },
+
+],
+
+'DevSecOps': [
+    { title: 'EXP 1 Download, install nmap and use it with different options to scan open ports, perform OS fingerprinting, ping scan, tcp port scan, udp port scan, etc.', file: 'files/cns/Exp_1.txt' },
+    { title: 'EXP 2 Study the use of network reconnaissance tools like WHOIS, dig, traceroute, nslookup to gather information about networks and domain registrars.', file: 'files/cns/Exp_2.txt' },
+    { title: 'EXP 3 Study of packet sniffer tools Wireshark: a. Observe performance in promiscuous as well as non-promiscuous mode. b. Show packets can be traced using different filters.', file: 'files/cns/Exp_3.txt' },
+    { title: 'EXP 4 Breaking the Mono-alphabetic Substitution Cipher using Frequency Analysis Method.', file: 'files/cns/Exp_4.txt' },
+    { title: 'EXP 5 Design and implement a product cipher using Substitution ciphers.', file: 'files/cns/Exp_5.txt' },
+    { title: 'EXP 6 Encrypt long messages using various modes of operation using AES or DES.', file: 'files/cns/Exp_6.txt' },
+    { title: 'EXP 7 Study of malicious software using different tools: a. Keylogger attack using keylogger tool. b. Simulate DoS attack using Hping or other tools. c. Use NESSUS/ISO Kali Linux to scan network for vulnerabilities.', file: 'files/cns/Exp_7.txt' },
+    { title: 'EXP 8 Study of Network Security: a. Set up IPSec under Linux. b. Set up Snort and study the logs. c. Explore GPG tool to implement email security.', file: 'files/cns/Exp_8.txt' },
+    { title: 'EXP 9 Content Beyond the Syllabus: a. Burp Suite Tool. b. Steghide Tool.', file: 'files/cns/Exp_9.txt' }
+],
+'AIML': [
+    { title: 'EXP 1 Download, install nmap and use it with different options to scan open ports, perform OS fingerprinting, ping scan, tcp port scan, udp port scan, etc.', file: 'files/cns/Exp_1.txt' },
+    { title: 'EXP 2 Study the use of network reconnaissance tools like WHOIS, dig, traceroute, nslookup to gather information about networks and domain registrars.', file: 'files/cns/Exp_2.txt' },
+    { title: 'EXP 3 Study of packet sniffer tools Wireshark: a. Observe performance in promiscuous as well as non-promiscuous mode. b. Show packets can be traced using different filters.', file: 'files/cns/Exp_3.txt' },
+    { title: 'EXP 4 Breaking the Mono-alphabetic Substitution Cipher using Frequency Analysis Method.', file: 'files/cns/Exp_4.txt' },
+    { title: 'EXP 5 Design and implement a product cipher using Substitution ciphers.', file: 'files/cns/Exp_5.txt' },
+    { title: 'EXP 6 Encrypt long messages using various modes of operation using AES or DES.', file: 'files/cns/Exp_6.txt' },
+    { title: 'EXP 7 Study of malicious software using different tools: a. Keylogger attack using keylogger tool. b. Simulate DoS attack using Hping or other tools. c. Use NESSUS/ISO Kali Linux to scan network for vulnerabilities.', file: 'files/cns/Exp_7.txt' },
+    { title: 'EXP 8 Study of Network Security: a. Set up IPSec under Linux. b. Set up Snort and study the logs. c. Explore GPG tool to implement email security.', file: 'files/cns/Exp_8.txt' },
+    { title: 'EXP 9 Content Beyond the Syllabus: a. Burp Suite Tool. b. Steghide Tool.', file: 'files/cns/Exp_9.txt' }
+],
+'AWX': [
     { title: 'EXP 1 Download, install nmap and use it with different options to scan open ports, perform OS fingerprinting, ping scan, tcp port scan, udp port scan, etc.', file: 'files/cns/Exp_1.txt' },
     { title: 'EXP 2 Study the use of network reconnaissance tools like WHOIS, dig, traceroute, nslookup to gather information about networks and domain registrars.', file: 'files/cns/Exp_2.txt' },
     { title: 'EXP 3 Study of packet sniffer tools Wireshark: a. Observe performance in promiscuous as well as non-promiscuous mode. b. Show packets can be traced using different filters.', file: 'files/cns/Exp_3.txt' },

@@ -1,0 +1,66 @@
+🧪 New Experiment 3: Trace Journey and Find Geo-Location
+Aim: Use the email header to trace the email’s journey and approximate the geographic location of the sender.
+
+Tools:
+
+Gmail (or any email account)
+
+Web Browser
+
+Website 1: MXToolbox Header Analyzer
+
+Website 2: IP Location Finder
+
+Step-by-Step Guide
+Part 1: Get Your Email Header
+
+Open Gmail and log in.
+
+Select an email.
+
+Click the three dots (⋮) on the top-right.
+
+Click "Show Original".
+
+A new browser tab will open. Click the "Copy to clipboard" button.
+
+
+
+Part 2: Analyze the Header
+
+Open a new browser tab.
+
+Go to the website:
+ https://mxtoolbox.com/EmailHeaders.aspx.
+
+Paste your copied header into the big text box.
+
+Click the "Analyze Header" button.
+
+
+
+Part 3: Find the Email's Journey
+
+The tool will show you a report. Scroll down to the section that shows the "Routing Path" table (the same table from your picture with Hop, Delay, From).
+
+This table IS the email's journey. It shows every server the email "hopped" through to get to you.
+
+
+
+Part 4: Find the Sender's Geographic Location
+
+In the same MXToolbox report (usually near the top), find the "Originating IP" or "Sender IP". This is the computer address of the person who sent the email.press contrl f n search for "client-ip" u will see something like this
+	(Received-SPF: pass (google.com: domain of bounce-4673_html-377684140-12674-546007459-108350@bounce.s13.mc.pd25.com designates 128.245.247.83 as permitted sender) client-ip=128.245.247.83;)
+
+Copy that IP address (it will look like numbers, e.g., 123.45.67.89).
+
+Open a new browser tab.
+
+Go to this new website:
+ https://www.iplocation.net/.
+
+Paste the IP address you copied into the search box on this new site.
+
+Click the "Find" button.
+
+The website will show you a map and details like the Country, City, and ISP (Internet Company) for that IP address. This is your answer for the sender's location.

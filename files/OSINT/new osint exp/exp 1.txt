@@ -1,0 +1,55 @@
+🧪 New Experiment 1: Analyze Header for IP and Spoofing
+Aim: Identify the actual sender’s IP address, verify if the email passed SPF/DKIM checks, and determine if the email was spoofed.
+
+Tools:
+
+Gmail (or any email account)
+
+Web Browser
+
+MXToolbox Header Analyzer (the one you prepared for) 
+
+
+Step-by-Step Guide
+
+Part 1: Get Your Email Header
+
+Open Gmail and log in.
+
+Select any email you want to test (like a newsletter or spam).
+
+Inside the email, find the three dots (⋮) on the top-right, next to the "Reply" button.
+
+Click the three dots, then click "Show Original".
+
+A new browser tab will open. Click the "Copy to clipboard" button.
+
+
+
+Part 2: Analyze the Header
+
+Open a new browser tab.
+
+Go to the website:
+ https://mxtoolbox.com/EmailHeaders.aspx.
+
+You will see a big text box. Paste your copied header into this box.
+
+Click the "Analyze Header" button.
+
+
+
+Part 3: Find the Answers
+
+The website will show you a simple report.
+
+To find the Sender IP: Look for the row that says "Sender IP" or "Originating IP". That's your first answer.
+
+To check SPF/DKIM: Look at the test results. You will see rows for SPF and DKIM.
+
+
+To see if it's spoofed:
+
+If you see SPF: Pass and DKIM: Pass, the email is probably real and NOT spoofed.
+
+If you see SPF: Fail or DKIM: Fail, it is a very strong sign that the email IS spoofed.

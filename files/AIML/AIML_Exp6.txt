@@ -1,0 +1,292 @@
+------------------------------------------------------------
+1. AIM
+------------------------------------------------------------
+Experiment 6: Predict Disease Risk from Patient Data
+
+Colab File Link: https://drive.google.com/file/d/1Ief5WGFqKxFLeO7kenSN2JCfIy6kCep8/view?usp=drive_link
+
+Date Set File Link: https://drive.google.com/file/d/1np5LSXKv-ebOx_SwlHwr9Nq9vmJEndjy/view
+------------------------------------------------------------
+2. COURSE OUTCOMES (CO)
+------------------------------------------------------------
+CO1: Understand the role of AI and ML in medical data analysis and healthcare applications.
+CO2: Implement machine learning models for disease prediction using patient datasets.
+CO3: Evaluate model accuracy, precision, and performance metrics for predictive healthcare systems.
+CO4: Gain practical exposure to preprocessing, training, and testing real-world health datasets.
+
+------------------------------------------------------------
+3. LABORATORY LEARNING OUTCOMES (LLO)
+------------------------------------------------------------
+LLO1: Apply data preprocessing and feature engineering on healthcare datasets.
+LLO2: Train and validate classification models for disease prediction.
+LLO3: Evaluate accuracy and interpret classification reports.
+LLO4: Understand ethical and responsible AI practices in healthcare prediction systems.
+
+------------------------------------------------------------
+4. ALGORITHM / PROCEDURE
+------------------------------------------------------------
+Step 1: Import necessary libraries (Pandas, NumPy, Matplotlib, Scikit-learn).
+Step 2: Load the patient health dataset.
+Step 3: Perform data preprocessing — handle missing values, normalize data, and encode categorical features.
+Step 4: Split the dataset into training and testing sets.
+Step 5: Train a machine learning model (e.g., Logistic Regression, Decision Tree, or Random Forest).
+Step 6: Evaluate model performance using accuracy, confusion matrix, and classification report.
+Step 7: Visualize results and risk prediction.
+Step 8: Draw conclusions based on accuracy and model interpretation.
+
+------------------------------------------------------------
+5. PROGRAM CODE
+------------------------------------------------------------
+# -*- coding: utf-8 -*-
+"""
+AI & ML Experiment 6 : Parkinson's Disease Detection
+----------------------------------------------------
+Objective:
+Detect Parkinson’s Disease using various Machine Learning algorithms.
+
+Dataset:
+parkinsons.data
+"""
+
+# Importing Libraries
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn import metrics
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix
+from google.colab import files
+import io
+
+# ---------------------------------------------
+# Load Dataset
+# ---------------------------------------------
+
+# Uncomment below lines if using file upload in Colab:
+# uploaded = files.upload()
+# df = pd.read_csv(io.BytesIO(uploaded['parkinsons.data']))
+
+# Comment this Line if Using Files Upload Feature
+df = pd.read_csv('/content/EXP_6_parkinsons.data')
+
+
+print("✅ Dataset Loaded Successfully!")
+print("\nFirst few rows of the dataset:")
+print(df.head())
+
+print("\nDataset Shape:", df.shape)
+print("\nDataset Information:")
+print(df.info())
+
+# Checking for missing values
+print("\nMissing Values in Dataset:")
+print(df.isnull().sum())
+
+# Summary Statistics
+print("\nStatistical Summary:")
+print(df.describe())
+
+# Column names
+print("\nColumns in Dataset:")
+print(df.columns)
+
+# Target column
+print("\nTarget Distribution (status column):")
+print(df['status'].value_counts())
+
+# ---------------------------------------------
+# Data Visualization
+# ---------------------------------------------
+
+plt.figure(figsize=(10, 6))
+df.status.hist()
+plt.xlabel('Status')
+plt.ylabel('Frequencies')
+plt.title('Distribution of Parkinson’s Disease Status')
+plt.show()
+
+plt.figure(figsize=(10, 6))
+sns.barplot(x='status', y='NHR', data=df)
+plt.title('NHR vs Status')
+plt.show()
+
+plt.figure(figsize=(10, 6))
+sns.barplot(x='status', y='HNR', data=df)
+plt.title('HNR vs Status')
+plt.show()
+
+plt.figure(figsize=(10, 6))
+sns.barplot(x='status', y='RPDE', data=df)
+plt.title('RPDE vs Status')
+plt.show()
+
+# ---------------------------------------------
+# Distribution Plots
+# ---------------------------------------------
+
+rows, cols = 3, 7
+fig, ax = plt.subplots(nrows=rows, ncols=cols, figsize=(16, 4))
+col = df.columns
+index = 1
+
+for i in range(rows):
+    for j in range(cols):
+        sns.histplot(df[col[index]], ax=ax[i][j], kde=True, color='steelblue')
+        ax[i][j].set_title(col[index])
+        index += 1
+        if index >= len(col):
+            break
+
+plt.tight_layout()
+plt.show()
+
+# ---------------------------------------------
+# Data Preprocessing
+# ---------------------------------------------
+
+df.drop(['name'], axis=1, inplace=True)
+X = df.drop(labels=['status'], axis=1)
+Y = df['status']
+
+# Splitting the data
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=40)
+print("\nData Split:")
+print(X_train.shape, X_test.shape, Y_train.shape, Y_test.shape)
+
+# ---------------------------------------------
+# Logistic Regression
+# ---------------------------------------------
+
+print("\n--- Logistic Regression ---")
+log_reg = LogisticRegression().fit(X_train, Y_train)
+
+train_preds = log_reg.predict(X_train)
+test_preds = log_reg.predict(X_test)
+
+print("Accuracy on Train Data:", accuracy_score(Y_train, train_preds))
+print("Accuracy on Test Data:", accuracy_score(Y_test, test_preds))
+print("Confusion Matrix (Train):\n", confusion_matrix(Y_train, train_preds))
+print("Confusion Matrix (Test):\n", confusion_matrix(Y_test, test_preds))
+
+# ---------------------------------------------
+# Random Forest Classifier
+# ---------------------------------------------
+
+print("\n--- Random Forest Classifier ---")
+RF = RandomForestClassifier().fit(X_train, Y_train)
+
+train_preds2 = RF.predict(X_train)
+test_preds2 = RF.predict(X_test)
+
+print("Accuracy on Train Data:", accuracy_score(Y_train, train_preds2))
+print("Accuracy on Test Data:", accuracy_score(Y_test, test_preds2))
+print("Confusion Matrix (Train):\n", confusion_matrix(Y_train, train_preds2))
+print("Confusion Matrix (Test):\n", confusion_matrix(Y_test, test_preds2))
+print("Wrong Predictions:", (Y_test != test_preds2).sum(), "/", len(Y_test))
+print("Kappa Score:", metrics.cohen_kappa_score(Y_test, test_preds2))
+
+# ---------------------------------------------
+# Applying Other ML Models
+# ---------------------------------------------
+
+from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.metrics import recall_score, cohen_kappa_score
+
+# Re-split to ensure same data consistency
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=40)
+
+# ---------------------------------------------
+# Decision Tree Classifier
+# ---------------------------------------------
+
+print("\n--- Decision Tree Classifier ---")
+DT = DecisionTreeClassifier().fit(X_train, Y_train)
+train_preds3 = DT.predict(X_train)
+test_preds3 = DT.predict(X_test)
+
+print("Train Accuracy:", accuracy_score(Y_train, train_preds3))
+print("Test Accuracy:", accuracy_score(Y_test, test_preds3))
+print("Confusion Matrix (Test):\n", confusion_matrix(Y_test, test_preds3))
+print("Kappa Score:", cohen_kappa_score(Y_test, test_preds3))
+
+# ---------------------------------------------
+# Naive Bayes Classifier
+# ---------------------------------------------
+
+print("\n--- Naive Bayes Classifier ---")
+NB = GaussianNB().fit(X_train, Y_train)
+train_preds4 = NB.predict(X_train)
+test_preds4 = NB.predict(X_test)
+
+print("Train Accuracy:", accuracy_score(Y_train, train_preds4))
+print("Test Accuracy:", accuracy_score(Y_test, test_preds4))
+print("Confusion Matrix (Test):\n", confusion_matrix(Y_test, test_preds4))
+print("Kappa Score:", cohen_kappa_score(Y_test, test_preds4))
+
+# ---------------------------------------------
+# K-Nearest Neighbors Classifier
+# ---------------------------------------------
+
+print("\n--- K-Nearest Neighbors Classifier ---")
+KNN = KNeighborsClassifier().fit(X_train, Y_train)
+train_preds5 = KNN.predict(X_train)
+test_preds5 = KNN.predict(X_test)
+
+print("Train Accuracy:", accuracy_score(Y_train, train_preds5))
+print("Test Accuracy:", accuracy_score(Y_test, test_preds5))
+print("Confusion Matrix (Test):\n", confusion_matrix(Y_test, test_preds5))
+print("Kappa Score:", cohen_kappa_score(Y_test, test_preds5))
+
+# ---------------------------------------------
+# Support Vector Machine (SVM)
+# ---------------------------------------------
+
+print("\n--- Support Vector Machine (SVM) ---")
+SVM = SVC(kernel='linear').fit(X_train, Y_train)
+train_preds6 = SVM.predict(X_train)
+test_preds6 = SVM.predict(X_test)
+
+print("Train Accuracy:", accuracy_score(Y_train, train_preds6))
+print("Test Accuracy:", accuracy_score(Y_test, test_preds6))
+print("Confusion Matrix (Test):\n", confusion_matrix(Y_test, test_preds6))
+print("Recall Score:", recall_score(Y_test, test_preds6))
+print("Kappa Score:", cohen_kappa_score(Y_test, test_preds6))
+
+print("\n✅ All models executed successfully!")
+
+------------------------------------------------------------
+
+6. OUTPUT (SUMMARY)
+------------------------------------------------------------
+The program successfully loads and processes patient health data, trains the machine learning model, and predicts disease risk for new patient samples. Visualization of results and classification metrics demonstrates model reliability and interpretability.
+
+------------------------------------------------------------
+7. CONCLUSION
+------------------------------------------------------------
+In this experiment, we developed a machine learning model capable of predicting disease risk based on patient data. The results indicate that machine learning techniques can effectively assist in early diagnosis and preventive healthcare decision-making.
+
+------------------------------------------------------------
+8. VIVA QUESTIONS AND ANSWERS
+------------------------------------------------------------
+Q1. What is the main objective of this experiment?
+A1. The objective is to predict disease risk from patient data using machine learning techniques.
+
+Q2. Why is data preprocessing important in healthcare datasets?
+A2. It ensures data quality by handling missing values, normalizing numerical values, and encoding categorical variables.
+
+Q3. What evaluation metrics are used to measure model performance?
+A3. Accuracy, precision, recall, F1-score, and confusion matrix are commonly used metrics.
+
+Q4. What is the role of supervised learning in disease prediction?
+A4. Supervised learning uses labeled data to train models that can classify or predict disease outcomes based on patient features.
+
+Q5. How can this model help in real-world healthcare?
+A5. It assists doctors in identifying high-risk patients, prioritizing preventive care, and improving early diagnosis accuracy.
+
+------------------------------------------------------------

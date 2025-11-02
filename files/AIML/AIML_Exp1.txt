@@ -1,0 +1,206 @@
+------------------------------------------------------------
+Experiment No. 1: Breast Cancer Detection
+------------------------------------------------------------
+
+Aim:
+To collect, clean, integrate, and transform healthcare data based on a specific disease (Breast Cancer Detection).
+
+Course Outcome:
+HNAMLR1701.1
+
+Learning Outcomes:
+- Collect, explore, pre-process, and transform healthcare data for a specific disease.
+- Build a binary classification ML model to predict breast cancer using preprocessed data.
+
+------------------------------------------------------------
+Algorithm:
+------------------------------------------------------------
+1. Import necessary Python libraries (NumPy, Pandas, Matplotlib, Seaborn, Sklearn).
+2. Load the Breast Cancer dataset from Kaggle.
+3. Explore the data structure — view shape, info, and summary statistics.
+4. Handle missing values and remove unwanted columns. 
+5. Convert categorical data into numeric form using One-Hot Encoding.  
+6. Check relationships between variables using correlation matrix, boxplot and heatmap.
+7. Split the dataset into training and testing sets (80-20 ratio).
+8. Apply feature scaling to bring all numerical values to similar range.
+9. Build a Logistic Regression model.
+10. Train the model and test it on unseen data. 
+11. Evaluate model performance using accuracy, confusion matrix, precision, recall, and F1 score.
+
+------------------------------------------------------------
+Code Implementation (with comments)
+------------------------------------------------------------
+
+# ----------------------------------------------------------
+# Step 1: Import Required Libraries
+# ----------------------------------------------------------
+# These libraries are essential for handling data, visualization, and analysis.
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# ----------------------------------------------------------
+# Step 2: Download the Dataset Directly from Kaggle
+# ----------------------------------------------------------
+# Kaggle datasets can be accessed using the Kaggle API.
+# First, install the Kaggle library.
+!pip install -q kaggle
+
+# Upload your Kaggle API key file (kaggle.json) from your local system.
+from google.colab import files
+files.upload()   # Select kaggle.json when prompted.
+
+# Move the key to the correct folder and set permissions.
+!mkdir -p ~/.kaggle
+!mv kaggle.json ~/.kaggle/
+!chmod 600 ~/.kaggle/kaggle.json
+
+# Download the Breast Cancer Wisconsin dataset.
+!kaggle datasets download -d uciml/breast-cancer-wisconsin-data
+
+# Unzip the downloaded dataset.
+!unzip -o breast-cancer-wisconsin-data.zip
+
+# ----------------------------------------------------------
+# Step 3: Load the Dataset
+# ----------------------------------------------------------
+# Read the CSV file into a pandas DataFrame.
+dataset = pd.read_csv('data.csv')
+
+# Display the first few rows of the dataset.
+dataset.head()
+
+# ----------------------------------------------------------
+# Step 4: Data Exploration
+# ----------------------------------------------------------
+# Check the size of the dataset (rows, columns).
+print("Shape:", dataset.shape)
+
+# Display data types, column names, and non-null counts.
+dataset.info()
+
+# Display statistical summary for numerical features.
+dataset.describe()
+
+# ----------------------------------------------------------
+# Step 5: Handle Missing Values
+# ----------------------------------------------------------
+# The column 'Unnamed: 32' contains mostly missing values — remove it.
+dataset = dataset.drop(columns=['Unnamed: 32'])
+
+# Check if any missing values remain in the dataset.
+print("Any missing values:", dataset.isnull().values.any())
+
+# ----------------------------------------------------------
+# Step 6: Handle Categorical Data
+# ----------------------------------------------------------
+# The 'diagnosis' column contains categorical values — B (Benign) and M (Malignant).
+print("Unique values in diagnosis:", dataset['diagnosis'].unique())
+
+# Convert categorical data into numeric using one-hot encoding.
+# drop_first=True avoids dummy variable trap by dropping one column.
+dataset = pd.get_dummies(data=dataset, drop_first=True)
+
+# ----------------------------------------------------------
+# Step 7: Class Distribution
+# ----------------------------------------------------------
+# Check how many samples belong to each class.
+print("Benign (0):", (dataset.diagnosis_M == 0).sum())
+print("Malignant (1):", (dataset.diagnosis_M == 1).sum())
+
+# ----------------------------------------------------------
+# Step 8: Correlation Matrix & Visualization
+# ----------------------------------------------------------
+# Correlation helps identify relationships between variables.
+plt.figure(figsize=(20,15))
+sns.heatmap(dataset.corr(), annot=True, cmap='coolwarm')
+plt.title("Correlation Heatmap")
+plt.show()
+
+# ----------------------------------------------------------
+# Step 9: Boxplot for Outlier Detection
+# ----------------------------------------------------------
+# Boxplots help visualize data spread and detect outliers in features.
+plt.figure(figsize=(50,50))
+sns.boxplot(data=dataset, width=0.5, fliersize=3)
+plt.title("Boxplot of Features")
+plt.show()
+
+# ----------------------------------------------------------
+# Step 10: Split Dataset into Training and Testing Sets
+# ----------------------------------------------------------
+# Separate features (X) and target label (y).
+x = dataset.drop(['diagnosis_M'], axis=1)
+y = dataset['diagnosis_M']
+
+# Split the dataset: 80% training and 20% testing.
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=0)
+
+# Display the number of samples in each set.
+print("Training samples:", x_train.shape[0], "| Testing samples:", x_test.shape[0])
+
+# ----------------------------------------------------------
+# Step 11: Feature Scaling
+# ----------------------------------------------------------
+# Standardize features to have zero mean and unit variance.
+from sklearn.preprocessing import StandardScaler
+sc = StandardScaler()
+x_train = sc.fit_transform(x_train)
+x_test = sc.transform(x_test)
+
+# ----------------------------------------------------------
+# Step 12: Build Logistic Regression Model
+# ----------------------------------------------------------
+# Logistic Regression is a simple yet effective model for binary classification problems.
+from sklearn.linear_model import LogisticRegression
+model = LogisticRegression(random_state=0)
+
+# Train the model using the training data.
+model.fit(x_train, y_train)
+
+# ----------------------------------------------------------
+# Step 13: Predictions and Model Evaluation
+# ----------------------------------------------------------
+# Predict outcomes on the test data.
+y_pred = model.predict(x_test)
+
+# Import evaluation metrics to assess model performance.
+from sklearn.metrics import accuracy_score, confusion_matrix, f1_score, precision_score, recall_score
+
+# Calculate performance metrics.
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print("F1 Score:", f1_score(y_test, y_pred))
+print("Precision:", precision_score(y_test, y_pred))
+print("Recall:", recall_score(y_test, y_pred))
+
+# Display the Confusion Matrix.
+cm = confusion_matrix(y_test, y_pred)
+print("\nConfusion Matrix:\n", cm)
+
+------------------------------------------------------------
+Explanation (for Viva)
+------------------------------------------------------------
+
+💡 What is the objective?
+The goal is to detect whether a breast tumor is benign (0) or malignant (1) using machine learning.
+
+💡 Dataset:
+The dataset is from the UCI Breast Cancer Wisconsin Dataset, containing features like radius, texture, perimeter, area, smoothness, etc.
+
+💡 Steps Overview:
+1. Data Collection: Loaded dataset from UCI/Kaggle using Kaggle api.
+2. Data Exploration: Checked datatypes, structure, and summary statistics.
+3. Data Preprocessing: Removed nulls, dropped unnecessary columns, encoded categorical data, and scaled features.
+4. Modeling: Applied Logistic Regression — a binary classification algorithm.
+5. Model Evaluation: Evaluated model with metrics:
+   - Accuracy: Overall correctness
+   - Precision: How many predicted positives are actually positive
+   - Recall: How many actual positives are detected
+   - F1 Score: Balance between precision and recall
+   - Confusion Matrix: Shows true vs. false predictions
+
+------------------------------------------------------------
+End of Experiment 1
+------------------------------------------------------------

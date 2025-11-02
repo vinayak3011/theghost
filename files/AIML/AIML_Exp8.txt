@@ -1,0 +1,198 @@
+------------------------------------------------------------
+Experiment No. 8: Explainable AI in Healthcare (Model Interpretation)
+------------------------------------------------------------
+
+Aim:  
+To understand and implement Explainable AI (XAI) techniques for model interpretation in healthcare using SHAP values.
+
+Course Outcome:  
+HNAMLR1701.4
+
+Learning Outcomes:  
+- Understand the importance of model interpretability in healthcare AI.  
+- Implement explainable AI using SHAP for model interpretation.  
+- Evaluate and visualize how features influence predictions.
+
+------------------------------------------------------------
+Algorithm (Simplified)
+------------------------------------------------------------
+1. Install and import necessary libraries (SHAP, sklearn, pandas, seaborn).  
+2. Load the Diabetes dataset from Kaggle.  
+3. Explore the dataset — check info, describe statistics, and handle missing values.  
+4. Split data into training and testing sets (80:20).  
+5. Train a Random Forest Classifier to predict diabetes outcomes.  
+6. Evaluate the model using accuracy and classification report.  
+7. Use SHAP (SHapley Additive Explanations) to interpret model predictions.  
+8. Generate:
+   - SHAP Summary Plot – shows global feature importance.  
+   - SHAP Force Plot – explains how individual features affect a single prediction.  
+   - SHAP Dependence Plot (Glucose) – shows how Glucose values influence model output.  
+9. Visualize Feature Importance (from Random Forest) using bar plots.  
+
+------------------------------------------------------------
+Code Implementation (with Comments)
+------------------------------------------------------------
+
+# -------------------------------------------------------------
+# Step 1: Install and import required libraries
+# -------------------------------------------------------------
+!pip install shap pandas scikit-learn matplotlib seaborn
+
+import pandas as pd
+import numpy as np
+import shap
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, accuracy_score
+
+# -------------------------------------------------------------
+# Step 2: Download healthcare dataset from Kaggle
+# -------------------------------------------------------------
+from google.colab import files
+files.upload()   # Upload kaggle.json API key manually
+
+!mkdir -p ~/.kaggle
+!cp kaggle.json ~/.kaggle/
+!chmod 600 ~/.kaggle/kaggle.json
+
+# Download and unzip the Diabetes dataset
+!kaggle datasets download -d uciml/pima-indians-diabetes-database
+!unzip pima-indians-diabetes-database.zip
+
+# -------------------------------------------------------------
+# Step 3: Load and explore dataset
+# -------------------------------------------------------------
+df = pd.read_csv("diabetes.csv")
+df.head()
+
+# Display structure, summary, and check for null values
+print(df.info())
+print(df.describe())
+print(df.isnull().sum())
+
+# -------------------------------------------------------------
+# Step 4: Define features and target variable
+# -------------------------------------------------------------
+X = df.drop("Outcome", axis=1)
+y = df["Outcome"]
+
+# Split dataset (80% train, 20% test)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# -------------------------------------------------------------
+# Step 5: Train the Random Forest model
+# -------------------------------------------------------------
+model = RandomForestClassifier(random_state=42)
+model.fit(X_train, y_train)
+
+# Predict outcomes
+y_pred = model.predict(X_test)
+
+# Evaluate model performance
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print("\nClassification Report:\n", classification_report(y_test, y_pred))
+
+# -------------------------------------------------------------
+# Step 6: Apply SHAP for Explainable AI
+# -------------------------------------------------------------
+explainer = shap.TreeExplainer(model)
+shap_values = explainer.shap_values(X_test)
+
+# Summary plot shows how all features influence the model globally
+if isinstance(shap_values, list):
+    shap.summary_plot(shap_values[1], X_test)
+else:
+    shap.summary_plot(shap_values, X_test)
+
+# -------------------------------------------------------------
+# Step 7: Force plot (individual sample explanation)
+# -------------------------------------------------------------
+sample = X_test.iloc[0, :]  # Select one test instance
+shap.initjs()  # Initialize JS visualization
+shap_value_positive = shap_values[:, :, 1]
+shap.plots.force(explainer.expected_value[1], shap_value_positive[0, :], sample)
+
+# -------------------------------------------------------------
+# Step 8: Dependence plot for Glucose feature
+# -------------------------------------------------------------
+shap_values_pos = shap_values[:, :, 1]
+shap.dependence_plot("Glucose", shap_values_pos, X_test)
+
+# -------------------------------------------------------------
+# Step 9: Feature Importance (Model’s internal perspective)
+# -------------------------------------------------------------
+importances = model.feature_importances_
+indices = np.argsort(importances)[::-1]
+plt.figure(figsize=(8,5))
+sns.barplot(x=importances[indices], y=X.columns[indices])
+plt.title("Feature Importance (Random Forest)")
+plt.show()
+
+"""
+Model achieved good accuracy.
+SHAP plots show Glucose, BMI, and Age are key predictors.
+Explainable AI helps understand how features influence predictions.
+Improves trust and interpretability in clinical decision-making.
+""";
+
+------------------------------------------------------------
+Concept / Viva Explanation
+------------------------------------------------------------
+
+Q1. What is Explainable AI (XAI)?  
+Explainable AI (XAI) makes machine learning decisions transparent and understandable by humans.  
+It explains why a model made a specific prediction.
+
+Q2. Why is XAI important in healthcare?  
+Because medical predictions affect patient outcomes — clinicians need to understand the reasoning behind predictions (not just accuracy).
+
+Q3. What is SHAP?  
+SHAP (SHapley Additive Explanations) assigns an importance score to each feature, showing how much it contributed to increasing or decreasing a prediction.
+
+Q4. Difference between Global and Local explanations?  
+- Global: Explains the overall model behavior (summary plot, feature importance).  
+- Local: Explains one individual prediction (force plot).  
+
+Q5. Why use Random Forest with SHAP?  
+Tree-based models (like Random Forest) work efficiently with SHAP, giving both accuracy and clear interpretability.
+
+Q6. How does SHAP improve trust in AI?  
+By showing which features (like Glucose, BMI, Age) influenced predictions, SHAP helps doctors trust AI outputs and validate decisions.
+
+------------------------------------------------------------
+Output Explanation (Based on Your Images)
+------------------------------------------------------------
+
+🧩 1. Feature Importance (Bar Plot):  
+Displays the ranking of all input features based on their contribution to model predictions.  
+- Top features: Glucose, BMI, and Age.  
+- These are biologically relevant for diabetes diagnosis, proving the model is logical.
+
+📊 2. SHAP Summary Plot (Glucose & Pregnancies):  
+Each point represents a patient.  
+- Red = high feature value, Blue = low.  
+- High glucose values (red dots) push predictions toward diabetes (right side).  
+- Pregnancies also influence outcomes but less strongly.
+
+💡 3. SHAP Force Plot (Single Sample):  
+Shows how each feature pushes the prediction:
+- Red bars: Increase probability of diabetes (e.g., Insulin, BMI, Age).  
+- Blue bars: Decrease probability (e.g., Glucose, BloodPressure).  
+- The model predicts the final probability based on this balance.
+
+📈 4. SHAP Dependence Plot (Glucose):  
+Illustrates the relationship between Glucose values and their SHAP impact.  
+Higher glucose → higher SHAP value → higher risk prediction.
+
+------------------------------------------------------------
+Conclusion
+------------------------------------------------------------
+- The Random Forest model achieved high accuracy on the diabetes dataset.  
+- SHAP analysis revealed that Glucose, BMI, and Age are the most influential features.  
+- Explainable AI enhances model transparency, making predictions interpretable and reliable for healthcare applications.
+
+------------------------------------------------------------
+End of Experiment 8
+------------------------------------------------------------

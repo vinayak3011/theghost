@@ -1,0 +1,177 @@
+EXP 7 OSINT
+
+7.1 Aim: Use OSINT Tools to identify the technologies and frameworks used by the Website, such content/management systems (CMS), server software, programming languages, or analytics tools and create vulnerability reports.
+
+Steps 
+
+0. Open kali open terminal
+
+1. Update your system's package list and upgrade existing software.
+	sudo apt update && sudo apt upgrade
+
+2. Install all prerequisite system tools (pip, git, and pipx).
+	sudo apt install python3-pip git pipx
+
+3. Install the 'wappalyzer' tool safely using pipx.
+	pipx install wappalyzer
+
+4. Create a target file with a test website.
+	echo "[http://testphp.vulnweb.com](http://testphp.vulnweb.com)" > targets.txt
+
+5. (Optional) Verify the target file was created correctly.
+	cat targets.txt
+
+6. Run Wappalyzer to identify the website's technologies.
+	wappalyzer -i targets.txt
+
+7. Update the local 'searchsploit' vulnerability database.
+	searchsploit -u
+
+8. Create a new file for the report and add the first header.
+	echo "--- Wappalyzer Technology Report ---" > vulnerability_report.txt
+
+9. Add the Wappalyzer scan results to the report file.
+	wappalyzer -i targets.txt >> vulnerability_report.txt
+
+10. Add a header for the Nginx vulnerability search to the report.
+	echo -e "\n\n--- Nginx 1.19.0 Vulnerability Search ---" >> vulnerability_report.txt
+
+11. Add the Nginx search results to the report file.
+	searchsploit nginx 1.19.0 >> vulnerability_report.txt
+
+12. Add a header for the PHP vulnerability search to the report.
+	echo -e "\n\n--- PHP 5.6.40 Vulnerability Search ---" >> vulnerability_report.txt
+
+13. Add the PHP search results to the report file.
+	searchsploit php 5.6.40 >> vulnerability_report.txt
+
+14. Add a header for the Ubuntu vulnerability search to the report.
+	echo -e "\n\n--- Ubuntu Vulnerability Search ---" >> vulnerability_report.txt
+
+15. Add the Ubuntu search results to the report file.
+	searchsploit ubuntu >> vulnerability_report.txt
+
+16. Add a header for the Adobe Flash vulnerability search to the report.
+	echo -e "\n\n--- Adobe Flash Vulnerability Search ---" >> vulnerability_report.txt
+
+17. Add the Adobe Flash search results to the report file.
+	searchsploit "Adobe Flash" >> vulnerability_report.txt
+
+18. View the final, consolidated report from the file.
+	cat vulnerability_report.txt
+
+
+
+done exp u can show the output of 18 as its the report for scans saved in txt file
+
+
+
+
+************************theory n QNA**************************************
+
+
+Experiment 7.1: Related Theory
+This experiment combines two key cybersecurity processes: OSINT (Open-Source Intelligence) and Vulnerability Identification.
+
+What is OSINT in Web Profiling?
+
+OSINT is the practice of gathering information from publicly available sources. When applied to a website, it's often called footprinting. The goal is to build a profile of the website's digital components—what it's made of and how it works.
+
+This is crucial for security analysis. Every piece of software, from a specific server version to a small plugin, can have known, publicly disclosed security flaws (vulnerabilities). Identifying the technology stack is the first step in figuring out if a website is vulnerable to a known attack.
+
+
+Key Technologies to Identify
+The experiment focuses on identifying several key components:
+
+
+Content Management System (CMS): Software like WordPress, Joomla, or Drupal, used to manage website content. Outdated CMS platforms are a very common entry point for attackers.
+
+
+
+Web Server Software: The program that handles HTTP requests and sends back web pages, such as Apache, Nginx, or Microsoft IIS. Your scan identified Nginx.
+
+
+
+
+Programming Languages/Frameworks: The backend code that makes the site dynamic, like PHP, Python, or Ruby on Rails. Your scan found PHP.
+
+
+Analytics and Tracking: Tools like Google Analytics that measure user traffic.
+
+
+JavaScript Frameworks: Frontend libraries like React or jQuery that run in the user's browser.
+
+How Technologies are Detected
+Tools like wappalyzer (which you used) don't need to hack a site to find this information. They just look at public clues, such as:
+
+HTTP Headers: When your browser requests a website, the server sends back "headers." These often explicitly state the server type (e.g., Server: Nginx/1.19.0) or the backend language (e.g., X-Powered-By: PHP/5.6.40).
+
+
+File Paths & Source Code: The HTML of a site can contain unique file paths, like /wp-content/, which tells you the site uses WordPress.
+
+Cookies: The names of cookies can be a giveaway. For example, a PHPSESSID cookie is a strong indicator that the site uses PHP.
+
+Basic Vulnerability Reporting
+After you identify a technology (e.g., PHP 5.6.40), the next step is to create a basic report. This is a non-intrusive, OSINT-based process.
+
+
+
+Identify: You used wappalyzer to find the technology and its exact version.
+
+
+Search: You used searchsploit to check a public vulnerability database (Exploit-DB) for that specific version.
+
+Report: You then logged these findings. This report simply states that publicly known vulnerabilities exist for that software version. It does not involve trying to exploit the vulnerability.
+
+
+15 Questions & Answers
+Here are 15 questions and answers based on the experiment.
+
+1. What is the main aim of this experiment?
+Answer: To use OSINT tools to identify a website's technologies (like its CMS, server, and programming languages) and then create a basic report on publicly known vulnerabilities associated with those technologies.
+
+2. What is OSINT? 
+Answer: OSINT stands for Open-Source Intelligence. It is the practice of gathering data from publicly available sources, such as websites, public records, and code repositories.
+
+3. What is a "technology stack"? 
+Answer: It's the collection of software and technologies that work together to make a website or web application function. This includes the web server, database, programming language, and frontend frameworks.
+
+4. What tool did we use to identify website technologies? 
+Answer: We used wappalyzer (specifically, the wappalyzer package installed via pipx).
+
+5. Why is knowing a software's version (e.g., Nginx 1.19.0) important for security? 
+Answer: Because specific versions are tied to specific, publicly known vulnerabilities (CVEs). An attacker will search for a vulnerability that affects the exact version a target is running.
+
+
+6. What is a CVE? 
+Answer: It stands for "Common Vulnerabilities and Exposures." It's a unique ID number for a specific, publicly disclosed cybersecurity vulnerability.
+
+7. What tool did we use to search for vulnerabilities?
+Answer: We used searchsploit, which is a command-line tool for searching the Exploit-DB (a public database of vulnerabilities and exploits).
+
+8. When we ran searchsploit php 5.6.40, did it mean the website had all those vulnerabilities? 
+Answer: No. It means searchsploit found many vulnerabilities in its database related to other applications that also use PHP 5.6.40. It gives an idea of the types of risks associated with that technology.
+
+9. What is a web server? Which one did we identify?
+Answer: A web server is the software that handles client requests and serves web pages. We identified Nginx as the web server for testphp.vulnweb.com.
+
+10. What is a CMS?
+Answer: A Content Management System (CMS) is software that helps users create and manage digital content, like a blog or e-commerce store (e.g., WordPress, Joomla).
+
+11. Why did we have to use pipx to install wappalyzer? 
+Answer: Modern Kali Linux (and other systems) prevents pip from installing packages "system-wide" to avoid breaking other system tools. pipx is the recommended tool to install Python-based applications in their own safe, isolated environments.
+
+12. What are HTTP headers and how are they used in OSINT? 
+Answer: HTTP headers are bits of information sent by a web server along with a web page. They are used in OSINT because they often directly disclose the server software, its version, and the programming language, like Server: Nginx or X-Powered-By: PHP.
+
+13. Is running wappalyzer on a website considered an attack?
+Answer: It is generally considered "low-impact active tooling" or "passive scanning". It just requests the website like a normal browser and reads the public information (headers, HTML). It is not an intrusive attack, but performing it on a large scale could be flagged.
+
+14. What is the difference between vulnerability identification (this lab) and exploitation?
+Answer: Identification (what we did) is just using OSINT to find a list of potential flaws, like finding an old version of PHP and noting that CVEs exist for it. Exploitation is the act of using that flaw to gain unauthorized access, which is illegal and was not part of this experiment.
+
+
+15. How did we create a local, saved report of our findings? 
+Answer: We used the > and >> shell redirect operators. echo "Title" > report.txt created the file, and then searchsploit ... >> report.txt appended the command's output to that file.
+
+

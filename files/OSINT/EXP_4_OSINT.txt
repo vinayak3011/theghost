@@ -1,0 +1,82 @@
+OSINT EXPERIMENT-4 ---OSNIT HARVESTOR
+
+THEORY:
+
+4.1 Aim:
+Using an OSINT tool such as TheHarvester,you can gather publicly available 
+information like emails, subdomains, hosts, employee names, open ports, and 
+banners from different public sources (e.g., search engines, PGP key servers). 
+
+4.2 Course Outcome: Analyze the fundamentals of OSINT including its evolution, types, stakeholders, and 
+ethical challenges.
+ 
+4.3 Learning Objective:
+Examine emailheaders to extract information such as sender IP address, routing 
+paths, and server details for forensic and investigative purposes. 
+
+4.4 Requirement:
+● Operating System: Windows / Linux 
+● Internet connectivity 
+● Pre-installed 
+TheHarvester
+ (commonly available in Kali Linux) 
+● Access to a sample email with headers
+
+ 
+4.5 Related Theory:
+● OSINT fundamentals — Collecting intelligence from publicly available sources 
+(search engines, social media, PGP keyservers, DNS records). Low-cost, 
+legal reconnaissance that reduces unknowns before active testing. 
+● TheHarvester role — Passive information-gathering CLI tool that aggregates 
+results from multiple public sources (Google/Bing/Yahoo, PGP, LinkedIn, etc.) 
+to enumerate emails, subdomains, hostnames and virtual hosts. Useful for 
+footprinting a target domain. 
+● Data types & value — Emails (phishing vectors), subdomains (attack surface), 
+hosts/IPs (targeting), employee names (social engineering), banners/open 
+ports (service fingerprinting when combined with active scans). 
+● Limitations — Dependence on public data; noisy or incomplete results; results 
+may include false positives, cached or outdated entries. Passive tools cannot 
+find non-public services. 
+● Ethical & legal considerations — Only use against targets you own or have 
+written permission for. Respect robots.txt, terms of service and privacy laws. 
+OSINT can be powerful but must be used responsibly. 
+● Email header basics — Headers contain metadata: Received: chain (who 
+handled the message and timestamps), From: / Return-Path: / Reply-To:, 
+authentication results (SPF/DKIM/DMARC), and MIME/Content-Type. Header 
+analysis helps attribute, timeline, and detect spoofing.
+ 
+4.6 Program and Output: ADD SCREENSHOTS  
+
+4.7 Conclusion: Through this experiment, OSINT tools like TheHarvester , crucial intelligence such as emails, subdomains, and hosts can be gathered from public sources. This supports penetration testing, threat hunting, and reconnaissance activities. Email header analysis further strengthens investigation by allowing analysts to trace the origin, path, and authenticity of suspicious emails. Both techniques play a vital role in cybersecurity operations and digital forensics.
+
+
+
+WORKING: 
+
+TheHarvester 
+Start Kali Linux → Search theHarvester in the menu and open it.
+
+Basic Domain Info:
+
+theHarvester -d infosectrain.com -b yahoo
+
+
+2. Check Virtual Hosts:
+
+theHarvester -d nist.gov -b google -l 100 -v
+
+
+3. Find People (Social Networks):
+
+theHarvester -d nist.gov -b linkedin
+
+
+Flags:
+-d = domain
+-b = data source (google, yahoo, linkedin, etc.)
+-l = limit results
+-v = verbose (detailed output)
+
+
+
+ 
