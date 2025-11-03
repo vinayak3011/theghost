@@ -1,0 +1,171 @@
+DevSecOps Exp 6
+AIM: Use Docker to run containers of different applications and Operating Systems.
+
+
+# Open your Kali Linux terminal.
+
+# ----------------------------------------------------
+# PART A: INSTALL DOCKER ON KALI LINUX
+# ----------------------------------------------------
+
+# Update APT package lists and upgrade all installed packages to their latest versions.
+    sudo apt update && sudo apt upgrade -y
+
+# Install prerequisite packages needed to add repositories securely over HTTPS.
+    sudo apt install -y ca-certificates curl gnupg
+
+# Create a new directory to store the Docker GPG key.
+    sudo install -m 0755 -d /etc/apt/keyrings
+
+# Download Docker's official GPG key and save it in the new directory.
+    curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+# Add the official Docker repository, telling it to use the Debian "bookworm" version.
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian bookworm stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Update APT package lists again to include the new Docker repository.
+    sudo apt update
+
+# (Step 1) Install the Docker Engine, command-line client (CLI), and related components.
+    sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin
+
+# Add your current user to the "docker" group to run docker commands without sudo.
+    sudo usermod -aG docker $USER
+
+# --- IMPORTANT ---
+# You MUST reboot or log out and log back in for the previous command to take effect.
+# Run the 'reboot' command now, then re-open your terminal and continue.
+    reboot
+
+# ----------------------------------------------------
+# PART B: RUN EXPERIMENT STEPS
+# ----------------------------------------------------
+
+# (Step 2) Verify installation using docker run hello-world
+# This command downloads and runs a test image. You should see a "Hello from Docker!" message.
+    docker run hello-world
+
+# (Step 3) Pull different OS images
+# Download the latest official Ubuntu image.
+    docker pull ubuntu
+
+# Download the latest official Alpine Linux image (very small).
+    docker pull alpine
+
+# Download the CentOS 7 image (using a specific tag).
+    docker pull centos:7
+
+# (Step 4) Run containers interactively using the -it flag
+# Runs the Ubuntu container and opens an interactive BASH shell inside it.
+    docker run -it ubuntu /bin/bash
+# Inside the container, you can type 'cat /etc/os-release' to verify, then type 'exit'.
+
+# Runs the Alpine container and opens an interactive SH shell inside it.
+    docker run -it alpine /bin/sh
+# Inside the container, you can type 'cat /etc/os-release' to verify, then type 'exit'.
+
+# Runs the CentOS 7 container and opens an interactive BASH shell inside it.
+    docker run -it centos:7 /bin/bash
+# Inside the container, you can type 'cat /etc/os-release' to verify, then type 'exit'.
+
+# (Step 5) Pull application containers
+# Download the latest official Nginx (web server) image.
+    docker pull nginx
+
+# Download the latest official MySQL (database) image.
+    docker pull mysql
+
+# Download the latest official Python (programming language) image.
+    docker pull python
+
+# (Step 6) Test connectivity and functionality between containers
+# Create a new virtual network for containers to communicate with each other.
+    docker network create my-app-network
+
+# Start an Nginx container in the background (-d) on the new network, named "my-web-server".
+    docker run -d --name my-web-server --network my-app-network nginx
+
+# Run a temporary Alpine container (--rm) on the same network to ping the Nginx container by its name.
+    docker run --rm --network my-app-network alpine ping -c 3 my-web-server
+
+# (Step 7) Stop and remove containers after testing
+# Stop the Nginx container that is running in the background.
+    docker stop my-web-server
+
+# Remove the stopped Nginx container.
+    docker rm my-web-server
+
+
+
+
+
+
+***********************************
+
+
+📚 Theory
+Before running the commands, it's helpful to understand the core concepts of Docker.
+
+Docker: This is a platform for developing, shipping, and running applications in containers. It packages an application and all its dependencies (libraries, settings, etc.) into a single, isolated unit.
+
+Docker Image: This is a read-only template used to create containers. It's like a blueprint or a recipe. In your experiment, ubuntu, nginx, and python are all images you pulled.
+
+Docker Container: This is a runnable instance of an image. If an image is a blueprint, a container is the actual house built from that blueprint. You can run, start, stop, and delete containers. When you ran docker run hello-world, you created and ran a container from the hello-world image.
+
+Docker Hub: This is a cloud-based registry (a huge online storage) where Docker images are stored. When you run docker pull nginx, Docker downloads the image from Docker Hub.
+
+Docker Networking: By default, containers are isolated. To allow them to communicate, you must attach them to a virtual network. We created my-app-network so the Alpine container could find and ping the my-web-server (Nginx) container by its name.
+
+Key Flags:
+
+-it: This is a combination of two flags. -i (interactive) keeps STDIN open, and -t (tty) allocates a pseudo-terminal. Together, they let you type commands inside the container, just like a regular terminal.
+
+-d: This means "detached mode." It runs the container in the background so you get your terminal prompt back immediately.
+
+--rm: This automatically removes the container after it stops. It's great for temporary tasks like our ping test.
+
+❓ Q&A (15 Questions)
+Q: What is Docker? 
+A: Docker is a platform that uses containerization to package an application and all its dependencies into an isolated unit called a container.
+
+Q: What is the difference between a Docker image and a Docker container? 
+A: An image is a read-only template (like a blueprint) used to create containers. A container is a live, running instance of an image (like the actual house).
+
+Q: What command did we use to verify the Docker installation? 
+A: docker run hello-world
+
+Q: What is the purpose of the docker pull command? 
+A: It downloads an image from a registry (like Docker Hub) onto your local machine.
+
+Q: Why did docker pull centos fail, but docker pull centos:7 work? 
+A: The centos:latest tag is no longer supported on Docker Hub. We had to specify an exact version, like :7, to pull a valid image.
+
+Q: What do the -it flags mean in the docker run -it command? 
+A: -i (interactive) and -t (tty) are used together to give you an interactive command prompt (shell) inside the container.
+
+Q: How do you exit an interactive container shell and return to Kali? 
+A: You type exit and press Enter.
+
+Q: What command did we use to verify the OS inside a container? 
+A: cat /etc/os-release (This works on most modern Linux distributions).
+
+Q: Why did we need to create a docker network? 
+A: To allow containers to communicate with each other by name. Without a shared network, they are isolated.
+
+Q: What does the -d flag do in the docker run -d command? 
+A: It runs the container in "detached" mode (in the background) and gives you your terminal prompt back.
+
+Q: How did we test connectivity between the two containers? 
+A: We ran a temporary Alpine container and used the ping command to reach the Nginx container by its name (my-web-server).
+
+Q: What is the difference between docker stop and docker rm? 
+A: docker stop stops a running container, but it still exists. docker rm deletes a stopped container permanently.
+
+Q: Why did we run sudo usermod -aG docker $USER? 
+A: To add the current user to the docker group, which allows you to run docker commands without needing to type sudo every time.
+
+Q: What command would you use to see all the images downloaded on your system? 
+A: docker images or docker image ls
+
+Q: What command would you use to see all containers, including stopped ones? 
+A: docker ps -a

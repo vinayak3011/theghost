@@ -1,0 +1,297 @@
+﻿Experiment 1
+
+
+Aim: Perform Version control for different files/directories using GIT. 
+
+
+Lab Outcome: 
+By the end of this experiment, the student will be able to: 
+• Understand the core concepts of Git and version control. 
+• Initialize a Git repository and track changes to files and directories. • Stage and commit changes with proper messages. 
+• Create and merge branches to manage development workflows. 
+• Work with remote repositories (e.g., GitHub) to collaborate on code. 
+
+
+ Learning Objectives: 
+• To understand the need and benefits of version control systems. 
+• To learn basic and intermediate Git commands for file tracking and collaboration. 
+• To gain hands-on experience in managing source code using Git in real-time. 
+• To understand Git branching, merging, conflict resolution, and remote repository interaction. 
+
+
+ Requirement:
+ Hardware/Software Requirements:
+ • A computer system with internet connectivity 
+• Git installed (https://git-scm.com/downloads) 
+• GitHub (or similar) account
+ • Text Editor or IDE (e.g., VS Code) 
+
+
+Related Theory: 
+
+
+* What is Git? 
+Git is a distributed version control system designed to handle projects of any size with speed and efficiency. It allows multiple developers to work on a codebase simultaneously. 
+
+
+* Why Version Control? 
+• Tracks history of files and directories
+• Allows collaborative development 
+• Prevents loss of code 
+• Enables experimentation via branching 
+• Helps in code reviews and audits 
+
+
+
+
+* Common Git Terminology: 
+• Repository (repo): A project tracked by Git. 
+• Staging area: A space where changes are prepared before committing.
+• Commit: A snapshot of the project at a point in time. 
+• Branch: A separate line of development. 
+• Merge: Combining branches together. 
+• Remote: A repository hosted on a server like GitHub.
+
+
+
+
+Program & Output
+
+
+Install Git
+
+
+Windows
+1. Visit https://git-scm.com/downloads
+
+2. Download Git for Windows.
+
+3. Run the installer:
+
+   * Keep default options (select “Use Git Bash” and “Add Git to PATH”).
+
+      4. Open Git Bash (search “Git Bash” in Start menu).
+
+Linux 
+Open terminal and run below commands: 
+         *     sudo apt update
+         # updates package lists.
+
+
+         *     sudo apt install git -y
+# installs Git without asking for confirmation.
+
+
+         *     git --version
+          # verify installation; Displays the installed Git version
+
+
+ 
+
+
+
+
+Procedure / Commands to be Executed
+           
+            Open terminal and run below commands(only bulleted points are commands).
+1. Configuration
+         * git config --global user.name "admin"
+Sets your global Git username for all repositories on your system.
+
+
+         * git config --global user.email "admin@gmail.com"
+Sets your global email ID that appears in commits.
+
+
+         * git config --list
+Displays all Git configuration settings currently active.
+
+
+________________
+
+
+2. Repository Initialization
+         * cd desktop
+Changes the current working directory to the Desktop.
+
+
+         * mkdir devsec
+Creates a new folder named devsec.
+
+
+         * cd devsec
+Creates a new folder named devsec.
+
+
+         * git init
+Initializes a new empty Git repository in the current folder. It creates a hidden .git directory to track changes.
+	________________
+
+
+3. Add & Commit Files
+         * echo "Hello Git" > file1.txt
+Creates a new file named file1.txt containing the text Hello Git.
+
+         * git add file1.txt
+Stages the file file1.txt for the next commit. (Moves it from “unstaged” to “staged” area.)
+	
+
+         * git status
+Displays the current state of the repository — which files are staged, modified, or untracked.
+
+
+         * git commit -m "Initial commit"
+Saves the staged files permanently into the local repository with a message. Each commit represents a snapshot of your project.
+
+
+________________
+
+
+4. Add Another File and Commit
+         * echo "My word" > file2.txt
+
+
+         * git add .
+Stages all modified and new files in the current directory for commit.
+
+
+         * git status
+         * git commit -m "second commit"
+
+
+________________
+
+
+5. Reset to Previous Commit
+         * git reset --hard HEAD~1
+Rolls back the repository to the previous commit, discarding all changes after it.
+	
+
+
+
+________________
+
+
+6. Create and Switch Branch
+         * git branch new_feature
+Creates a new branch named new_feature for parallel development.
+
+
+         * git checkout new_feature
+Switches the working directory to the new_feature branch.
+
+
+         * git branch
+Lists all branches in the repository and shows the currently active one (*).
+
+
+________________
+
+
+7. Add and Commit New File on Branch
+         * echo "new change" > file3.txt
+         * git add .
+         * git status
+         * git commit -m "my commit 1"
+
+
+________________
+
+
+8. Reset Branch Back to Previous Commit
+         * git reset --hard HEAD~1
+
+
+________________
+
+
+9. Check Commit History
+         * git log
+Displays the commit history — author, date, and message of each commit.
+
+
+________________
+
+
+10. Create and Switch to ‘main’ Branch
+         * git checkout master
+Switches from the current branch back to the master branch.
+
+
+         * git branch main
+Creates a new branch called main (often the default main branch).
+         * git checkout main
+Switches to the main branch to continue work there.
+
+
+________________
+
+
+11. Add Remote Repository
+             
+            Login to Github account, create new repository and copy it’s URL
+      (eg: https://github.com/admin/devsecops).
+
+
+         * git remote add origin https://github.com/admin/devsecops
+Links the local repository with a remote GitHub repository named origin.
+
+
+         * git remote -v
+Displays the URLs of remote repositories linked to the project (for fetch & push).
+
+
+Output:
+origin  https://github.com/admin/devsecops (fetch)
+origin  https://github.com/admin/devsecops (push)
+
+
+________________
+
+
+12. Make Local Changes and Use Stash
+         * echo "Temporary change not ready to commit" >> file1.txt
+Adds text to file1.txt without committing, to demonstrate stash.
+
+
+         * git status
+
+
+Output:
+On branch main
+Changes not staged for commit:
+  modified: file1.txt
+
+
+Now save the local changes temporarily using stash:
+         * git stash
+Temporarily saves (stashes) local changes that are not yet ready to be committed, and reverts files to the last commit..
+
+
+Output:
+Saved working directory and index state WIP on main: Initial commit
+
+
+To apply back the stashed changes:
+         * git stash pop
+Restores (applies) the most recently stashed changes back into the working directory.
+
+
+________________
+
+
+13. Push to Remote Repository
+         * git push -u origin main
+Uploads your local commits to the main branch of the remote GitHub repository and sets it as the default upstream.
+________________
+
+
+14. Verify Commit History
+         * git log
+         * git dif
+
+
+
+
+Conclusion: 
+In this experiment, we explored the usage of Git for version controlling files and directories. We learned how to initialize a Git repository, add and commit files, create and merge branches, and push code to a remote repository. These operations are essential for collaborative software development and ensure smooth and organized tracking of changes in a project.

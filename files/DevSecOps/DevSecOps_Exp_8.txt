@@ -1,0 +1,94 @@
+DevSecOps Exp 8
+
+
+8.1 Aim : To implement Static Application Security Testing using SonarQube
+
+
+# Open your Kali Linux terminal.
+
+	sudo apt update && sudo apt upgarde
+
+# Install all prerequisites (Java, Curl, Unzip, Git, and CA certificates).
+	sudo apt install -y ca-certificates curl gnupg default-jdk unzip git
+
+# Create a directory to store the Docker GPG key securely.
+	sudo install -m 0755 -d /etc/apt/keyrings
+
+# Download Docker's official GPG key and save it.
+	curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+# Add the official Docker repository for Debian 'bookworm' (compatible with Kali).
+	echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian bookworm stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Update APT package lists to recognize the new Docker repository.
+	sudo apt update
+
+# Install the Docker Engine, client, and related components.
+	sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin
+
+# Add the current user ($USER) to the 'docker' group to run commands without 'sudo'.
+	sudo usermod -aG docker $USER
+
+# --- IMPORTANT ---
+# You MUST reboot or log out and log back in for the user group change to take effect.
+shut down kali n open again dont do restart close it completly n start again 
+
+
+# Increase the virtual memory map count, a system requirement for SonarQube to start correctly.
+	sudo sysctl -w vm.max_map_count=262144
+
+# Start the SonarQube server (Community Edition) in detached mode (-d).
+# Port 9000 is mapped to the host, and the container is named 'sonarqube-demo'.
+# This command will take 2-5 minutes to complete the initial setup.
+	docker run -d --name sonarqube-demo -p 9000:9000 sonarqube:lts-community
+
+# View the container logs and wait until you see the message "SonarQube is operational".
+# Press Ctrl+C to exit the logs once the operational message appears.
+	docker logs -f sonarqube-demo
+
+# 1. Open a browser and navigate to the SonarQube dashboard.
+	http://localhost:9000
+
+# 2. Log in with the default credentials:
+#    Username: admin
+#    Password: admin (The system will force you to change this; set it to something like 'admin123').
+
+# 3. Create a new project:
+#    - Click **Manually**.
+#    - Set 'Project display name' and 'Project key' to **test-project**.
+#    - Click **Set Up**.
+
+# 4. On the next screen, click **Locally**.
+
+# 5. On the token page:
+#    - Enter a name (e.g., 'test-token') and click **Generate**.
+#    - CAREFULLY COPY the generated token (e.g., sqp_36d20ba0...).
+#    - Click **Continue**, then click **Other** (for JS, TS, Go, etc.), and finally **Linux**.
+#    (Keep the token copied for the next part!)
+
+
+# Download the official SonarScanner CLI (v4.7.0.2747) directly as a ZIP file.
+	curl -L -o sonar-scanner.zip "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip"
+
+# Unzip the downloaded scanner archive.
+	unzip sonar-scanner.zip
+
+# Download a vulnerable Java project example for analysis.
+	curl -L -o project.zip "https://github.com/SonarSource/sonar-scanning-examples/archive/refs/heads/master.zip"
+
+# Unzip the project archive.
+	unzip project.zip
+
+# Rename the project folder to simplify navigation.
+	mv sonar-scanning-examples-master sonar-project
+
+# Change directory into the Java example project where analysis properties are defined.
+	cd sonar-project/sonar-scanner
+
+# (Step 5) Execute the Static Code Analysis (SAST).
+# NOTE: Replace 'sqp_36d20ba01bb8817a92bc3b30632c806d23c0d5c6' with the EXACT token you copied earlier.
+# This command will output 'ANALYSIS SUCCESSFUL'.
+	../../sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner -Dsonar.projectKey=test-project -Dsonar.sources=. -Dsonar.host.url=http://localhost:9000 -Dsonar.login=sqp_36d20ba01bb8817a92bc3b30632c806d23c0d5c6
+
+#Stop SonarQube
+	docker stop sonarqube

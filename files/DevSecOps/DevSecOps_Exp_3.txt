@@ -1,0 +1,150 @@
+﻿Aim: Create Jenkins’s pipeline using a scripted/declarative pipeline. 
+
+
+Lab Outcome: Apply Jenkins to Build, Deploy and Test the Software Applications 
+
+
+Learning Outcome: To learn how to track changes in files using GIT. 
+
+
+Requirement: Windows/Linux/Git account. 
+
+
+Related Theory: 
+
+
+What is Jenkins? 
+Jenkins is an open-source automation server widely used for continuous integration (CI) and continuous delivery (CD). It helps automate building, testing, and deploying software projects, making development faster and more reliable. 
+
+
+What is a Jenkins Pipeline? 
+A Jenkins Pipeline is a suite of plugins that supports implementing and integrating continuous delivery pipelines into Jenkins. A pipeline defines the entire CI/CD process as code, typically written in a file called a Jenkinsfile. 
+
+
+Benefits of Jenkins Pipeline 
+● Automates every step of the software lifecycle.
+● Provides version-controlled build and deployment steps.
+● Supports complex workflows like parallel execution, branching, and conditions.
+● Easily integrates with Git, Maven, Docker, etc. 
+
+
+Types of Jenkins Pipelines 
+Jenkins supports two types of pipeline syntaxes: 
+
+
+1. Declarative Pipeline 
+● Introduced to simplify pipeline creation.
+● Structure-based and easier to understand. 
+● Preferred for most use cases.
+
+
+ Features:
+● Simpler syntax with predefined structure (pipeline, agent, stages, steps)
+● Supports post conditions for handling success/failure. 
+● More readable and beginner-friendly. Example Keywords: groovy pipeline, agent, stages, stage, steps, post 
+
+
+
+
+2. Scripted Pipeline 
+● Uses full Groovy scripting. 
+● Offers maximum flexibility and control. 
+● Suitable for advanced users with complex requirements. 
+
+
+Features: 
+● Code-based (imperative) 
+● Supports custom logic, loops, and conditionals 
+● More powerful but harder to maintain Example Keywords: groovy node, stage, echo, sh, try-catch.
+
+
+
+
+
+
+Procedure :
+
+
+Check if Jenkins is already installed by checking below port on browser:
+Localhost:8080
+(copy-pate in browser)
+
+
+If Jenkins Page pops up start experiment , otherwise follow installation steps
+
+
+Installation
+
+
+
+
+1. Install Jdk from this website : https://download.oracle.com/java/21/archive/jdk-21.0.8_windows-x64_bin.exe
+Open cmd And Run [java --version] to Verify the java is installed
+2. Once file is downloaded, install jdk and copy and save its path, it must look somethink like “C:\Program Files\Java\jdk-21” (JDK Path)
+3. Link: https://www.jenkins.io/download/#downloading-jenkins
+   Go to this website: Download and deploy 
+4. Click on Windows
+5. file is Downloaded, install the file
+6. During installation, for Logon type, select Run Service as local system, select next->next
+7. Paste JDK Path copied earlier. 
+8. Complete the installation.
+9. Open browser and go to localhost:8080
+10. A path is displayed, copy that and paste it in File Explorer
+11. Go to initialAdminPassword file and copy password and paste in jenkins window, click Continue.
+12.  Click “Install suggested plugins” , let all the installations complete
+13. Set a new username and password. Save and finish.
+14. Click on “Start using Jenkins”. Else , go to brower and open localhost:8080
+
+
+
+
+Experiment steps 
+
+
+1. In left side dashboard, select “New item”.
+2. Enter any name and select “Pipeline” from options below, click OK. 
+3. Add any description and scroll down.
+4. In definition, select only “Pipeline script”.
+5. In script part , enter below code : 
+
+
+pipeline {
+    agent any
+
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building...'
+            }
+        }
+
+
+        stage('Test') {
+            steps {
+                echo 'Running tests...'
+            }
+        }
+
+
+        stage('Deploy') {
+            steps {
+                echo 'Deploying...'
+            }
+        }
+    }
+}
+
+
+6. Click save.
+7. On the left side, click on “Build Now” .
+8. Builds are shown at left side bottom. 
+9. Open recent build.
+10. Open console output from left column.
+11.  Checked status at the end , it must show: Finished: SUCCESS. 
+
+
+
+
+3.8 Conclusion: 
+In this experiment, we learned how to create and execute a Jenkins pipeline using both scripted and declarative syntax. We also understood the purpose of Jenkins in automating software development workflows, its integration with Git, and how to set up and run pipeline jobs. This practical exposure helps in implementing continuous integration and continuous delivery (CI/CD) in real-world software projects

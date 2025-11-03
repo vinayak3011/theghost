@@ -1,0 +1,225 @@
+﻿Experiment 2
+
+Aim: Conduct a version control using GITHUB to sync local GIT repositories and perform various related operations.Using GIT cheat sheet 
+
+
+Lab Outcome: 
+By the end of this lab, the student will be able to: 
+● Use GitHub to host and manage repositories. 
+● Connect local repositories to GitHub using HTTPS or SSH. 
+● Perform Git operations to sync local and remote repositories. 
+● Use Git cheat sheet for efficient version control. 
+● Collaborate with others using pull requests and forks. 
+
+
+Learning Objectives: 
+● Understand how GitHub enhances Git functionality with remote hosting. 
+● Learn to sync changes between local and remote repositories. 
+● Explore collaborative development using GitHub features. 
+● Apply cheat sheet commands to perform Git operations efficiently. 
+● Resolve conflicts during merges and pull requests. 
+
+
+Requirement: 
+Hardware/Software Requirements: 
+● Internet-enabled computer 
+● Git installed (https://git-scm.com/downloads) 
+● GitHub account (https://github.com) 
+● Git cheat sheet (Download from: GitHub Git Cheat Sheet PDF) 
+● A text editor (e.g., VS Code, Sublime) 
+
+
+Related Theory: 
+What is GitHub? 
+GitHub is a cloud-based platform that uses Git for version control and enables developers to store, manage, and track their code repositories. 
+
+
+Why use GitHub with Git? 
+● Code backup and remote access 
+● Collaboration and contribution 
+● Issue tracking and project management 
+● Pull Requests for code reviews 
+● Hosting open-source and private projects 
+
+
+Common Git + GitHub Workflow:  
+1. Create a repository on GitHub 
+2. Clone the GitHub repo to local 
+3. Make changes locally 
+4. Add and commit changes 
+5. Push changes to GitHub 
+6. Create and merge branches 
+7. Pull latest changes from GitHub 
+
+
+
+Procedure and Output
+
+
+
+
+Step 1: Install Git
+
+
+Windows
+1. Visit https://git-scm.com/downloads
+
+2. Download Git for Windows.
+
+3. Run the installer:
+
+   Keep default options (select “Use Git Bash” and “Add Git to PATH”).
+
+      4. Open Git Bash (search “Git Bash” in Start menu).
+
+Linux 
+Run below commands: 
+             sudo apt update
+             sudo apt install git -y
+             git --version
+
+
+# # sudo apt update → updates package lists.
+
+# # sudo apt install git -y → installs Git without asking for confirmation.
+
+
+# # git --version→  verify installation; Displays the installed Git version
+
+
+
+
+Step 2: Configure Git
+
+
+         git config --global user.name "Your Name"
+         git config --global user.email "your_email@example.com"
+
+
+# # Stores your username and email globally for all repositories.
+
+# # Used to identify you as the author of commits.
+
+
+         3. git config --list
+
+# # To check configuration
+
+
+Step 3: Create a New Repository on GitHub
+
+
+         On GitHub → click New Repository.
+
+         Name it e.g. devsecops-Exp2.
+
+         Do not initialize with a README (keep it off, we’ll add locally).
+
+         Click Create repository.
+
+         Copy the HTTPS URL,
+
+
+Step 4: Clone the Remote Repository
+Open terminal and paste below commands: 
+
+            cd Desktop
+            mkdir Practical
+            cd Practical 
+
+
+            git clone https://github.com/username/devsecops-exp2.git (paste copied URL)
+# Makes a local copy of the GitHub repository.
+
+
+            cd devsecops-Exp2
+# Moves into particular local folder.
+
+
+
+
+Step 5: Create and Edit a File
+                        echo "# ExDevSecOps Experiment 2" > README1.md
+# Creates a new file named README1.md and writes text inside it.
+
+
+
+
+Step 6: Add and Commit the File
+
+
+            git add README1.md
+# stages the file (prepares it for commit).
+
+
+            git commit -m "Added README1.md"
+            # saves the staged change to the repository with a message.
+
+
+
+
+Step 7: Push the Commit to GitHub
+            git push origin main
+# Uploads your local commits from branch main to remote repository named origin.
+
+
+Step 8: Create and Switch to a New Branch
+
+
+            git checkout -b new
+# Creates a new branch called new and switches to it in one step.
+
+
+Step 9: Create Another File on the New Branch
+
+
+            echo "New branch created" > new.txt
+# Creates a new file
+            git add new.txt
+# Stages the new file
+
+
+            git commit -m "Added new file"
+# Commits file to new branch 
+
+
+Step 10: Push, pull the New Branch to GitHub
+
+
+            git push origin new
+# Sends the new branch and its commits to GitHub so others can see or merge them.
+
+
+
+
+Step 11: Sync / Pull Updates 
+
+
+            git pull origin main
+# Downloads and merges the latest changes from the remote main branch into your local one.
+
+
+
+
+Step 12: View Commit Log
+
+
+            git log --oneline 
+# Shows all commits for a quick history.
+
+
+
+
+Step 13: Check Repository Status
+
+
+            git status
+# Displays current working directory status 
+
+
+
+
+
+
+Conclusion: 
+In this experiment, learned how to sync local Git repositories with GitHub effectively. The steps involved cloning a remote repository, committing and pushing changes, pulling updates, and managing branches using Git commands. The use of the Git cheat sheet enhanced efficiency during operations. GitHub was observed as a powerful collaborative platform that supports remote version control, making it essential for modern software development and team-based workflows.

@@ -1,0 +1,77 @@
+﻿Aim:  To Setup and Run Selenium Tests in Jenkins Using Maven. 
+
+
+Lab Outcome: Apply Jenkins to Build, Deploy and Test the Software Applications  
+
+
+Learning Outcome: To learn how to set up and integrate Selenium tests with Jenkins using Maven for automated test execution in a CI/CD pipeline.  
+
+
+Requirement: Windows/Linux/,Git account,Jenkins.  
+
+
+Related Theory: 
+
+
+Selenium is a widely used tool for automating web applications, and Jenkins is a powerful automation server. Integrating Selenium tests with Jenkins using Maven streamlines the testing process. 
+Selenium: It's an open-source framework for automating web browsers, allowing testers to perform functional and regression testing on web applications. 
+Jenkins: An automation server that facilitates continuous integration and continuous delivery. It's used to automate building, testing, and deployment of software projects. 
+Maven: A build automation and project management tool. It simplifies project setup, handling dependencies, and building Java projects. 
+
+
+
+
+Procedure :
+
+
+Check if Jenkins is already installed by checking below port on browser:
+localhost:8080
+(copy-pate in browser)
+
+
+If Jenkins Page pops up start experiment , otherwise follow installation steps
+
+
+Installation
+
+
+
+
+1. Install Jdk from this website : https://download.oracle.com/java/25/latest/jdk-25_windows-x64_bin.msi
+2. Once file is downloaded, install jdk and copy and save its path, it must look somethink like “C:\Program Files\Java\jdk-21” (JDK Path)
+3. Go to this website: Download and deploy
+4. Click on Windows
+5. file is Downloaded, install the file
+6. During installation, for Logon type, select Run Service as local system, select next->next
+7. Paste JDK Path copied earlier. 
+8. Complete the installation.
+9. Open browser and go to localhost:8080
+10. A path is displayed, copy that and paste it in File Explorer
+11. Go to initialAdminPassword file and copy password and paste in jenkins window, click Continue.
+12.  Click “Install suggested plugins” , let all the installations complete
+13. Set a new username and password. Save and finish.
+14. Click on “Start using Jenkins”. Else , go to browser and open localhost:8080
+
+
+
+
+Experiment steps 
+1. Open jenkins. On top right corner, open settings;
+2. Open Tools > Add installations.
+3. Select Maven and add name: maven > Save
+4. Go to Homepage. On top left corner, click “New Item”.
+5. Select “Freestyle project” and add name & click OK.
+6. Go to source code management tab on left, select”Git” instead of None.
+7. Paste Git repo URL: 
+8. Scroll down and replace */master with */main.
+9. Scroll, under Build Steps, click on “Add build step”.
+10. Select top-level Maven targets and under Goals type : clean test
+11. Click on Save.
+12. Click Build Now.
+13. Done
+
+
+
+
+Conclusion
+In this experiment, we learned how to integrate Jenkins with a Maven-based Selenium project for continuous integration. We configured the required tools, including Git and Maven, set up the project repository, and linked it to Jenkins. We also explored how to resolve common build issues, such as configuring the correct Maven version, updating branch specifiers, and matching ChromeDriver with the installed browser version. Finally, we successfully executed automated tests through Jenkins, demonstrating the end-to-end build and test automation workflow.

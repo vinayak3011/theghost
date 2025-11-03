@@ -30,15 +30,14 @@ const experimentData = {
 ],
 
 'DevSecOps': [
-    { title: 'EXP 1 Download, install nmap and use it with different options to scan open ports, perform OS fingerprinting, ping scan, tcp port scan, udp port scan, etc.', file: 'files/cns/Exp_1.txt' },
-    { title: 'EXP 2 Study the use of network reconnaissance tools like WHOIS, dig, traceroute, nslookup to gather information about networks and domain registrars.', file: 'files/cns/Exp_2.txt' },
-    { title: 'EXP 3 Study of packet sniffer tools Wireshark: a. Observe performance in promiscuous as well as non-promiscuous mode. b. Show packets can be traced using different filters.', file: 'files/cns/Exp_3.txt' },
-    { title: 'EXP 4 Breaking the Mono-alphabetic Substitution Cipher using Frequency Analysis Method.', file: 'files/cns/Exp_4.txt' },
-    { title: 'EXP 5 Design and implement a product cipher using Substitution ciphers.', file: 'files/cns/Exp_5.txt' },
-    { title: 'EXP 6 Encrypt long messages using various modes of operation using AES or DES.', file: 'files/cns/Exp_6.txt' },
-    { title: 'EXP 7 Study of malicious software using different tools: a. Keylogger attack using keylogger tool. b. Simulate DoS attack using Hping or other tools. c. Use NESSUS/ISO Kali Linux to scan network for vulnerabilities.', file: 'files/cns/Exp_7.txt' },
-    { title: 'EXP 8 Study of Network Security: a. Set up IPSec under Linux. b. Set up Snort and study the logs. c. Explore GPG tool to implement email security.', file: 'files/cns/Exp_8.txt' },
-    { title: 'EXP 9 Content Beyond the Syllabus: a. Burp Suite Tool. b. Steghide Tool.', file: 'files/cns/Exp_9.txt' }
+    { title: 'EXP 1 Perform Version control for different files directories using GIT.', file: 'files\\DevSecOps\\DevSecOps_Exp_1.txt' },
+    { title: 'EXP 2 Conduct a version control using GITHUB to sync local GIT repositories and perform various related operations using GIT Cheat-sheet.', file: 'files\\DevSecOps\\DevSecOps_Exp_2.txt' },
+    { title: 'EXP 3 Create Jenkins pipeline using a scripted/declarative pipeline.', file: 'files\\DevSecOps\\DevSecOps_Exp_3.txt' },
+    { title: 'EXP 4 Setup and Run Selenium Tests in Jenkins Using Maven.', file: 'files\\DevSecOps\\DevSecOps_Exp_4.txt' },
+    { title: 'EXP 5 Understand Docker Architecture and Container Life Cycle: install Docker, execute docker commands to manage images, interact with containers, create a custom Docker image using Dockerfile, and upload it to Docker Hub.', file: 'files\\DevSecOps\\DevSecOps_Exp_5.txt' },
+    { title: 'EXP 6 Use Docker to run containers of different applications and Operating Systems.', file: 'files\\DevSecOps\\DevSecOps_Exp_6.txt' },
+    { title: 'EXP 7 Create Application and Code Security Testing using Snyk.', file: 'files\\DevSecOps\\DevSecOps_Exp_7.txt' },
+    { title: 'EXP 8 Implement Static Application Security Testing using SonarQube.', file: 'files\\DevSecOps\\DevSecOps_Exp_8.txt' }
 ],
 'AIML': [
     { title: 'EXP 1 Download, install nmap and use it with different options to scan open ports, perform OS fingerprinting, ping scan, tcp port scan, udp port scan, etc.', file: 'files/cns/Exp_1.txt' },

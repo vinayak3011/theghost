@@ -1,0 +1,275 @@
+DecSecOps EXP 5
+AIM: Understand Docker Architecture and Container Life Cycle: install Docker, execute docker commands to manage images, interact with containers, create a custom Docker image using Dockerfile, and upload it to Docker Hub.
+
+
+Step for kali
+
+
+# Open your Kali Linux terminal.
+
+# Update system package lists and upgrade existing packages.
+	sudo apt update && sudo apt upgrade -y
+
+#  Install prerequisite packages for adding new HTTPS repositories.
+	sudo apt install apt-transport-https ca-certificates curl software-properties-common gnupg2 -y
+
+#   Create the directory for GPG keys.
+	sudo install -m 0755 -d /etc/apt/keyrings
+
+#  Download Docker's official GPG key and save it.
+	sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.gpg
+
+#   Make the key readable by apt.
+	sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+#   Add the Docker repository, pointing to Debian "bookworm"
+# (which Kali is based on) and using the new key.
+	echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian bookworm stable" | sudo tee 	/etc/apt/sources.list.d/docker.list > /dev/null
+
+# Update package lists again to include the new Docker repo.
+	sudo apt update
+
+#  Remove conflicting packages from the default Kali repository.
+	sudo apt remove docker-buildx docker-compose -y
+
+# Install the official Docker packages.
+	sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+
+# Start the Docker service.
+	sudo systemctl start docker
+
+# Enable Docker to start automatically on boot.
+	sudo systemctl enable docker
+
+#  Check the installed Docker version.
+	docker --version
+
+#  Run the "hello-world" container to verify the installation works.
+	sudo docker run hello-world
+
+# List all Docker images downloaded to your machine.
+	docker images
+
+# List all containers (including stopped ones, like "hello-world").
+	docker ps -a
+
+# Download the official Ubuntu image from Docker Hub.
+	docker pull ubuntu
+
+# Run the Ubuntu container interactively ('-it') and start a 'bash' shell.
+	docker run -it ubuntu bash
+
+run this if error occurred in above command
+	echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf
+
+# You are now INSIDE the container.
+# To leave the container and return to your Kali terminal, just type:
+	exit
+
+# Create a new directory for your project on your Kali machine.
+	mkdir my-docker-project
+
+# Move into your new project directory.
+	cd my-docker-project
+
+# Use nano text editor to create your Dockerfile.
+	nano Dockerfile
+
+
+Paste entire thing in the file:
+
+		# Use the official Ubuntu image as the base 
+		FROM ubuntu:latest
+
+		# Run commands to update and install the "cowsay" program 
+		RUN apt-get update && apt-get install -y cowsay
+
+		# Set the default command to run when the container starts 
+		# (We use the full path '/usr/games/cowsay' to fix the $PATH error)
+		CMD ["/usr/games/cowsay", "Hello from my custom image!"]
+
+To save and exit nano:
+
+Press CTRL + O
+
+Press Enter (to confirm the filename "Dockerfile")
+
+Press CTRL + X (to exit)
+
+
+# Build your custom image from the Dockerfile in the current directory ('.')
+# *** REPLACE 'prathxxm' with your Docker Hub username ***
+	
+	docker build -t prathxxm/my-first-image .
+
+# Run your new image to test it.
+# You should see the cow message you defined in the CMD.
+	docker run prathxxm/my-first-image
+
+# Log in to your Docker Hub account.
+# It will ask for your username and password.
+	
+	docker login
+
+
+# Push (upload) your custom image to your Docker Hub repository [cite: 12]
+# *** REPLACE 'YOUR_USERNAME' with your Docker Hub username ***
+	
+	docker push prathxxm/my-first-image
+
+
+Steps for Windows
+
+
+# Step 1: Check System Requirements 
+# Make sure you have Windows 10 or 11 (64-bit), Pro/Enterprise edition,
+# or Windows Home with WSL 2 installed and enabled].
+# Make sure Virtualization is enabled in your computer's BIOS
+
+
+#  Download Docker Desktop 
+# 1. Open your web browser and go to the official Docker Desktop site(https://docs.docker.com/desktop/setup/install/windows-install/).
+# 2. Download the installer for Windows
+
+
+# Step 3: Install Docker 
+# 1. Run the ".exe" file you downloaded
+# 2. Follow the installation prompts. Make sure "Use WSL 2" is checked if you
+#    are on Windows Home
+# 3. Restart your computer when prompted.
+
+
+# Step 4: Start Docker Desktop 
+# 1. Open "Docker Desktop" from your Start Menu.
+# 2. Wait for the icon in your system tray to say "Docker is running".
+
+
+# Step 5: Check the installed Docker version.
+	docker --version
+
+
+# Step 5: Run the "hello-world" container to verify the installation works[cite: 146].
+# This will also show the "Hello from Docker!" message [cite: 253-254].
+	docker run hello-world
+
+
+
+If error occurred :
+
+Press the Windows Key + R to open the "Run" dialog.
+
+Type ncpa.cpl and press Enter. This will open your "Network Connections" control panel.
+	ncpa.cpl
+
+Find your active internet connection (it will be named "Wi-Fi" or "Ethernet").
+
+Right-click on it and select Properties.
+
+In the list, find and select "Internet Protocol Version 4 (TCP/IPv4)" and click the Properties button.
+
+Click the bubble for "Use the following DNS server addresses:".
+
+Enter the following:
+
+Preferred DNS server: 8.8.8.8
+
+Alternate DNS server: 8.8.4.4
+
+Click OK to save, then Close on the next window.
+
+
+
+# List all Docker images downloaded to your machine.
+	docker images
+
+
+# List all containers (including stopped ones, like "hello-world").
+	docker ps -a
+
+
+# Download the official Ubuntu image from Docker Hub.
+	docker pull ubuntu
+
+
+# Run the Ubuntu container interactively ('-it') and start a 'bash' shell.
+	docker run -it ubuntu bash
+
+
+# You are now INSIDE the Ubuntu container.
+# To leave the container and return to your Windows prompt, just type:
+	exit
+
+
+# Create a new directory for your project.
+	mkdir my-docker-project
+
+# Move into your new project directory.
+	cd my-docker-project
+
+# Use Notepad or another editor (like VS Code) to create a file
+# named "Dockerfile" (with no .txt extension) in this directory.
+#
+# Open Notepad and paste the 4 lines below into it.
+# When saving, select "Save as type: All Files"
+# and name the file "Dockerfile".
+
+
+
+Paste this text into your Dockerfile
+
+	# Use the official Ubuntu image as the base
+	FROM ubuntu:latest
+
+	# Run commands to update and install the "cowsay" program
+	RUN apt-get update && apt-get install -y cowsay
+
+	# Set the default command to run when the container starts
+	# (We use the full path '/usr/games/cowsay' to fix the $PATH error)
+	CMD ["/usr/games/cowsay", "Hello from my custom image!"]
+
+
+
+
+# Build your custom image from the Dockerfile in the current directory ('.')
+# *** REPLACE 'pratham150404' with your Docker Hub username ***
+	docker build -t pratham150404/my-first-image .
+
+
+# Run your new image to test it.
+# You should see the cow message you defined in the CMD.
+	docker run pratham150404/my-first-image
+
+
+# Log in to your Docker Hub account.
+# It will ask for your username and password or open a browser.
+	docker login
+
+
+# Push (upload) your custom image to your Docker Hub repository.
+# (This assumes you are logged in as 'pratham150404' and your
+# image is tagged with 'pratham150404'.)
+	docker push pratham150404/my-first-image
+
+
+if error occurred
+	docker tag pratham150404/my-first-image
+
+use own user namessss
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

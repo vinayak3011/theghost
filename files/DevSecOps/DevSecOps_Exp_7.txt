@@ -1,0 +1,165 @@
+DevSecOps Exp 7
+
+Aim: create Application and code security testing using snyk.
+
+
+
+Steps to perform
+open kali
+# Open your Kali Linux VM/installation (start the machine or open the OS).
+
+open terminal
+# Open a terminal window to run all following commands.
+
+	sudo apt update && sudo apt upgrade
+# Update APT package lists and upgrade installed packages to latest available versions.
+
+	sudo apt install -y curl git ca-certificates build-essential
+# Install essential utilities: curl (download), git (VCS), ca-certificates (TLS trust), and build tools.
+
+	sudo apt install -y nodejs npm
+# Install Node.js runtime and npm package manager (needed for Snyk CLI and Node projects).
+
+	node -v
+# Print the installed Node.js version to verify installation.
+
+	npm -v
+# Print the installed npm version to verify installation.
+
+	sudo apt install -y python3 python3-venv python3-pip
+# Install Python 3, virtual environment support, and pip (Python package manager).
+
+	python3 -m venv ~/snyk-venv
+# Create an isolated Python virtual environment at ~/snyk-venv for Python tooling.
+
+	source ~/snyk-venv/bin/activate
+# Activate the Python virtual environment so pip installs go inside it.
+
+	pip install --upgrade pip setuptools
+# Upgrade pip and setuptools inside the venv to latest versions for reliability.
+
+	sudo apt install -y docker.io
+# Install Docker engine (required if you plan to scan container images).
+
+	sudo systemctl enable --now docker
+# Enable Docker to start on boot and start the Docker service now.
+
+	sudo usermod -aG docker $USER
+# Add your user to the 'docker' group so you can run docker without sudo (log out/in required).
+
+	sudo npm install -g snyk
+# Install Snyk CLI globally using npm (quick and common install method).
+
+	snyk --version
+# Verify Snyk CLI installed correctly by printing its version.
+
+	curl -L https://downloads.snyk.io/cli/latest/snyk-linux -o snyk
+# Download the Snyk standalone Linux binary (alternative to npm install).
+
+	chmod +x snyk
+# Make the downloaded Snyk binary executable.
+
+	sudo mv snyk /usr/local/bin/snyk
+# Move the Snyk binary into a system PATH location so you can run 'snyk' from anywhere.
+
+	snyk --version
+# Verify the Snyk binary is installed and print the version.
+
+	snyk auth
+# Authenticate the Snyk CLI to your Snyk account (opens a browser for OAuth login).
+
+	mkdir snyk-lab-node && cd snyk-lab-node
+# Create a test Node project directory and change into it.
+
+	npm init -y
+# Generate a default package.json for the Node project (auto answers).
+
+	npm install express lodash
+# Install example dependencies (express web framework and lodash utility library).
+
+	npm install debug@2.6.9
+# Intentionally install an older version of 'debug' (example vulnerable dep) for demo scans.
+
+	snyk test
+# Run a local Snyk vulnerability scan for the project and show found issues in the terminal.
+
+	snyk monitor
+# Send a snapshot of the project to Snyk's cloud to track the project over time and view results in the web UI.
+
+
+
+
+*****************Q N A************************
+
+
+1️⃣ Q: What is the objective of this experiment?
+
+A: The objective is to perform application and code security testing using Snyk, a tool that identifies and helps fix vulnerabilities in application dependencies, code, containers, and configurations.
+
+2️⃣ Q: What is DevSecOps?
+
+A: DevSecOps is the integration of security practices into DevOps processes, ensuring that security is implemented from the early stages of software development through automation and continuous monitoring.
+
+3️⃣ Q: What is Snyk and how does it work?
+
+A: Snyk is a developer-first security tool that scans for known vulnerabilities in open-source dependencies, container images, and IaC files. It uses a vulnerability database to detect issues and suggests remediations or upgrades.
+
+4️⃣ Q: Why is dependency scanning important?
+
+A: Because most modern applications use third-party packages that might contain known vulnerabilities, dependency scanning ensures all imported libraries are secure and up to date.
+
+5️⃣ Q: Why do we run sudo apt update && sudo apt upgrade before starting?
+
+A: It ensures all system packages are up to date, preventing compatibility or security issues during the installation of new tools.
+
+6️⃣ Q: What is the purpose of installing Node.js and npm in this experiment?
+
+A: Node.js provides the runtime environment, and npm is used to install Snyk CLI and manage dependencies for the demo Node.js project.
+
+7️⃣ Q: What is the function of snyk auth?
+
+A: This command authenticates the Snyk CLI with the user’s Snyk account through browser login (GitHub, Google, or email), allowing scans to be performed.
+
+8️⃣ Q: What is the difference between snyk test and snyk monitor?
+
+A:
+
+snyk test → Performs a local scan and shows vulnerabilities immediately.
+
+snyk monitor → Uploads a snapshot of the project to Snyk for continuous monitoring and notifications.
+
+9️⃣ Q: Why did we install debug@2.6.9 in our project?
+
+A: That version of debug contains known vulnerabilities; it’s used deliberately so Snyk can detect and report it during the scan.
+
+🔟 Q: What kind of vulnerabilities can Snyk detect?
+
+A: Snyk detects vulnerabilities like Cross-Site Scripting (XSS), Command Injection, Prototype Pollution, Denial of Service, and insecure dependencies in open-source libraries.
+
+11️⃣ Q: What is the purpose of creating a virtual environment using python3 -m venv?
+
+A: It isolates Python dependencies so that package versions and Snyk testing do not interfere with system-wide installations.
+
+12️⃣ Q: Can Snyk only test Node.js applications?
+
+A: No. Snyk supports multiple languages and environments including Python, Java, Go, .NET, Docker, and Infrastructure-as-Code (Terraform, Kubernetes, etc.).
+
+13️⃣ Q: What is the .snyk policy file used for?
+
+A: It stores ignored vulnerabilities, project-specific settings, and policies that control which issues should be excluded from scans.
+
+14️⃣ Q: What are the advantages of using Snyk in DevSecOps pipelines?
+
+A:
+
+	Early vulnerability detection
+
+	Continuous monitoring of dependencies
+
+	Automatic remediation suggestions
+
+	Integration with CI/CD tools (like GitHub Actions, Jenkins)
+
+15️⃣ Q: What is the overall conclusion of this experiment?
+
+A: The experiment demonstrates how Snyk integrates security testing into the development lifecycle, automatically detecting vulnerabilities in code and dependencies — promoting secure coding practices within DevSecOps pipelines.
