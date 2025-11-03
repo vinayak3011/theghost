@@ -37,9 +37,11 @@ Installation
 
 
 
-1. Install Jdk from this website : https://download.oracle.com/java/25/latest/jdk-25_windows-x64_bin.msi
+1. Install Jdk from this website : https://download.oracle.com/java/21/archive/jdk-21.0.8_windows-x64_bin.exe
+Open cmd And Run [java --version] to Verify the java is installed
 2. Once file is downloaded, install jdk and copy and save its path, it must look somethink like “C:\Program Files\Java\jdk-21” (JDK Path)
-3. Go to this website: Download and deploy
+3. Link: https://www.jenkins.io/download/#downloading-jenkins
+   Go to this website: Download and deploy
 4. Click on Windows
 5. file is Downloaded, install the file
 6. During installation, for Logon type, select Run Service as local system, select next->next
@@ -62,7 +64,7 @@ Experiment steps
 4. Go to Homepage. On top left corner, click “New Item”.
 5. Select “Freestyle project” and add name & click OK.
 6. Go to source code management tab on left, select”Git” instead of None.
-7. Paste Git repo URL: 
+7. Paste Git repo URL: https://github.com/NehaPawar2114/selenium-jenkins-demo
 8. Scroll down and replace */master with */main.
 9. Scroll, under Build Steps, click on “Add build step”.
 10. Select top-level Maven targets and under Goals type : clean test
