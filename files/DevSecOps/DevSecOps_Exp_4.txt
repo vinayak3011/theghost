@@ -64,13 +64,14 @@ Experiment steps
 4. Go to Homepage. On top left corner, click “New Item”.
 5. Select “Freestyle project” and add name & click OK.
 6. Go to source code management tab on left, select”Git” instead of None.
-7. Paste Git repo URL: https://github.com/NehaPawar2114/selenium-jenkins-demo
+7. Paste Git repo URL: https://github.com/admino01/selenium-jenkins-demo.git
 8. Scroll down and replace */master with */main.
 9. Scroll, under Build Steps, click on “Add build step”.
 10. Select top-level Maven targets and under Goals type : clean test
-11. Click on Save.
-12. Click Build Now.
-13. Done
+11 in maven version instead of Default Select maven
+12. Click on Save.
+13. Click Build Now.
+14. Done
 
 
 
