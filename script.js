@@ -40,15 +40,14 @@ const experimentData = {
     { title: 'EXP 8 Implement Static Application Security Testing using SonarQube.', file: 'files\\DevSecOps\\DevSecOps_Exp_8.txt' }
 ],
 'AIML': [
-    { title: 'EXP 1 Download, install nmap and use it with different options to scan open ports, perform OS fingerprinting, ping scan, tcp port scan, udp port scan, etc.', file: 'files/cns/Exp_1.txt' },
-    { title: 'EXP 2 Study the use of network reconnaissance tools like WHOIS, dig, traceroute, nslookup to gather information about networks and domain registrars.', file: 'files/cns/Exp_2.txt' },
-    { title: 'EXP 3 Study of packet sniffer tools Wireshark: a. Observe performance in promiscuous as well as non-promiscuous mode. b. Show packets can be traced using different filters.', file: 'files/cns/Exp_3.txt' },
-    { title: 'EXP 4 Breaking the Mono-alphabetic Substitution Cipher using Frequency Analysis Method.', file: 'files/cns/Exp_4.txt' },
-    { title: 'EXP 5 Design and implement a product cipher using Substitution ciphers.', file: 'files/cns/Exp_5.txt' },
-    { title: 'EXP 6 Encrypt long messages using various modes of operation using AES or DES.', file: 'files/cns/Exp_6.txt' },
-    { title: 'EXP 7 Study of malicious software using different tools: a. Keylogger attack using keylogger tool. b. Simulate DoS attack using Hping or other tools. c. Use NESSUS/ISO Kali Linux to scan network for vulnerabilities.', file: 'files/cns/Exp_7.txt' },
-    { title: 'EXP 8 Study of Network Security: a. Set up IPSec under Linux. b. Set up Snort and study the logs. c. Explore GPG tool to implement email security.', file: 'files/cns/Exp_8.txt' },
-    { title: 'EXP 9 Content Beyond the Syllabus: a. Burp Suite Tool. b. Steghide Tool.', file: 'files/cns/Exp_9.txt' }
+    { title: 'AIML EXP 1 Collect, Clean, Integrate and Transform Healthcare Data based on specific disease.', file: 'files/AIML/AIML_Exp1.txt' },
+    { title: 'AIML EXP 2 Perform Exploratory Data Analysis of Healthcare Data.', file: 'files/AIML/AIML_Exp2.txt' },
+    { title: 'AIML EXP 3 AI for Medical Diagnosis based on MRI/X-ray Data.', file: 'files/AIML/AIML_Exp3.txt' },
+    { title: 'AIML EXP 4 AI for Medical Prognosis.', file: 'files/AIML/AIML_Exp4.txt' },
+    { title: 'AIML EXP 5 Natural Language Entity Extraction from Medical Reports.', file: 'files/AIML/AIML_Exp5.txt' },
+    { title: 'AIML EXP 6 Predict Disease Risk from Patient Data.', file: 'files/AIML/AIML_Exp6.txt' },
+    { title: 'AIML EXP 7 Medical Reviews Analysis from Social Media Data.', file: 'files/AIML/AIML_Exp7.txt' },
+    { title: 'AIML EXP 8 Explainable AI in Healthcare for Model Interpretation.', file: 'files/AIML/AIML_Exp8.txt' }
 ],
 'AWX': [
     { title: 'EXP 1 Download, install nmap and use it with different options to scan open ports, perform OS fingerprinting, ping scan, tcp port scan, udp port scan, etc.', file: 'files/cns/Exp_1.txt' },
@@ -60,11 +59,11 @@ const experimentData = {
     { title: 'EXP 7 Study of malicious software using different tools: a. Keylogger attack using keylogger tool. b. Simulate DoS attack using Hping or other tools. c. Use NESSUS/ISO Kali Linux to scan network for vulnerabilities.', file: 'files/cns/Exp_7.txt' },
     { title: 'EXP 8 Study of Network Security: a. Set up IPSec under Linux. b. Set up Snort and study the logs. c. Explore GPG tool to implement email security.', file: 'files/cns/Exp_8.txt' },
     { title: 'EXP 9 Content Beyond the Syllabus: a. Burp Suite Tool. b. Steghide Tool.', file: 'files/cns/Exp_9.txt' }
-],
+]
 };
 
 document.getElementById('downloadAllButton').addEventListener('click', function () {
-    window.location.href = 'files/cns/files.zip';
+    window.location.href = 'files\AIML.zip';
 });
 
 
@@ -132,7 +131,7 @@ document.getElementById('experiment').addEventListener('change', function () {
 
               // Show or hide the "Download All" button based on EXP 4 selection
             const downloadAllButton = document.getElementById('downloadAllButton');
-            if (subject === 'CNS' && filePath === 'files/cns/Exp_4.txt') {
+            if (subject === 'AIML' || filePath === 'files/AIML/AIML_Exp4.txt') {
                 downloadAllButton.style.display = 'inline-block';
             } else {
                 downloadAllButton.style.display = 'none';
