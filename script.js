@@ -12,7 +12,6 @@ const experimentData = {
 // ],
 'OSINT': [
     { title: 'EXP 1: Perform Email Header Analysis for extracting valuable information like sender IP address, email servers, and routing information', file: 'files\\OSINT\\EXP_1_OSINT.txt' },
-
     { title: "EXP 1 scenario Based: The cybersecurity team received a suspicious email claiming to\nbe from the university’s IT department. You are tasked to analyze\nits email header to:\n● Identify the actual sender’s IP address,\n● Verify if the email passed SPF/DKIM checks, and\n● Determine if the email was spoofed.", file: "files\\OSINT\\new osint exp\\exp 1.txt" },
     { title: 'EXP 2: Conduct email address enumeration by attempting to verify the existence of email addresses within a target domain using tools like TheHarvester or thehunter.io to find email addresses associated with a specific domain', file: 'files\\OSINT\\EXP_2_OSINT.txt' },
     { title: "EXP 2 scenario Based: A company reports delayed email deliveries. You are asked to\nextract the routing path from the email header and identify which\nmail server caused the delay based on timestamp analysis.", file: "files\\OSINT\\new osint exp\\exp 2.txt" },
@@ -44,7 +43,7 @@ const experimentData = {
     { title: 'AIML EXP 2 Perform Exploratory Data Analysis of Healthcare Data.', file: 'files/AIML/AIML_Exp2.txt' },
     { title: 'AIML EXP 3 AI for Medical Diagnosis based on MRI/X-ray Data.', file: 'files/AIML/AIML_Exp3.txt' },
     { title: 'AIML EXP 4 AI for Medical Prognosis.', file: 'files/AIML/AIML_Exp4.txt' },
-    { title: 'AIML EXP 5 Natural Language Entity Extraction from Medical Reports.', file: 'files\AIML\AIML_Exp_5.txt' },
+    { title: 'AIML EXP 5 Natural Language Entity Extraction from Medical Reports.', file: 'files/AIML/AIML_Exp_5.txt' },
     { title: 'AIML EXP 6 Predict Disease Risk from Patient Data.', file: 'files/AIML/AIML_Exp6.txt' },
     { title: 'AIML EXP 7 Medical Reviews Analysis from Social Media Data.', file: 'files/AIML/AIML_Exp7.txt' },
     { title: 'AIML EXP 8 Explainable AI in Healthcare for Model Interpretation.', file: 'files/AIML/AIML_Exp8.txt' }
