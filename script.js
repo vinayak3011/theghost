@@ -62,7 +62,7 @@ const experimentData = {
 };
 
 document.getElementById('downloadAllButton').addEventListener('click', function () {
-    window.location.href = '//files//AIML//AIML.zip';
+    window.location.href = 'https://github.com/vinayak3011/theghost/blob/e5f5d7b2bef799756dc27e158b4bb1fa45b2759f/files/AIML.zip';
 });
 
 
