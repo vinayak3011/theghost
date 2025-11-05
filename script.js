@@ -44,7 +44,7 @@ const experimentData = {
     { title: 'AIML EXP 2 Perform Exploratory Data Analysis of Healthcare Data.', file: 'files/AIML/AIML_Exp2.txt' },
     { title: 'AIML EXP 3 AI for Medical Diagnosis based on MRI/X-ray Data.', file: 'files/AIML/AIML_Exp3.txt' },
     { title: 'AIML EXP 4 AI for Medical Prognosis.', file: 'files/AIML/AIML_Exp4.txt' },
-    { title: 'AIML EXP 5 Natural Language Entity Extraction from Medical Reports.', file: 'files/AIML/AIML_Exp5.txt' },
+    { title: 'AIML EXP 5 Natural Language Entity Extraction from Medical Reports.', file: 'files\AIML\AIML_Exp_5.txt' },
     { title: 'AIML EXP 6 Predict Disease Risk from Patient Data.', file: 'files/AIML/AIML_Exp6.txt' },
     { title: 'AIML EXP 7 Medical Reviews Analysis from Social Media Data.', file: 'files/AIML/AIML_Exp7.txt' },
     { title: 'AIML EXP 8 Explainable AI in Healthcare for Model Interpretation.', file: 'files/AIML/AIML_Exp8.txt' }
@@ -63,7 +63,7 @@ const experimentData = {
 };
 
 document.getElementById('downloadAllButton').addEventListener('click', function () {
-    window.location.href = 'files\AIML.zip';
+    window.location.href = '//files//AIML//AIML.zip';
 });
 
 

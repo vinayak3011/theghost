@@ -1,6 +1,7 @@
 ------------------------------------------------------------
 Experiment No. 2: Exploratory Data Analysis (EDA)
 ------------------------------------------------------------
+Files: https://drive.google.com/file/d/1Yen-fdwDDZfWa5rBThP53ETuD6v2E8Wo/view?usp=sharing
 
 Aim:
 Perform Exploratory Data Analysis (EDA) on a 3D MRI brain scan dataset.

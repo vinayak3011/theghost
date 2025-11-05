@@ -1,6 +1,8 @@
 ------------------------------------------------------------
 Experiment No. 3: AI for Medical Diagnosis based on MRI/X-ray Data
 ------------------------------------------------------------
+Files: https://drive.google.com/file/d/1Yen-fdwDDZfWa5rBThP53ETuD6v2E8Wo/view?usp=sharing
+
 Aim: Colab File Link:
 https://colab.research.google.com/drive/1iYAPY-Eqm6Q1v6VuqD618FvGTll8A6WG?usp=sharing
 

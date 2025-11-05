@@ -2,6 +2,8 @@
 1. AIM
 ------------------------------------------------------------
 Experiment 6: Predict Disease Risk from Patient Data
+Files: https://drive.google.com/file/d/1Yen-fdwDDZfWa5rBThP53ETuD6v2E8Wo/view?usp=sharing
+
 
 Colab File Link: https://drive.google.com/file/d/1Ief5WGFqKxFLeO7kenSN2JCfIy6kCep8/view?usp=drive_link
 

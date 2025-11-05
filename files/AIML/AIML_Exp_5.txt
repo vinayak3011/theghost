@@ -1,0 +1,216 @@
+------------------------------------------------------------
+
+Experiment No. 5: Natural Language Entity Extraction from Medical Reports
+
+------------------------------------------------------------
+Files: https://drive.google.com/file/d/1Yen-fdwDDZfWa5rBThP53ETuD6v2E8Wo/view?usp=sharing
+
+Aim:
+To extract meaningful medical entities such as diseases, drugs, and dosages from medical transcriptions using Natural Language Processing (NLP) and SciSpaCy.
+
+Colab File: https://drive.google.com/file/d/1mFLfDFN8KW7GQiesV-JnWMStrjpRQKnY/view
+
+https://colab.research.google.com/drive/10zmyeOfFol8ONPZHaqYg2AipGpijPN-V#scrollTo=B3PoRYToym_2
+
+Course Outcome:
+HNAMLR1701.5
+
+Learning Outcomes:
+
+Understand and apply Named Entity Recognition (NER) in biomedical text.
+
+Utilize SciSpaCy models for extracting clinical and chemical entities.
+
+Perform data preprocessing, entity visualization, and pattern-based entity extraction using Matcher.
+
+Store extracted entities into structured data formats for further medical text analytics.
+
+------------------------------------------------------------
+Algorithm:
+------------------------------------------------------------
+
+Import required Python libraries such as spacy, scispacy, and pandas.
+
+Install and load specialized biomedical NLP models (en_core_sci_sm, en_core_sci_md, en_ner_bc5cdr_md).
+
+Load the mtsamples.csv dataset from Kaggle containing real medical transcription data.
+
+Select a transcription sample and process it through NLP pipelines for entity detection.
+
+Use the displacy visualizer to highlight named entities in the medical text.
+
+Perform Named Entity Recognition (NER) to extract disease and chemical (drug) entities.
+
+Use the Matcher class to identify specific patterns such as Drug + Dosage combinations.
+
+Process all medical transcriptions using a pipeline and store results in a structured CSV file.
+
+Display and analyze the extracted entities and patterns.
+
+------------------------------------------------------------
+Code Implementation (with Comments)
+------------------------------------------------------------
+# -*- coding: utf-8 -*-
+"""
+Name: Vinayak Vilaspure
+Roll No: 108
+PRN: 22UF17258CS060
+Branch: Cyber Security
+Experiment Title: Experiment 5 – Natural Language Entity Extraction from Medical Reports
+"""
+
+# ----------------------------------------------------------
+# Step 1: Install and Import Required Libraries
+# ----------------------------------------------------------
+!pip install spacy==3.4.4 scispacy==0.5.1 --quiet
+!pip install --no-deps https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.5.1/en_core_sci_sm-0.5.1.tar.gz --quiet
+!pip install --no-deps https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.5.1/en_core_sci_md-0.5.1.tar.gz --quiet
+!pip install --no-deps https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.5.1/en_ner_bc5cdr_md-0.5.1.tar.gz --quiet
+
+import scispacy
+import spacy
+import en_core_sci_sm
+import en_core_sci_md
+import en_ner_bc5cdr_md
+from spacy import displacy
+import pandas as pd
+from spacy.matcher import Matcher
+import os
+from google.colab import files
+
+# ----------------------------------------------------------
+# Step 2: Upload and Load Dataset
+# ----------------------------------------------------------
+# Upload mtsamples.csv from your system if not already in /content
+if not os.path.exists('/content/mtsamples.csv'):
+    print("Please upload mtsamples.csv file...")
+    uploaded = files.upload()
+
+mtsample_df = pd.read_csv('/content/mtsamples.csv')
+mtsample_df.head()
+
+# ----------------------------------------------------------
+# Step 3: Extract Sample Transcription and Apply NLP Model
+# ----------------------------------------------------------
+text = mtsample_df.loc[10, "transcription"]
+
+# Load basic and medium-sized SciSpaCy models
+nlp_sm = en_core_sci_sm.load()
+nlp_md = en_core_sci_md.load()
+nlp_bcc = en_ner_bc5cdr_md.load()
+
+# Visualize entities in text using displacy
+doc = nlp_sm(text)
+displacy.render(doc, style='ent', jupyter=True)
+
+# Apply biomedical NER model to extract disease and chemical entities
+doc = nlp_bcc(text)
+displacy.render(doc, style='ent', jupyter=True)
+
+# ----------------------------------------------------------
+# Step 4: Display Extracted Entities
+# ----------------------------------------------------------
+print("TEXT", "START", "END", "ENTITY TYPE")
+for ent in doc.ents:
+    print(ent.text, ent.start_char, ent.end_char, ent.label_)
+
+# ----------------------------------------------------------
+# Step 5: Subset Dataset for Efficient Processing
+# ----------------------------------------------------------
+mtsample_df.dropna(subset=['transcription'], inplace=True)
+mtsample_df_subset = mtsample_df.sample(n=100, replace=False, random_state=42)
+mtsample_df_subset.info()
+
+# ----------------------------------------------------------
+# Step 6: Define Matcher Pattern for Drug-Dose Extraction
+# ----------------------------------------------------------
+matcher = Matcher(nlp_bcc.vocab)
+pattern = [
+    {"ENT_TYPE": "CHEMICAL"},
+    {"IS_SPACE": False, "OP": "*"},
+    {"LIKE_NUM": True},
+    {"LOWER": {"IN": ["mg", "g", "mcg", "ml", "units", "iu", "µg", "mg/kg"]}, "OP": "?"}
+]
+matcher.add("DRUG_DOSE", [pattern])
+
+# ----------------------------------------------------------
+# Step 7: Apply Pattern Matching on Sample Transcriptions
+# ----------------------------------------------------------
+for transcription in mtsample_df_subset['transcription']:
+    doc = nlp_bcc(transcription)
+    matches = matcher(doc)
+    for match_id, start, end in matches:
+        span = doc[start:end]
+        print(span.text, start, end, nlp_bcc.vocab.strings[match_id])
+
+# ----------------------------------------------------------
+# Step 8: Save Extracted Entities into CSV File
+# ----------------------------------------------------------
+rows = []
+for doc_index, doc in enumerate(nlp_bcc.pipe(mtsample_df_subset['transcription'].astype(str), batch_size=32)):
+    matches = matcher(doc)
+    for match_id, start, end in matches:
+        span = doc[start:end]
+        ent_texts = [(ent.text, ent.label_) for ent in doc.ents]
+        rows.append({
+            "doc_index": doc_index,
+            "span_text": span.text,
+            "span_start": span.start_char,
+            "span_end": span.end_char,
+            "match_label": nlp_bcc.vocab.strings[match_id],
+            "entities_in_doc": ent_texts,
+            "doc_snippet": doc.text[:300]
+        })
+
+results_df = pd.DataFrame(rows)
+results_df.to_csv('/content/extracted_entities_mtsamples.csv', index=False)
+print("Saved", len(results_df), "rows to extracted_entities_mtsamples.csv")
+results_df.head()
+
+------------------------------------------------------------
+Explanation (for Viva)
+------------------------------------------------------------
+
+💡 Objective:
+To identify and extract meaningful entities such as diseases, drugs, and dosages from medical text using advanced biomedical NLP models.
+
+💡 Dataset:
+The dataset mtsamples.csv contains over 4,000 real medical transcription records collected from the MTSample website.
+Each record includes fields like medical specialty, sample name, description, and full transcription.
+
+💡 Approach Summary:
+
+Library Setup: Installed SciSpaCy and biomedical models for entity extraction.
+
+Data Loading: Imported medical transcriptions from the dataset.
+
+NER Models: Used SciSpaCy models:
+
+en_core_sci_sm → General biomedical text
+
+en_core_sci_md → Enhanced model with scientific vocabulary
+
+en_ner_bc5cdr_md → Specialized model for Disease and Chemical/Drug recognition
+
+Entity Visualization: Displayed extracted entities using displacy.
+
+Pattern Matching: Used the Matcher to detect Drug + Dosage patterns like “Paracetamol 500 mg”.
+
+Entity Export: Extracted data saved to extracted_entities_mtsamples.csv for further use.
+
+💡 Evaluation:
+
+Verified accuracy by checking if extracted entities correspond to meaningful medical terms.
+
+Used visualization to confirm entity tagging consistency.
+
+Exported structured results for use in downstream healthcare NLP tasks.
+
+------------------------------------------------------------
+Outcome:
+------------------------------------------------------------
+
+✅ Successfully implemented Natural Language Entity Extraction using SciSpaCy.
+✅ Extracted Diseases, Drugs, and Dosages from medical reports.
+✅ Created structured entity dataset (extracted_entities_mtsamples.csv) for future analytics.
+✅ Gained practical understanding of Biomedical NER and Pattern Matching in medical NLP.
