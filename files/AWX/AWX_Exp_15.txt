@@ -1,0 +1,92 @@
+AIM: Extended SQLi, Protecting against SQLi, and SQLi Forensics: Reading Files from the Target Web Server 
+
+
+12.2 Lab Outcome: Implement secure web solutions to prevent client-side and server-side 
+security vulnerabilities.
+
+12.3 Laboratory Learning Outcome: Investigate and exploit advanced SQL Injection 
+techniques to extract sensitive data, such as password hashes, from a vulnerable web 
+application.
+
+12.4 Requirement
+
+• A running DVWA instance accessible at http://localhost with credentials admin / 
+password.
+• Browser (Firefox) to interact with DVWA.
+• DVWA security level set to Low.
+• Administrative access to the host or container to inspect and copy files (Docker exec 
+or shell access).
+• Ability to read webserver logs (e.g., Apache access.log) on the host or container.
+• Basic knowledge of SQL injection payloads, MySQL functions (LOAD_FILE, INTO 
+OUTFILE), and simple PHP web shells.
+• A test environment isolated from production to safely perform exploitation and 
+forensics.
+
+12.5 Related Theory
+
+• SQL Injection Fundamentals: Unsanitized user input concatenated into SQL queries 
+allows attackers to alter query logic, extract data, and invoke database functions not 
+intended for application use.
+• UNION-based Exfiltration: Using UNION SELECT lets an attacker append arbitrary 
+query results into an application’s displayed result set to expose sensitive data from 
+other tables or expressions.
+• LOAD_FILE Behavior: MySQL’s LOAD_FILE can return the contents of a file on 
+the database host when the MySQL server has read permission and secure_file_priv 
+does not block the path; this enables reading system files like /etc/passwd when 
+misconfigured.
+• INTO OUTFILE Behavior: INTO OUTFILE writes query results to the database 
+server’s filesystem when the server process has write rights and secure_file_priv 
+allows the destination; attackers can use this to create files such as PHP shells if the 
+destination is web-accessible.
+• Web Shells and Remote Code Execution: A small script (for example, a PHP file 
+invoking system($_GET['cmd'])) executed by the webserver lets an attacker run 
+arbitrary commands with the webserver’s privileges, effectively converting a data 
+breach into full remote command execution.
+• Permissions and Configuration Risks: Successful read/write file abuse often stems 
+from excessive database or filesystem privileges, permissive secure_file_priv settings, 
+and webroot directories writable by the DB or webserver processes.
+• Forensic Evidence: Exploitation leaves artifacts across layers—malicious SQL 
+payloads may be recorded in application logs, webserver access logs will show 
+requests to any written shells and their parameters, and filesystem 
+timestamps/contents can confirm written files; correlating these sources reconstructs 
+the attack timeline.
+• Mitigations Summary: Parameterized queries (prepared statements), strict input 
+validation, least-privilege database and filesystem accounts, disabling or restricting 
+functions like LOAD_FILE and INTO OUTFILE, configuring secure_file_priv 
+correctly, hardening webroot permissions, and centralized logging and monitoring 
+together reduce risk and improve incident detection and response
+
+
+----------------------------------------------
+Step by Step Guide For Performing the Practical
+--------------------------------------------------
+-----------------------------------------------
+Reading the Files
+------------------------------------------------
+Step 1 To install DVWA using Docker
+-> First ensure Docker is installed on your Kali Linux machine (sudo apt update && sudo apt install docker.io -y).
+
+-> Pull the official DVWA Docker image:
+sudo docker pull citizenstig/dvwa
+
+-> Run the DVWA container, mapping port 8080 to container’s port 80:
+sudo docker run -d -p 8080:80 citizenstig/dvwa
+
+-> Open your browser and go to http://localhost:8080.
+
+-> Log in with username admin and password password.
+
+-> On the DVWA home page, click on "Create/Reset database" to initialize the environment.
+
+-> Set security to Low
+
+-> Inside DVWA, go to Vulnerabilities → SQL Injection (sqli).
+
+Step 2:
+In user if input filed paste this command
+' UNION SELECT 1, LOAD_FILE('/etc/passwd')#
+
+you will get a list of files that has be loaded
+
+-----------------------------------------------------
+
