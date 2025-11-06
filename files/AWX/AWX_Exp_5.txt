@@ -1,0 +1,141 @@
+AWX Experiment 6
+
+6.1 Aim: Identify Session Management Vulnerabilities in DVWA. 
+
+6.2 Lab Outcome: Analyze authentication, authorization, and session management mechanisms in web security. 
+6.3 Laboratory Learning Outcome: 
+Be able to analyze and exploit session management vulnerabilities within DVWA to understand the impact of weak session handling and improve security posture. 
+6.4 Requirement: 
+•	Web application: DVWA IN Kali Linux 
+•	Burp Suite (Community or Pro Edition) 
+•	Browser (preferably Firefox/Chrome) 
+•	Configured network to intercept traffic via Burp Suite 
+•	Set DVWA Security Level to Low or Medium 
+
+6.5 Related Theory: 
+Session Management in Web Security: 
+Session management refers to the handling of user sessions after authentication. Once logged in, a user is given a session ID (usually stored in a cookie) which helps the server recognize the user in subsequent requests. 
+Common Session Management Vulnerabilities: 
+1.	Session ID in URL (URL rewriting) 
+2.	Predictable or fixed session IDs 
+3.	Session Fixation 
+4.	Session Hijacking 
+5.	Missing session expiration/invalidation on logout 
+Example Attacks: 
+•	Session Hijacking: Stealing a user’s session ID via XSS or network sniffing 
+•	Session Fixation: Attacker sets a known session ID and tricks the user into logging in with it 
+•	Exploiting Persistent Sessions: Sessions not expiring properly after logout or timeout 
+
+6.7	Conclusion: 
+In this lab, we successfully analyzed and exploited session management vulnerabilities such as session hijacking, session fixation, and improper logout handling in DVWA/Mutillidae. These vulnerabilities arise from insecure handling of session tokens, lack of proper cookie attributes (HttpOnly, Secure, SameSite), and improper session lifecycle management. 
+
+
+
+WORKING :
+
+
+1. To install DVWA using Docker
+-> First, ensure Docker is installed on your Kali Linux machine:
+sudo apt update && sudo apt install docker.io -y
+
+-> Pull the official DVWA Docker image:
+sudo docker pull citizenstig/dvwa
+
+-> Run the DVWA container, mapping port 8080 to container’s port 80:
+sudo docker run -d -p 8080:80 citizenstig/dvwa
+
+-> Open your browser and go to http://localhost:8080.
+-> Log in with username admin and password password.
+-> On the DVWA home page, click "Create/Reset database" to initialize the environment.
+ 
+2. To configure Burp Suite and browser for interception
+-> Launch Burp Suite.
+-> Set your browser's proxy to Burp Suite listener (often 127.0.0.1:8081).
+-> Confirm interception is "ON" in Burp Suite Proxy.
+-> Navigate to DVWA login and vulnerability pages via the proxy-enabled browser.
+ 
+3. To identify and analyze session management vulnerabilities
+-> Set DVWA's security level to "Low" or "Medium" via the settings menu.
+-> Log in to DVWA and intercept the HTTP POST request for /login.php using Burp Suite.
+•	Review the request and response cookies, especially PHPSESSID, dvwaSession, and security tokens.[1]
+-> Explore session management flaws:
+•	Weak Session IDs: On the "Weak Session IDs" page, generate new sessions and observe if session IDs are predictable, short, or incrementing.
+•	Session Cookies: Use Burp Suite Inspector and browser’s Network/Storage inspector to view current cookies (dvwaSession, PHPSESSID) and their values.
+•	Logout Handling: Log out and attempt to reuse the previous session cookie (copy it from Burp or browser inspector), then revisit protected pages to check if the session is still accepted.
+•	Session Fixation: Set a specific session ID in your browser cookies before login, then log in and see if the application accepts the pre-set (fixed) session ID.
+-> Use browser DevTools (Network tab and Application/Storage tab) to inspect request, response, and cookie transitions throughout login, logout, and vulnerability exploitation.
+ 
+4. To exploit and demonstrate session hijacking/fixation
+-> While logged in, copy your session cookie from Burp or browser and import it into another browser or session.
+-> Access DVWA pages using the stolen session cookie—confirm if user's session and privileges are transferred.
+-> If the session persists after logout, note the issue as improper session invalidation.
+
+
+VIVA QUESTION AND ANSWERS :
+
+1. What is session management in web security, and why is it important?
+Answer:
+Session management is the process by which a web application tracks authenticated users across multiple requests, using mechanisms like cookies for session tokens. It is important because improper handling can allow attackers to hijack valid sessions, impersonate users, and bypass authentication entirely.​
+
+2. Which session management vulnerabilities can be found in web applications like DVWA?
+Answer:
+Common session vulnerabilities include:
+
+Session ID in URL (URL rewriting)
+
+Predictable or weak session IDs
+
+Session fixation (re-using or setting session ID)
+
+Session hijacking (stealing session cookie through XSS or sniffing)
+
+Failure to invalidate sessions after logout or timeout.​
+
+3. How can you identify if a session ID is weak or predictable?
+Answer:
+Repeatedly initiate new sessions (login, reload, or generate session multiple times), then compare the session IDs. If they show a simple pattern, are short, sequential, or can be guessed, the session management is weak, making brute-force or prediction attacks feasible.
+
+4. How do you test for session fixation vulnerability in DVWA?
+Answer:
+Set a known session ID (via browser or Burp Suite) before login. If, after authentication, the app continues using that session ID instead of generating a new one, it is vulnerable to session fixation, allowing attackers to force a victim to use a session of the attacker's choosing.
+
+5. What is session hijacking and how can it be practically demonstrated?
+Answer:
+Session hijacking is the unauthorized acquisition and use of a valid session ID to impersonate a user. It can be demonstrated by copying an active user's session cookie into another browser instance or session, thereby granting the attacker the same privileges as the victim.​
+
+6. Why is session invalidation after logout critical to security?
+Answer:
+If the session token remains valid after logout, an attacker can reuse the token after the legitimate user logs out, maintaining unauthorized access or impersonating the user. Proper invalidation ensures old tokens are rendered useless once the user logs out.
+
+7. Which cookie attributes help protect session security, and why are they important?
+Answer:
+
+HttpOnly: Prevents client-side scripts (e.g., JavaScript) from accessing the cookie, reducing XSS risk.
+
+Secure: Ensures the cookie is only sent over HTTPS, reducing exposure to sniffing.
+
+SameSite: Mitigates CSRF by restricting cross-site requests.
+Setting these attributes helps prevent common attacks on session cookies.
+
+8. What practical tools and techniques did you use to inspect and exploit session flaws in DVWA?
+Answer:
+Used Burp Suite to intercept, modify, and resend requests; browser DevTools (Network/Storage tab) to view cookies and session transitions; Docker for lab deployment; and manual cookie tampering for session fixation/hijacking.​
+
+9. How does setting DVWA's security level affect session management?
+Answer:
+At lower levels (Low/Medium), DVWA is intentionally lenient, omitting protections (predictable IDs, missing logout routines). At higher levels (High/Impossible), it introduces protections like CSRF tokens and better session handling, making exploitation harder.​
+
+10. What mitigation strategies would you recommend for session management vulnerabilities?
+Answer:
+
+Use long, random, unpredictable session IDs.
+
+Always generate new session IDs post-login.
+
+Invalidate sessions properly on logout and after a timeout.
+
+Set Secure, HttpOnly, and SameSite flags on cookies.
+
+Avoid putting session IDs in URLs.
+
+Monitor for abnormal session activity.

@@ -1,0 +1,170 @@
+AWX Experiment 4
+
+4.1 Aim: Identify the target web application and gather relevant information such as the
+application's technology stack, URLs, endpoints, and any other publicly available
+information.
+
+4.2 Lab Outcome:
+Apply penetration testing methodologies and vulnerability management techniques to web
+applications by performing reconnaissance and information gathering on the target.
+
+4.3 Laboratory Learning Outcome:
+Identify a target web application and efficiently gather key information—such as the
+technology stack, URLs, endpoints, and publicly available data—to support effective security
+analysis and vulnerability assessment.
+
+4.4 Requirement:
+• Tools:
+o Web browser (with Developer Tools)
+o WhatWeb or Wappalyzer extension (for technology stack detection)
+o Burp Suite (Community Edition)
+o Nmap (optional for network reconnaissance)
+o Google dorks (for passive information gathering)
+o Target application: DVWA (Damn Vulnerable Web Application) or
+Mutillidae running locally or on VM
+• Pre-setup:
+o Target web application installed and running (DVWA or Mutillidae)
+o Burp Suite configured with browser
+o Internet access (for passive reconnaissance using tools)
+
+4.5 Related Theory:
+Information Gathering is the first step in the penetration testing process, also known as
+reconnaissance. It is divided into:
+• Passive Reconnaissance: Gathering information without directly interacting with the
+target (e.g., WHOIS, Google dorks).
+• Active Reconnaissance: Interacting directly with the target (e.g., scanning, probing
+endpoints).
+Key areas of information gathering:
+• Identifying server-side technologies (e.g., PHP, Apache, MySQL)
+• Finding client-side frameworks (e.g., jQuery, React)
+• Detecting open ports/services
+• Mapping URLs and parameters
+• Finding hidden endpoints or admin panels
+• Collecting headers, cookies, and session details
+Common Tools Used:
+• WhatWeb, Wappalyzer for tech stack
+• Browser Developer Tools for headers, requests
+• Burp Suite (target scope setup, Repeater, Spider, etc.)
+• Nmap for port scanning
+• Google Dorks for open-source intelligence
+
+4.7 Conclusion:
+In this lab, we successfully identified the target web application and gathered detailed
+information about its architecture and structure. We used both passive and active
+reconnaissance methods to determine the application's technology stack, endpoints, and other
+publicly available information. This foundational step is critical in the penetration testing
+lifecycle as it helps narrow down the attack surface and identify potential vulnerabilities for
+further testing
+
+
+
+WORKING:
+
+
+1. To identify the target web application and gather its technology stack, endpoints, and public info (using vulnweb)
+-> Open the target website in your browser:
+http://testphp.vulnweb.com/artists.php?artist=1 (Acuart site).
+
+-> Use browser Inspect (right-click > Inspect):
+
+Network tab: Reload the page, observe all network requests—document endpoints like /artists.php, /search.php, /image.php.
+
+Headers: Look for clues about the technology stack (e.g., Server: Apache, X-Powered-By: PHP).
+
+Page Source: Scan for references to frameworks and libraries (e.g., jQuery, Bootstrap).
+
+Note visible links, error messages, and footers for additional endpoint or tech stack hints.
+
+2. To use Wappalyzer for technology stack identification
+-> Install the Wappalyzer browser extension (available for Chrome, Firefox, Edge).​
+
+-> After installation, open the vulnweb site in your browser.
+
+-> Click the Wappalyzer icon in the browser bar:
+
+Wappalyzer instantly lists detected technologies: web server (e.g., Apache), programming language (e.g., PHP), database (e.g., MySQL), JavaScript libraries, analytics platforms, and more.​
+
+Example output:
+
+text
+Web Server: Apache
+Programming Language: PHP
+Database: MySQL
+JavaScript Libraries: jQuery
+Analytics: Google Analytics
+-> Record all Wappalyzer findings for use in security analysis and vulnerability mapping.​
+
+3. To actively enumerate endpoints and data using Burp Suite
+-> Set up Burp Suite as a proxy (ensure browser proxy points to Burp's listener, such as 127.0.0.1:8081).
+
+-> Browse the Acuart vulnweb site through the proxy-enabled browser.
+
+-> In Burp Suite:
+
+Proxy > HTTP History: Lists every intercepted request—note all endpoints and parameterized URLs.
+
+Target > Site Map: Automatically indexes discovered endpoints and directories.
+
+Right-click the site domain and use the Crawl option for automated endpoint discovery.
+
+-> Use Burp's Inspector to view, modify, and analyze headers, parameters, cookies, and body data for further clues about server-side logic and stack.
+
+4. To finalize documentation and analysis
+-> Make a table summarizing:
+
+Endpoints: /artists.php, /search.php, /admin.php, /upload.php
+
+Tech Stack: From Wappalyzer and headers (e.g., Apache, PHP, MySQL, jQuery)
+
+Public Data/Assets: JavaScript files, admin dashboards, documentation links.
+
+-> Reflect how each tool (Wappalyzer, Inspect, Burp Suite) contributed to the complete mapping and stack analysis.
+
+5. How Wappalyzer supports vulnerability assessment
+-> Wappalyzer’s results help you prioritize relevant vulnerability checks:
+
+Example: Does the site use PHP and MySQL? Then focus on finding SQL injection and file upload flaws.
+
+Example: Is jQuery detected? Check for outdated libraries and associated client-side issues.​
+
+
+
+1. What is the purpose of reconnaissance in web application penetration testing?
+Answer:
+Reconnaissance or information gathering is the initial phase to collect data about the target, such as technology stack, URLs, endpoints, and public data. It helps understand the application’s architecture and narrows down potential vulnerabilities to test.​
+
+2. How do you identify the technology stack of a web application using Wappalyzer?
+Answer:
+Wappalyzer is a browser extension that detects technologies used on a website by analyzing DOM, headers, scripts, and cookies. After installing the extension, you simply visit the target website, click the Wappalyzer icon, and see identified technologies such as web servers, programming languages, databases, and JS libraries.​
+
+3. What information can you gather using browser Developer Tools (Inspect/Network)?
+Answer:
+Developer tools provide HTTP headers (revealing server and language), network requests (showing possible endpoints and parameters), cookies, scripts, and responses. This passive technique offers critical insight into the structure and behavior of the application.​
+
+4. How does Burp Suite assist in active reconnaissance?
+Answer:
+Burp Suite acts as a proxy to intercept and relay browser requests, enabling enumeration of endpoints via proxy history and site map, spidering/crawling the application automatically to discover hidden URLs, input fields, and parameters for further testing.​
+
+5. Why is it important to combine passive and active reconnaissance techniques?
+Answer:
+Passive scanning (browser tools, Wappalyzer) gathers information without alerting the target, while active techniques (Burp crawl/spider) explore deeper resources and hidden endpoints. Together, they provide a thorough picture of the attack surface.​
+
+6. What kinds of vulnerabilities can you identify once you map technology stack and endpoints?
+Answer:
+Based on detected tech (e.g., PHP + MySQL), you can target SQL injection vulnerabilities; knowledge of upload URLs guides file upload flaw testing; understanding JS frameworks helps assess XSS risks and client-side flaws.​
+
+7. How can reconnaissance influence your penetration testing strategy?
+Answer:
+Reconnaissance prioritizes vulnerabilities and targets specific attack vectors, making testing efficient and focused. It reduces guesswork and highlights critical areas to assess, improving the likelihood of uncovering exploitable weaknesses.​
+
+8. Describe how Google dorking fits into reconnaissance.
+Answer:
+Google dorking involves using search engine queries to find publicly available but sensitive information or hidden pages related to the target domain, which can reveal admin panels, backup files, or configuration data.​
+
+9. Can you explain what Burp Suite’s Site Map does?
+Answer:
+The Site Map organizes all URLs and resources Burp captures during browsing or crawling, showing the hierarchy of endpoints and enabling targeted manual or automated testing at discovered locations.​
+
+10. How does this experiment prepare you for effective vulnerability assessment?
+Answer:
+It builds a detailed understanding of the web app’s structure and technology, helping tailor vulnerability scans, exploit payloads, and manual assessments to the target’s specific context, greatly improving testing accuracy and impact.

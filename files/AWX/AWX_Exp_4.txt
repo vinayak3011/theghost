@@ -1,0 +1,141 @@
+AWX Experiment 5
+
+
+5.1 Aim: Use open-source intelligence (OSINT) techniques to gather information about the web application, its infrastructure, and any potential vulnerabilities. 
+
+5.2 Lab Outcome: 
+Apply penetration testing methodologies and vulnerability management techniques to web applications by leveraging publicly available information. 
+
+5.3 Laboratory Learning Outcome: 
+Understand and perform reconnaissance on a target web application using OSINT tools and techniques to gather key information that can support further security testing.
+ 
+5.4 Requirement: 
+Software/Tools Needed: 
+•	Kali Linux (or any OS with OSINT tools) 
+•	Web Browser 
+•	WHOIS Lookup 
+•	nslookup / dig 
+•	theHarvester 
+•	whatweb 
+•	Wappalyzer (browser extension) 
+•	Shodan 
+•	Netcraft 
+•	Google (Dorking) • 	GitHub (for repo leaks) 
+
+5.5 Related Theory: 
+Open Source Intelligence (OSINT): 
+•	OSINT is the process of collecting and analyzing publicly available data to gain insights into the target system. 
+•	It includes gathering data from search engines, domain registrars, social media, public repositories, and specialized tools. 
+Common OSINT Categories: 
+•	Domain Info: WHOIS, DNS records 
+•	Server Tech Stack: WhatWeb, Wappalyzer 
+•	Subdomains and IPs: dig, DNSDumpster 
+•	Email & People Search: theHarvester, hunter.io 
+•	Sensitive Data Leaks: GitHub, Pastebin 
+•	Network Exposure: Shodan, Censys 
+Use in Pentesting: 
+•	OSINT is the first stage of ethical hacking and helps map out attack vectors without active scanning, which is ideal for stealth and pre-engagement rules. 
+
+5.7 Conclusion: 
+In this lab, we successfully demonstrated how OSINT tools and techniques can be used to collect publicly available data about a web application. This reconnaissance process helps penetration testers and cybersecurity professionals understand the system’s attack surface before launching more intrusive tests. We used tools like WHOIS, WhatWeb, Shodan, theHarvester, and Google Dorking to gather information such as server details, exposed email addresses, software versions, and domain records, which can later be used for vulnerability assessment. 
+
+
+WORKING :
+
+a) Gather Domain and Registrar Info (WHOIS)
+-> Open a browser and go to a WHOIS lookup site (e.g., DomainTools).
+-> Enter the target domain (e.g., vulnweb.com) to retrieve:
+•	Registrar, Registration and Expiry Dates.
+•	Name servers, IP address, location, organization.
+-> (Alternative) On Kali Linux, use:
+whois vulnweb.com
+
+-> Review output for technical contacts, IP range, hosting provider, and domain history.
+
+b) Collect DNS and Hosting Info (nslookup/dig)
+-> In terminal, run:
+nslookup testphp.vulnweb.com
+
+or
+dig testphp.vulnweb.com
+
+-> Note resolved IP address, DNS records, hostnames, and possible subdomains.
+
+c) Identify Tech Stack with WhatWeb/Wappalyzer
+-> Use WhatWeb in Kali Linux:
+whatweb testphp.vulnweb.com
+
+-> Observe detected technologies such as:
+•	Web server (nginx), programming language (PHP), X-Powered-By headers, JS/CSS assets.
+-> In your browser, use the Wappalyzer extension:
+•	Open the target site and click the Wappalyzer icon to list backend/frontend technologies (e.g., Nginx, PHP, Adobe Flash, Ubuntu, jQuery).
+
+d) Harvest Email Addresses/Metadata (theHarvester)
+-> In terminal, run:
+theHarvester -d testphp.vulnweb.com -b yahoo
+
+-> Search for discovered email addresses, IPs, subdomains, hosts in public sources.
+-> Analyze results for potential contacts, user info, or asset exposure.
+
+e) Use Google Dorking for Endpoint Discovery
+-> In your browser, search:
+site:vulnweb.com inurl:admin
+site:vulnweb.com filetype:php
+site:vulnweb.com "login"
+
+-> Note any sensitive or restricted endpoints (e.g., /admin, /login.php, file upload forms) in search results.
+
+f) Check Shodan for Exposure/Server Details
+-> Go to Shodan and search for the target site’s IP.
+-> Record open ports, geolocation, hosting provider, cloud service (e.g., Amazon AWS).
+-> Check for exposed services or banners (e.g., port 80, nginx version).
+
+g) Explore Public Code/Leaks on GitHub
+-> In Google, search:
+site:github.com "vulnweb.com"
+
+-> Identify public repositories referencing the target, which can reveal code snippets, default credentials, or deployment details.
+
+
+
+VIVA QUESTION AND ANSWERS :
+
+1. What is OSINT and why is it important in pentesting?
+Answer:
+OSINT (Open Source Intelligence) is the process of gathering and analyzing publicly available data from internet resources—such as websites, search engines, repositories, and public databases—without direct interaction with the target. It is important as it enables attackers (and defenders) to map out a target’s attack surface, identify exposed sensitive details, and prioritize vulnerabilities before more intrusive scans.​
+
+2. Which tools can be used for OSINT reconnaissance of a web application?
+Answer:
+Common OSINT tools include WHOIS lookup for domain info, nslookup/dig for DNS data, WhatWeb/Wappalyzer for technology stack detection, theHarvester for emails/subdomains, Google search/dorking for endpoint discovery, Shodan for exposed services, and reviewing repositories on GitHub for code leaks.​
+
+3. What information does a WHOIS lookup provide and how is it useful?
+Answer:
+WHOIS lookup provides domain ownership, registrar, registration/expiry dates, technical and admin contact details, and often an associated organization or hosting provider. This info helps track the domain’s history, its likely owner, and infrastructure for further social engineering or technical enumeration.​
+
+4. How does theHarvester assist in OSINT?
+Answer:
+theHarvester aggregates emails, subdomains, and hostnames related to a target by querying search engines and public datasets. This data helps find contact avenues for spear phishing, discover hidden hosts, and broaden the organizational attack surface.​
+
+5. Describe how WhatWeb and Wappalyzer contribute to OSINT.
+Answer:
+Both tools fingerprint the application’s technology stack, identifying servers (e.g., nginx, Apache), languages (PHP, Python), frameworks, analytics, and plugins. This helps predict which vulnerabilities to target (e.g., outdated server software or CMS plugins).​
+
+6. What is Google dorking, and how is it used in an OSINT context?
+Answer:
+Google dorking uses specific search queries (“dorks”) to find hidden or sensitive files, directories, admin portals, or database dumps indexed by search engines. It reveals data that is not meant to be public but is accidentally exposed, such as /admin, credentials, or database errors.​
+
+7. What is Shodan and what role does it play in reconnaissance?
+Answer:
+Shodan is a search engine indexing internet-exposed services and devices. By querying Shodan for the target’s IP or domain, you can find open ports, exposed services, service banners, geolocation, and occasionally device vulnerabilities—crucial for identifying direct network attack entries.​
+
+8. Why should you check GitHub or similar repositories during OSINT?
+Answer:
+Public repositories may inadvertently contain configuration files, source code, API keys, hardcoded credentials, or internal documentation that can be weaponized for actual attacks. GitHub searches often reveal leaks by employees or former staff.​
+
+9. What are the ethical considerations when performing OSINT?
+Answer:
+Ethical OSINT uses only publicly available data and avoids any unauthorized account access, exploits, or active scanning. It complies with legal and organizational guidelines, using gathered info for defensive or permitted purposes, not for criminal activity.
+
+10. How does a comprehensive OSINT report benefit a penetration test?
+Answer:
+A good OSINT report offers a complete view of the target’s infrastructure, exposed data, and social links. It helps plan attack vectors, improve testing accuracy, reduce noise, and uncover vulnerabilities that may not even require active scanning to exploit.​

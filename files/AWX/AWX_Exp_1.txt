@@ -1,0 +1,124 @@
+AWX Experiment 2
+
+2.1 Aim: Identify and manage vulnerabilities by crawling the web application using Burp
+Spider/Site Map.
+
+2.2 Course Outcome Statement:
+Apply penetration testing methodologies and vulnerability management techniques to web
+applications.
+
+2.3 Laboratory Learning Outcome:
+Utilize Burp Spider to effectively crawl and map a target web application’s structure.
+
+2.4 Requirement:
+• Software/Tools:
+o Burp Suite Community/Professional Edition
+o Web Browser (configured to use Burp Proxy)
+o A vulnerable web application (e.g., Mutillidae, DVWA, or OWASP Juice
+Shop)
+o Kali Linux (or any Linux OS with Burp and vulnerable app installed)
+• Configuration:
+o Intercepting proxy configured in the browser (typically 127.0.0.1:8080)
+o Burp Suite Proxy → Intercept → ON
+o Target application running and accessible via localhost or network
+
+2.5 Related Theory:
+• Burp Spider/Site Map:
+o Burp Spider is a web crawling tool integrated into Burp Suite that
+automatically discovers content and functionalities within a target web
+application.
+o It works by parsing responses and following links/forms to map out the full
+application structure.
+o The Site Map tab shows all the discovered endpoints, which can be used to
+perform further testing like vulnerability scanning, parameter fuzzing, or
+manual analysis.
+• Crawling Process:
+o Manual Browsing: You interact with the application while Burp captures the
+requests/responses.
+o Active Crawling: Burp Spider automatically follows links and explores the
+application (limited in Community Edition).
+• Purpose of Crawling:
+o Understand the application's attack surface.
+o Identify hidden files, admin panels, unlinked pages, and parameters.
+o Prepare for further exploitation or scanning.
+
+2.7 Conclusion:
+The Burp Spider tool was successfully used to crawl and map the target web application.
+The Site Map helped visualize the complete structure, including hidden and unlinked
+resources. This structured view aids in identifying potential vulnerabilities by exposing all
+accessible points within the application. It also prepares the foundation for the next steps in
+the penetration testing process such as vulnerability scanning, fuzzing, and manual testing.
+This lab reinforced the importance of thorough reconnaissance and crawling in ethical
+hacking and vulnerability assessment practices.
+
+
+WORKING:
+
+To crawl and analyze the Acuart web application using Burp Spider/Site Map –
+AND REMEMBER IF TEACHER ASK WHY NOT DOING ACTIVE CRAWL THEN SAY...... TERI MA KI CHUT PREMIUM KA PAISA TERA BAAP DEGA
+-> Launch Burp Suite on your Kali Linux machine.
+-> Set the browser proxy to Burp’s default (127.0.0.1:8080).
+-> In the browser, visit http://testphp.vulnweb.com/artists.php?artist=1 (the Acuart site).
+-> In Burp Suite, go to the “Target” tab and expand the “Site map” to see the Acuart domain and URLs as you browse.
+-> Right-click on the Acuart domain and select “Spider this host” (or in newer versions, “Crawl”).
+-> Enter any required crawl options (e.g., if forms or logins are present).
+-> As the crawl progresses, watch the “Site map” tree fill up with endpoints such as /, /artists.php, /search.php, and any parameters and forms found dynamically.
+-> You may see details such as HTTP methods, parameters, cookies, and input forms in the details pane as each page is crawled.
+-> When finished, analyze the discovered URLs and input points. Burp will highlight potential vulnerabilities or interesting parameters (if Professional version is used).
+-> Save the site map or generated report for documentation or vulnerability triage.
+
+1. What is Burp Spider, and how does it work?
+Answer:
+Burp Spider is an automated crawler within Burp Suite that navigates through a web application by following hyperlinks and submitting forms. Its purpose is to discover and map all accessible content and input points, building a hierarchical site map which helps security analysts identify the application’s attack surface.​
+
+2. What is the role of the Site Map in Burp Suite?
+Answer:
+The Site Map displays all discovered content and requests within a target web application. It is organized hierarchically by domain, directories, files, and parameterized requests, allowing testers to visualize and manage mappings, filter discovered nodes, and define the scope of testing.​
+
+3. Why do security analysts crawl web applications before vulnerability assessment?
+Answer:
+Crawling unearths all reachable URLs, forms, directories, and parameters, ensuring a complete view of the attack surface. This foundational mapping step allows analysts to identify hidden endpoints and prepare for thorough vulnerability testing across all functional areas.​
+
+4. How do you use Burp Suite to crawl a target like Acuart on the vulnweb site?
+Answer:
+
+Set the browser proxy to Burp Suite.
+
+Browse to the Acuart site (http://testphp.vulnweb.com).
+
+In Burp, observe the URLs tree in the Site Map under the Target tab as you interact with the site.
+
+Launch an automated crawl/spider for the target.
+
+Review discovered resources and endpoints for security testing.​
+
+5. What is the difference between passive and active spidering/crawling in Burp Suite?
+Answer:
+Passive crawling occurs as you manually navigate the application, with Burp recording encountered links and forms. Active crawling initiates Burp’s automated crawler, which systematically follows all links, submits forms, and catalogs discovered resources without manual intervention.​​
+
+6. Explain how Burp Suite can help in finding hidden or sensitive endpoints during crawling.
+Answer:
+Burp Suite’s crawler can detect URLs and input fields not directly linked on main pages, such as admin panels, hidden form fields, query parameters, and authentication endpoints, which may not be visible without automated exploration.​
+
+7. What precautions must you take before crawling a live web application using Burp Suite?
+Answer:
+Crawling can generate significant automated traffic, impacting application performance or triggering alarms. Always test with authorization on dedicated lab environments or legal test targets such as vulnweb, Mutillidae, or DVWA to avoid unintended disruptions or ethical violations.​
+
+8. What types of vulnerabilities can be surfaced through thorough crawling and site mapping?
+Answer:
+Vulnerabilities such as SQL Injection, Cross-Site Scripting (XSS), Authentication Bypass, Insecure Direct Object References (IDOR), and misconfigurations can be identified once all forms, parameters, and URLs are mapped.​
+
+9. How is the crawl path information useful during assessment?
+Answer:
+Crawl path data lets you understand the exact navigation sequence to reach a given endpoint, clarifying how users or attackers might interact with the application and helping in reproducing or analyzing complex flows during testing.​
+
+10. What troubleshooting steps should you follow if Burp Spider/Suite does not discover all expected pages?
+Answer:
+
+Check target scope settings to ensure proper domains/paths are included.
+
+Verify session management and login steps (use session handling rules if necessary).
+
+Review site for anti-automation defenses (CAPTCHA, rate limiting).
+
+Cross-check manual exploration for resources missed by the automated crawler.

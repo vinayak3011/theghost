@@ -1,0 +1,176 @@
+AWX Experiment 3
+
+3.1 Aim: Identify and Manage vulnerabilities by Replaying web requests using the Repeater
+tab.
+
+3.2 Lab Outcome:
+To identify and manage vulnerabilities of web applications and execute appropriate
+mitigation strategies through web request manipulation.
+
+3.3 Laboratory Learning Outcome:
+Manipulate and replay individual web requests using the Repeater tab in Burp Suite to test
+for vulnerabilities such as SQL Injection, XSS, and authentication flaws.
+
+3.4 Requirement:
+• Hardware: PC with minimum 4 GB RAM
+• Software:
+o Burp Suite (Community or Professional Edition)
+o Kali Linux or OWASP BWA/Mutillidae/DVWA
+o Browser with Burp Proxy configuration
+• Target Web App: DVWA or Mutillidae (locally hosted or via virtual machine)
+
+3.5 Related Theory:
+The Repeater tab in Burp Suite is a tool used to manually modify and resend individual
+HTTP requests to observe how the server responds. It is commonly used for:
+• Testing for input-based vulnerabilities (like SQLi, XSS, command injection).
+• Validating authentication and authorization mechanisms.
+• Fuzzing parameters for unexpected behaviors.
+• Analyzing the effect of modifying headers, cookies, or payloads.
+How it works:
+1. Intercept a request using Proxy.
+2. Send it to Repeater (Right-click > "Send to Repeater").
+3. Modify the request as needed (e.g., change parameters, inject payloads).
+4. Click Send to observe the response.
+This is crucial for manual penetration testing where automated scanners may not be
+sufficient
+
+3.7 Conclusion:
+The Repeater tab in Burp Suite is a powerful tool to manually replay and manipulate
+HTTP requests, helping identify and confirm vulnerabilities in a controlled manner. This
+hands-on technique strengthens the understanding of web application behavior, allowing
+security professionals to pinpoint flaws that may not be easily discoverable through
+automated tools.
+
+
+
+WORKING:
+
+
+1. To install DVWA using Docker
+-> First ensure Docker is installed on your Kali Linux machine (sudo apt update && sudo apt install docker.io -y).
+
+-> Pull the official DVWA Docker image:
+sudo docker pull citizenstig/dvwa
+
+-> Run the DVWA container, mapping port 8080 to container’s port 80:
+sudo docker run -d -p 8080:80 citizenstig/dvwa
+
+-> Open your browser and go to http://localhost:8080.
+
+-> Log in with username admin and password password.
+
+-> On the DVWA home page, click on "Create/Reset database" to initialize the environment.
+
+
+2. To configure Burp Suite and intercept browser traffic
+
+-> Launch Burp Suite on Kali Linux.
+
+-> Set HTTP Proxy in your browser to Burp Suite's default address (127.0.0.1:8080).
+
+-> (Optional, for HTTPS) Download Burp CA certificate from http://burp in browser and add it to browser's certificates.
+
+-> Confirm interception in Burp Suite ("Proxy" → "Intercept" should be enabled).
+
+-> Navigate to DVWA in your browser via the Burp-configured proxy.
+
+if there comes any error of ports listening on same port then 
+go to burpsuite -> proxy -> then open browser -> then paste the dvwa link http://localhost:8080 everything will be solved
+
+
+3. To perform SQL Injection using Burp Suite’s Repeater tab
+
+-> Inside DVWA, go to Vulnerabilities → SQL Injection (sqli).
+
+-> Submit a test value in the user ID field (e.g., admin) and intercept the request in Burp Suite.
+
+-> In Burp Suite Proxy, right click the intercepted HTTP request and choose “Send to Repeater”.
+
+-> Switch to the Repeater tab. Modify the id parameter to inject SQL, e.g.:
+
+admin' OR '1'='1
+
+-> Click Send repeatedly, observe changes in response—if successful, the application will return additional user information or allow unauthorized access.
+
+-> Try variations (admin'--, admin' OR 1=1--, etc.) to confirm the nature and extent of the SQL injection vulnerability.
+
+4. To analyze and validate
+
+-> Compare request/responses for normal and injection payloads.
+
+-> Document response changes indicating successful exploitation (e.g., user list, admin access, etc.).
+
+-> Note the vulnerable endpoint and payload for lab records.
+
+
+5. To stop and cleanup DVWA environment
+
+-> Run the following to stop the container:
+
+sudo docker ps
+sudo docker stop <container-id>
+This procedure will enable you to demonstrate manual exploitation of SQL injection vulnerabilities in DVWA using Burp Suite Repeater and Docker. Every step is as per your practical lab requirements.
+
+
+VIVA QUESTION AND ANSWERS:
+
+
+​​1. What is DVWA and why is it used in security labs?
+Answer:
+DVWA (Damn Vulnerable Web Application) is a deliberately insecure PHP/MySQL web application designed for practicing and testing common web vulnerabilities, including SQL injection, in a controlled lab environment.​
+
+2. What is the function of the Burp Suite Repeater tab?
+Answer:
+The Repeater tab allows users to manually modify, resend, and replay HTTP requests multiple times to a web server, which aids in testing for vulnerabilities by observing how different payloads affect the server’s response.​
+
+3. Why use Docker to run DVWA for security experiments?
+Answer:
+Docker allows for quick, isolated, and reproducible deployment of DVWA, making it easy to set up, tear down, and reset vulnerable lab environments without manual installation or risk to the host OS.​
+
+4. Explain the process of performing an SQL injection test using Burp Suite.
+Answer:
+
+Intercept a web request targeting an input field using Burp Suite’s Proxy.
+
+Send the request to Repeater.
+
+Modify the parameter (e.g., id) to include SQL injection payloads like ' OR '1'='1.
+
+Send the request and analyze the response for signs of successful injection, such as unauthorized data or login bypass.​
+
+5. How do you confirm a successful SQL injection in DVWA via Burp Suite?
+Answer:
+A successful SQL injection may display additional or sensitive data (e.g., user details from the database) or allow a login/authentication bypass when a crafted payload returns valid results.​
+
+6. What are some common SQL injection payloads used in DVWA?
+Answer:
+Examples include:
+
+admin' OR '1'='1
+
+' OR 1=1--
+
+admin'--
+These are used to manipulate the logic of SQL queries and test if the application is vulnerable.​
+
+7. Why is it important to compare normal and injection requests/responses?
+Answer:
+Comparing helps identify abnormal behavior or responses to malicious input, confirming whether the application’s input validation is insufficient and exposing real vulnerabilities.​
+
+8. What steps should you follow to clean up after the experiment?
+Answer:
+Stop the Docker container running DVWA with:
+
+sudo docker ps
+
+sudo docker stop <container-id>
+This secures the environment and conserves system resources.
+
+9. What are the risks of running real SQL injection tests on non-lab web applications?
+Answer:
+Testing real (non-lab) applications without permission is illegal and can cause service disruption, data breaches, or loss. Always use legal, isolated targets like DVWA.​
+
+10. How can Burp Suite help reveal “blind” SQL injection vulnerabilities?
+Answer:
+By manipulating requests using Repeater and analyzing indirect changes in responses (such as time delays or error messages) rather than direct data output, attackers can exploit “blind” SQL injection issues.​
+

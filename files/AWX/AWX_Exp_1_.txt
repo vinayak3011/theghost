@@ -1,0 +1,238 @@
+AWX Experiment 1
+
+1.1Aim: To configure and install various web application security tools:
+a) Configuration of Burp Suite
+b) Installation of Mutillidae
+c) Installation of Kali Linux
+
+1.2 Course Outcome Statement:
+Demonstrate web application security concepts, vulnerabilities, and threat
+classification.
+
+1.3 Lab Learning Outcome:
+Upon successful completion of this lab, students will be able to:
+• Install Kali Linux, a widely used penetration testing OS.
+• Deploy Mutillidae, a deliberately vulnerable web application.
+• Configure Burp Suite for intercepting and analyzing HTTP(S) traffic.
+• Perform basic hands-on web security testing and vulnerability assessments.
+
+1.4 Requirements:
+Hardware Requirements:
+• System with minimum 8 GB RAM, 100 GB HDD
+• 64-bit processor with virtualization support
+Software Requirements:
+• VMware Workstation / VirtualBox
+• Kali Linux ISO (Latest version)
+• XAMPP / LAMP (for Mutillidae)
+• Burp Suite Community Edition (pre-installed on Kali)
+• Mutillidae vulnerable web application files
+
+1.5 Related Theory:
+1. Web Application Security:
+Refers to securing web-based applications from unauthorized access, vulnerabilities,
+and attacks like SQL Injection, XSS, CSRF, etc.
+2. Kali Linux:
+A Debian-based Linux distribution used for penetration testing and ethical hacking. It
+includes pre-installed security tools like Burp Suite, Nmap, Wireshark, etc.
+3. Burp Suite:
+An integrated platform for performing security testing of web applications. It allows
+intercepting, modifying, and replaying HTTP/HTTPS traffic between the browser and the
+target server.
+4. Mutillidae:
+A deliberately vulnerable web application designed for security testing and learning
+purposes. It includes various OWASP Top 10 vulnerabilities.
+
+1.7Conclusion:
+In this experiment, we successfully: 1.) Installed Kali Linux, a powerful security testing
+OS. 2.) Deployed Mutillidae, a vulnerable web application designed for practicing web
+attacks. 3.) Configured Burp Suite to intercept and analyze HTTP requests between the
+client and the server.
+This setup forms the basis for learning hands-on web application security testing and
+exploring real-world vulnerabilities in a controlled environment.
+
+
+
+WORKING :
+
+
+1. To install kali machine-
+ 
+-> First download the iso file of kali from official website.
+-> Then download the virtual box installer file and properly install it.
+-> After that open the virtual box and then click on add and locate the iso file and give the needful processor, ram, etc things
+-> And then run the machine.
+
+2. To install Mutillidae
+
+Prerequisites:
+Apache2, PHP, and Git are needed. Install them if not already present:
+
+sudo apt update
+sudo apt install apache2 php git
+
+Steps to Install Mutillidae:
+Navigate to the web root directory:
+
+cd /var/www/html
+
+Clone the Mutillidae repository:
+
+sudo git clone https://github.com/webpwnized/mutillidae.git
+
+No need to move the directory if cloned into /var/www/html.
+
+Set proper permissions so Apache can access the files:
+
+sudo chown -R www-data:www-data /var/www/html/mutillidae
+Restart Apache to apply changes:
+
+sudo systemctl restart apache2
+Additional Notes:
+After installation, access Mutillidae in your browser at http://localhost/mutillidae.
+
+If necessary, configure your php.ini and Apache settings for best compatibility (for example, enabling or adjusting required PHP extensions).
+
+
+ALTERNATE METHOD using docker-compose
+
+
+To Install Docker-compose on Kali Linux
+
+sudo apt update
+sudo apt install docker-compose -y
+
+-> Now To Install Mutillidae Using Docker-compose
+
+first create an folder named mutillidae
+then clone the below repository in it
+
+-> Step 1 : git clone https://github.com/webpwnized/mutillidae-dockerhub
+then by using ls command see whether an .yml file is present in it or not
+
+-> Step 2 : Pull the Mutillidae Docker image: sudo docker-compose up
+
+-> Step 3 : Go in web browser and open the 
+
+
+4. To Configure Burp Suite to Intercept Browser Traffic
+Launch Burp Suite on Kali Linux.
+
+In Burp Suite, go to the "Proxy" → "Options" tab and note the default proxy address (often 127.0.0.1:8080).
+
+Configure your browser (such as Firefox or Chrome) to use Burp’s proxy:
+
+Go to browser network settings.
+
+Set HTTP Proxy to 127.0.0.1, Port 8080.
+
+Install Burp’s CA certificate in your browser for HTTPS interception:
+
+In Burp, go to "Proxy" → "Intercept" → "Proxy Listeners" and ensure "intercept is on".
+
+Visit http://burp in your browser, download Burp’s CA certificate, and add it to your browser’s trusted authorities.
+
+Now, browse to the Mutillidae application (http://localhost:8080/) and capture/intercept web traffic in Burp Suite for analysis.
+
+
+
+
+Viva Questions and Answers
+1. What is Kali Linux and why is it used in penetration testing?
+Answer:
+Kali Linux is a Debian-based Linux distribution specifically designed for penetration testing and digital forensics. It includes a comprehensive collection of security tools for tasks such as vulnerability assessment, exploitation, forensics, and reverse engineering.​
+
+2. What is Mutillidae and how is it beneficial for security labs?
+Answer:
+Mutillidae is a deliberately vulnerable web application designed for security training, vulnerability testing, and practicing common web attacks like SQL injection and XSS. It simulates real-world web vulnerabilities so students and professionals can safely learn exploitation techniques.​
+
+3. Describe the steps required to install Mutillidae on Kali Linux.
+Answer:
+
+Ensure Apache2, PHP, and Git are installed.
+
+Navigate to the web root (cd /var/www/html).
+
+Clone the repository: sudo git clone https://github.com/webpwnized/mutillidae.git
+
+Set correct permissions: sudo chown -R www-data:www-data /var/www/html/mutillidae
+
+Restart Apache: sudo systemctl restart apache2
+
+Access via browser at http://localhost/mutillidae.
+
+4. What is Docker and why would you use it for web application security labs?
+Answer:
+Docker is a platform for developing, shipping, and running applications in lightweight, isolated containers. Using Docker simplifies deploying vulnerable web apps (like Mutillidae or DVWA) by avoiding manual dependency management and ensuring consistent environments.​
+
+5. How do you run Mutillidae using Docker Compose on Kali Linux?
+Answer:
+
+Install Docker Compose: sudo apt update && sudo apt install docker-compose -y
+
+Clone the Docker repository: git clone https://github.com/webpwnized/mutillidae-dockerhub
+
+Navigate into the cloned directory with the docker-compose.yml file.
+
+Start Mutillidae: sudo docker-compose up
+
+Access Mutillidae in the browser through the provided port.
+
+6. What is Burp Suite and how is it used in web application security testing?
+Answer:
+Burp Suite is a comprehensive web vulnerability scanner and proxy tool. It intercepts and analyzes HTTP traffic between a browser and web server, allowing testers to identify, exploit, and verify security flaws such as XSS, SQL injection, authentication issues, etc.​
+
+7. What is the purpose of configuring Burp Suite as a proxy in your browser?
+Answer:
+Configuring Burp Suite as a browser proxy allows Burp to capture, inspect, and modify HTTP(S) requests and responses, enabling interactive testing and automated crawling of web applications for security vulnerabilities.​
+
+8. Explain how to install Burp Suite’s CA certificate in your browser and why it is necessary.
+Answer:
+
+Visit http://burp in your browser with Burp Suite running.
+
+Download Burp’s CA certificate.
+
+Import it into the browser’s certificate manager as a trusted Root CA.
+Reason: This allows Burp to intercept and decrypt HTTPS traffic, simulating a secure “man-in-the-middle” for testing encrypted web applications.​
+
+9. What is Burp Spider (or Site Map Crawler) and how does it help in vulnerability assessment?
+Answer:
+Burp Spider is an automated crawler that browses a web application, following links and submitting forms to enumerate all accessible pages, parameters, and input vectors. This builds a complete map of the application structure, aiding thorough vulnerability assessment.​
+
+10. How do you use Burp Suite to crawl and map a site such as Acuart on vulnweb?
+Answer:
+
+Set your browser to use Burp as a proxy.
+
+Browse to the target (e.g., http://testphp.vulnweb.com/artists.php?artist=1).
+
+In Burp, go to the “Target” tab and right-click the target, select “Spider” or “Crawl” (Professional/Enterprise editions automate this step).
+
+Review the discovered URLs, forms, parameters, and inferred endpoints in the Site Map for attack surface analysis.​
+
+11. What troubleshooting steps would you take if Mutillidae doesn’t load after installation?
+Answer:
+
+Confirm Apache and PHP are properly installed and running.
+
+Verify folder permissions for /var/www/html/mutillidae.
+
+Check for syntax errors in Apache/PHP logs (/var/log/apache2/error.log).
+
+Make sure there are no conflicts with other processes using the same port.
+
+12. Why is it important to set file/folder permissions for the www-data user/group?
+Answer:
+Setting permissions to www-data ensures that the Apache HTTP server (running as www-data) can read, write, and execute necessary files/directories, preventing permission errors and improving lab security.​
+
+13. Can you explain the importance of using test targets like Mutillidae or Acuart instead of real applications for vulnerability testing?
+Answer:
+Test targets are deliberately insecure, legally safe environments designed for learning and practicing exploitation without causing real-world damage, data breaches, or legal issues. Testing real sites without permission is illegal and unethical.​
+
+14. What kind of vulnerabilities can you typically discover by crawling a web application with Burp Spider?
+Answer:
+Vulnerabilities like Cross-Site Scripting (XSS), SQL Injection, Command Injection, Directory Traversal, vulnerable parameters, and exposed admin pages can be uncovered by discovering all accessible pages and inputs.​
+
+15. Why should you not use Burp Suite automatic crawling on unauthorized or production systems?
+Answer:
+Automated crawling may generate high traffic, trigger alarms, or exploit vulnerabilities unintentionally, potentially disrupting real services or breaching legal/ethical standards. Always use test environments with proper authorization.​

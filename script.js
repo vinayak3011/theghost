@@ -49,15 +49,23 @@ const experimentData = {
     { title: 'AIML EXP 8 Explainable AI in Healthcare for Model Interpretation.', file: 'files/AIML/AIML_Exp8.txt' }
 ],
 'AWX': [
-    { title: 'EXP 1 Download, install nmap and use it with different options to scan open ports, perform OS fingerprinting, ping scan, tcp port scan, udp port scan, etc.', file: 'files/cns/Exp_1.txt' },
-    { title: 'EXP 2 Study the use of network reconnaissance tools like WHOIS, dig, traceroute, nslookup to gather information about networks and domain registrars.', file: 'files/cns/Exp_2.txt' },
-    { title: 'EXP 3 Study of packet sniffer tools Wireshark: a. Observe performance in promiscuous as well as non-promiscuous mode. b. Show packets can be traced using different filters.', file: 'files/cns/Exp_3.txt' },
-    { title: 'EXP 4 Breaking the Mono-alphabetic Substitution Cipher using Frequency Analysis Method.', file: 'files/cns/Exp_4.txt' },
-    { title: 'EXP 5 Design and implement a product cipher using Substitution ciphers.', file: 'files/cns/Exp_5.txt' },
-    { title: 'EXP 6 Encrypt long messages using various modes of operation using AES or DES.', file: 'files/cns/Exp_6.txt' },
-    { title: 'EXP 7 Study of malicious software using different tools: a. Keylogger attack using keylogger tool. b. Simulate DoS attack using Hping or other tools. c. Use NESSUS/ISO Kali Linux to scan network for vulnerabilities.', file: 'files/cns/Exp_7.txt' },
-    { title: 'EXP 8 Study of Network Security: a. Set up IPSec under Linux. b. Set up Snort and study the logs. c. Explore GPG tool to implement email security.', file: 'files/cns/Exp_8.txt' },
-    { title: 'EXP 9 Content Beyond the Syllabus: a. Burp Suite Tool. b. Steghide Tool.', file: 'files/cns/Exp_9.txt' }
+    { title: 'EXP 1 Identify and Manage vulnerabilities by Crawling the web application using Burp Spider/Site Map', file: 'files/AWX/AWX_Exp_1.txt' },
+    { title: 'EXP 2 Identify and Manage vulnerabilities by Replaying web requests using the Repeater tab.', file: 'files/AWX/AWX_Exp_2.txt' },
+    { title: 'EXP 3 Identify the target web application and gather relevant information such as the application technology stack, URLs, endpoints, and any other publicly available information.', file: 'files/AWX/AWX_Exp_3.txt' },
+    { title: 'EXP 4 Use open-source intelligence (OSINT) techniques to gather information about the application, its infrastructure, and potential vulnerabilities.', file: 'files/AWX/AWX_Exp_4.txt' },
+    { title: 'EXP 5 Identify Session Management Vulnerabilities in Mutillidae/DVWA', file: 'files/AWX/AWX_Exp_5.txt' },
+    { title: 'EXP 6 Identify  Brute forcing the authentication of Mutillidae/DVWA ', file: 'files/AWX/AWX_Exp_6.txt' },
+    { title: 'EXP 7 Detecting XSS Vulnerabilities in web application 1. Perform reflected XSS attack and stored XSS attack using Mutillidae/DVWA', file: 'files/AWX/AWX_Exp_7.txt' },
+    { title: 'EXP 8 Detecting CSRF Vulnerabilities in web application 2. Prevent CSRF attacks in web applications using Javascript.', file: 'files/AWX/AWX_Exp_8.txt' },
+    { title: 'EXP 9 Detecting CSRF Vulnerabilities in web application: Detect CSRF attack using Burp Suite', file: 'files/AWX/AWX_Exp_9.txt' },
+    { title: 'EXP 10 Examine  SQL Injection: Bypassing Authentication using SQL injection', file: 'files/AWX/AWX_Exp_10.txt' },
+    { title: 'EXP 11 Examine  SQL Injection: Extracting Data using the UNION attack ', file: 'files/AWX/AWX_Exp_11.txt' },
+    { title: 'EXP 12 Examine  SQL Injection: Blind SQL injection ', file: 'files/AWX/AWX_Exp_12.txt' },
+    { title: 'EXP 13 Extended SQLi, Protecting against SQLi, and SQLi Forensics: Reading Database Password Hashes', file: 'files/AWX/AWX_Exp_13.txt' },
+    { title: 'EXP 14 Extended SQLi, Protecting against SQLi, and SQLi Forensics: Protecting against SQL injection', file: 'files/AWX/AWX_Exp_14.txt' },
+    { title: 'EXP 15 Extended SQLi, Protecting against SQLi, and SQLi Forensics: Reading Files from the Target Web Server', file: 'files/AWX/AWX_Exp_15.txt' },
+    { title: 'EXP 16 Extended SQLi, Protecting against SQLi, and SQLi Forensics: Writing Files into the Target Web Serve', file: 'files/AWX/AWX_Exp_16.txt' },
+
 ]
 };
 

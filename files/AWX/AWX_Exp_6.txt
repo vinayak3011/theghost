@@ -1,0 +1,102 @@
+AWX Experiment 
+
+Identify Brute forcing the authentication of Mutillidae/DVWA
+
+
+1. To install DVWA using Docker
+-> First, verify Docker is installed on your Kali Linux machine:
+sudo apt update && sudo apt install docker.io -y
+
+-> Pull the official DVWA Docker image:
+sudo docker pull citizenstig/dvwa
+
+-> Run the DVWA container, mapping port 8080 to container’s port 80:
+sudo docker run -d -p 8080:80 citizenstig/dvwa
+
+-> Open your chromium of burpsuite browser and visit http://localhost:8080.
+-> Log in with username admin and password password.
+-> On the DVWA home page, click "Create/Reset database" to initialize the environment and set to low.
+ 
+2. To configure Burp Suite and browser for interception
+-> Launch Burp Suite.
+-> Open the intercept option and open chromium from it else it will not work.
+-> Confirm that "Intercept is ON" in Burp Suite Proxy tab.
+-> Navigate to DVWA’s "Brute Force" vulnerability page via your proxy-enabled browser.
+ 
+3. To capture a login request for brute force attack
+-> Enter arbitrary username and password (e.g. admin/1234) in the DVWA login form.
+-> Submit the form, intercept the HTTP POST request in Burp Suite’s Proxy tab.
+-> Right-click on the intercepted request and choose "Send to Intruder".[3][1]
+ 
+4. To set up Burp Suite Intruder for brute forcing
+-> Switch to the "Intruder" tab.
+-> Under the "Positions" tab, highlight the username and password values; set them as payload positions.
+-> Choose "Sniper" as the attack type.
+ 
+5. To configure payloads (usernames and passwords)
+-> Go to the "Payloads" tab.
+-> For Payload Set 1 (username): Enter a list of possible usernames, either manually or from a file.
+-> You may use default payloads or custom wordlists and add the " password "  in that list .(e.g., /usr/share/wordlists/rockyou.txt).
+ 
+6. To launch the brute force attack
+-> Click "Start Attack" in Burp Suite Intruder.
+-> Monitor the results: In the Intruder Attack window, sort responses by status, length, or response text.
+-> Look for responses indicating success (e.g., a change in status code, response length, or a valid login message such as "Welcome").
+ 
+7. To validate brute force results
+-> Try logging in to DVWA using username and password combinations that resulted in different responses or successful authentication.
+-> Confirm access to authenticated areas, proving the effectiveness of your brute force attack
+
+
+VIVA AND QUESTION AND ANSWERS
+
+1. What is brute force authentication testing?
+Answer:
+Brute force authentication testing is the process of systematically trying multiple username and password combinations, typically using automation, to guess valid login credentials and gain unauthorized access to an application.​​
+
+2. Why is DVWA or Mutillidae used to practice brute force attacks?
+Answer:
+DVWA and Mutillidae are intentionally vulnerable web applications designed for security testing and education, allowing safe practice of attack techniques (such as brute-forcing logins) in a controlled, legal environment.​
+
+3. Which tool did you use for automating brute-force attacks in this experiment, and why?
+Answer:
+Burp Suite Intruder was used because it automates the process of sending many payloads (usernames/passwords) against the login form and can be precisely configured to observe and analyze server responses for successful authentication attempts.​
+
+4. How do you capture and prepare a request for brute force in Burp Suite?
+Answer:
+Intercept a login request using Burp Suite’s Proxy, right-click the request, and select “Send to Intruder”. Then choose payload positions (for fields like username and password) in the Intruder module.​
+
+5. What is the significance of the attack type you choose in Intruder (Sniper, Battering Ram, Cluster Bomb, Pitchfork)?
+Answer:
+Attack types determine how payloads are used in request positions:
+
+Sniper tests one value at a time (single position).
+
+Cluster Bomb loads different payloads for multiple fields simultaneously.
+
+Choosing the correct type ensures all intended combinations of usernames and passwords are tested efficiently.​
+
+6. How do you identify a successful brute force attempt?
+Answer:
+In Burp Suite, a successful attempt is usually revealed by a difference in HTTP status codes, a distinct response length, or a specific text in the server’s reply (e.g., "Welcome" or "Login successful") compared to failed attempts.​
+
+7. What are default credentials for DVWA/Mutillidae you would expect to work in brute-forcing?
+Answer:
+Common defaults for DVWA include:
+
+Username: admin
+
+Password: password
+Other common sets: admin:admin, admin:123456, guest:guest, etc..​
+
+8. How do applications defend against brute force attacks?
+Answer:
+Defenses include account lockout after repeated failures, enforced rate limiting, CAPTCHAs, two-factor authentication, and monitoring/login attempt anomaly detection.​​
+
+9. Why is it important to set security level to "Low" in DVWA before brute force testing?
+Answer:
+"Low" disables defenses like CSRF tokens, delays, and account lockout, making brute force possible for educational testing; higher levels add protections that block or slow automated brute-forcing.​​
+
+10. What ethical guidelines must you follow when conducting brute force tests?
+Answer:
+Always obtain permission and use test environments (never attack real systems without explicit consent), since brute force attacks can disrupt services and are illegal/unethical against unauthorized targets.
