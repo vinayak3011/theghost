@@ -1,0 +1,164 @@
+AIM: Extended SQLi, Protecting against SQLi, and SQLi Forensics: Protecting against SQL injection 
+
+
+
+
+
+----------------------------------------------------------
+A. Install & start required services (Apache, PHP, MariaDB)
+# update package lists
+sudo apt update
+
+# install apache, mariadb (server + client), php and the PHP MySQL extension
+sudo apt install -y apache2 mariadb-server mariadb-client \
+  php libapache2-mod-php php-mysql php-curl php-xml php-mbstring php-gd git unzip curl jq
+
+# enable & start services
+sudo systemctl enable --now apache2
+sudo systemctl enable --now mariadb
+
+# check status
+sudo systemctl status apache2 --no-pager
+sudo systemctl status mariadb --no-pager
+
+
+Run: sudo mysql -u root
+in password hit just enter
+
+
+----------------------------
+C. Create demo database, table, and least-privileged web user
+
+Run:
+sudo mysql -u root -p
+# enter root password when prompted (set above or blank if none)
+
+# inside mysql> prompt run:
+CREATE DATABASE IF NOT EXISTS demo_sqli;
+USE demo_sqli;
+
+CREATE TABLE IF NOT EXISTS demo_users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(50) NOT NULL,
+  first_name VARCHAR(50),
+  surname VARCHAR(50),
+  password_hash VARCHAR(255)
+);
+
+-- Insert sample rows
+INSERT INTO demo_users (username, first_name, surname, password_hash) VALUES
+('alice','Alice','Anderson','fakehash1'),
+('bob','Bob','Brown','fakehash2'),
+('charlie','Charlie','Clark','fakehash3');
+
+-- Create least-privileged web app user (SELECT only)
+DROP USER IF EXISTS 'webuser'@'localhost';
+CREATE USER 'webuser'@'localhost' IDENTIFIED BY 'webuserpass';
+GRANT SELECT ON demo_sqli.* TO 'webuser'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+
+--------------------------------------------
+D. Deploy the demo PHP pages (vulnerable + safe)
+
+Create vuln.php (intentionally vulnerable; lab-only):
+
+""""""""""""""Copy form here""""""""""""""""""
+sudo tee /var/www/html/vuln.php > /dev/null <<'PHP'
+<?php
+// vuln.php - lab demo (intentionally vulnerable)
+ini_set('display_errors',0);
+
+$mysqli = new mysqli("localhost", "webuser", "webuserpass", "demo_sqli");
+if ($mysqli->connect_error) {
+    die("DB connect error");
+}
+
+$id = isset($_GET['id']) ? $_GET['id'] : '';
+$query = "SELECT first_name, surname FROM demo_users WHERE id = '$id'";
+
+$result = $mysqli->query($query);
+if (!$result) {
+    // in lab you can log errors to a file instead of showing to users
+    error_log("VULN_QUERY_ERR: " . $mysqli->error);
+    echo json_encode(['error'=>'query failed']);
+    exit;
+}
+
+$rows = [];
+while ($row = $result->fetch_assoc()) $rows[] = $row;
+header('Content-Type: application/json');
+echo json_encode(['query'=>$query,'rows'=>$rows]);
+$mysqli->close();
+PHP
+
+sudo chown www-data:www-data /var/www/html/vuln.php
+sudo chmod 644 /var/www/html/vuln.php
+""""""""""""""Till Here"""""""""""""""""""""
+
+------------------------------------
+Create safe.php (parameterized + basic validation):
+
+""""""""""""Copy From Here"""""""""""""""""""""
+sudo tee /var/www/html/safe.php > /dev/null <<'PHP'
+<?php
+// safe.php - parameterized queries + basic validation
+ini_set('display_errors',0);
+
+$mysqli = new mysqli("localhost", "webuser", "webuserpass", "demo_sqli");
+if ($mysqli->connect_error) {
+    die("DB connect error");
+}
+
+$raw_id = isset($_GET['id']) ? $_GET['id'] : '';
+$id = intval($raw_id); // simple allowlist for id
+
+$stmt = $mysqli->prepare("SELECT first_name, surname FROM demo_users WHERE id = ?");
+if (!$stmt) {
+    error_log('PREPARE_ERR: '.$mysqli->error);
+    echo json_encode(['error'=>'prepare failed']);
+    exit;
+}
+$stmt->bind_param('i',$id);
+$stmt->execute();
+$res = $stmt->get_result();
+
+$rows = [];
+while ($row = $res->fetch_assoc()) $rows[] = $row;
+header('Content-Type: application/json');
+echo json_encode(['id_received'=>$raw_id,'id_used'=>$id,'rows'=>$rows]);
+
+$stmt->close();
+$mysqli->close();
+PHP
+
+sudo chown www-data:www-data /var/www/html/safe.php
+sudo chmod 644 /var/www/html/safe.php
+
+""""""""""""""""Till Here"""""""""""""""
+--------------------------------------------
+Run: sudo systemctl restart apache2
+-------------------------------------------
+# static and PHP
+curl -i http://localhost/test.txt || true
+curl -s http://localhost/info.php | head -n 3
+
+
+--> Run : pip install jq
+
+# DB connectivity test via the pages
+curl -s "http://localhost/vuln.php?id=2" | jq .
+curl -s "http://localhost/safe.php?id=2" | jq .
+
+-------------------------------
+Classic SQLi demo (lab only):
+
+# vulnerable will show injection results (may return all rows)
+curl -s "http://localhost/vuln.php?id=1' OR '1'='1' -- " | jq .
+
+# safe will not be exploited; id becomes integer 1
+curl -s "http://localhost/safe.php?id=1' OR '1'='1' -- " | jq .
+
+
+
+Convenience mam you perform the experiment
